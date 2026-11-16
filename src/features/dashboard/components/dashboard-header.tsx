@@ -348,18 +348,18 @@ const DashboardHeader = () => {
               sidebarCollapsed ? 'lg:pl-[72px]' : 'lg:pl-[256px]',
             )}
           >
-            <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-              <div className="flex min-w-0 items-center gap-3">
+            <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-2 sm:gap-3 px-3 sm:px-6 lg:px-8">
+              <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}
                   aria-label={t('Open menu')}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink hover:bg-canvas lg:hidden cursor-pointer"
+                  className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink hover:bg-canvas lg:hidden cursor-pointer"
                 >
                   <Menu className="h-4 w-4" strokeWidth={1.5} />
                 </button>
-                <Link href="/" className="inline-flex items-center no-underline lg:hidden">
-                  <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
+                <Link href="/" className="inline-flex shrink-0 items-center no-underline lg:hidden">
+                  <Image src={Logo} alt="Zenvinus" className="h-4 sm:h-5 w-auto object-contain" priority />
                 </Link>
                 <button
                   type="button"
@@ -377,12 +377,12 @@ const DashboardHeader = () => {
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
                   aria-label={t('Quick search')}
-                  className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:text-ink sm:hidden cursor-pointer"
+                  className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:text-ink sm:hidden cursor-pointer"
                 >
                   <Search className="h-4 w-4" strokeWidth={1.5} />
                 </button>
@@ -417,10 +417,10 @@ const DashboardHeader = () => {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-hairline bg-surface">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 flex-1 items-center gap-4 2xl:gap-6">
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4 2xl:gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline">
-              <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
+              <Image src={Logo} alt="Zenvinus" className="h-4 sm:h-5 w-auto object-contain" priority />
             </Link>
 
             <nav
@@ -460,7 +460,7 @@ const DashboardHeader = () => {
             </nav>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -478,7 +478,7 @@ const DashboardHeader = () => {
               onClick={() => setSearchOpen(true)}
               aria-label={t('Quick search')}
               title={`${t('Quick search')} (Ctrl+K)`}
-              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:border-ink/25 hover:text-ink transition-colors 2xl:hidden cursor-pointer"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:border-ink/25 hover:text-ink transition-colors 2xl:hidden cursor-pointer"
             >
               <Search className="h-4 w-4" strokeWidth={1.5} />
             </button>
@@ -500,7 +500,7 @@ const DashboardHeader = () => {
               aria-label={mobileOpen ? t('Close menu') : t('Open menu')}
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((o) => !o)}
-              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink hover:bg-canvas xl:hidden cursor-pointer"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink hover:bg-canvas xl:hidden cursor-pointer"
             >
               <Menu className="h-4 w-4" strokeWidth={1.5} />
             </button>

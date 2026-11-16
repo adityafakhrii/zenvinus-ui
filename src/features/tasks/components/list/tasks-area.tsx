@@ -226,7 +226,7 @@ const TasksArea = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex w-full sm:w-auto flex-wrap items-center gap-2.5">
             <SearchInput
               value={query}
               onChange={setQuery}
@@ -240,13 +240,13 @@ const TasksArea = () => {
               options={sortOptions}
               size="sm"
               ariaLabel={t('Sort by')}
-              containerClassName="w-44"
+              containerClassName="flex-1 min-w-[140px] sm:flex-none sm:w-44"
             />
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              className="lg:hidden"
+              className="shrink-0 lg:hidden"
               leftIcon={<SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.6} />}
               onClick={() => setMobileFiltersOpen(true)}
             >

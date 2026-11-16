@@ -118,7 +118,7 @@ const ProjectList = () => {
             options={statusOptions}
             size="sm"
             ariaLabel={t('Filter by status')}
-            containerClassName="w-48"
+            containerClassName="w-full sm:w-48"
           />
         </div>
 

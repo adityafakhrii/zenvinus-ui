@@ -396,14 +396,15 @@ const ExpertArea = () => {
         className="mt-5"
         title={t('Review Queue')}
         subtitle={t('Submission status is separate from payout status — APPROVED items enter the reward ledger as PENDING')}
+        stackActionOnMobile
         action={
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex w-full sm:w-auto flex-wrap items-center gap-2.5">
             <SearchInput
               value={search}
               onChange={setSearch}
               placeholder={t('Search submissions')}
               size="sm"
-              containerClassName="w-48 sm:w-56"
+              containerClassName="w-full sm:w-56"
             />
             <CustomSelect
               value={statusFilter}
@@ -411,7 +412,7 @@ const ExpertArea = () => {
               options={statusOptions}
               size="sm"
               ariaLabel={t('Filter by review status')}
-              containerClassName="w-44"
+              containerClassName="w-full sm:w-44"
             />
           </div>
         }

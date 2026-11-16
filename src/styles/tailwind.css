@@ -74,6 +74,7 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background-color: var(--color-surface);
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -83,6 +84,7 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background-color: var(--color-surface);
+    overflow-x: clip;
   }
 }
 

@@ -14,7 +14,7 @@ export interface DashboardCanvasProps {
  */
 export function DashboardCanvas({ children, className }: DashboardCanvasProps) {
   return (
-    <section className={cn('min-h-screen bg-canvas pb-16 pt-6 sm:pt-7', className)}>
+    <section className={cn('min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-7', className)}>
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">{children}</div>
     </section>
   );
@@ -47,6 +47,8 @@ export interface BentoCardProps {
   title?: string;
   subtitle?: string;
   action?: ReactNode;
+  /** Stacks header action below the title on mobile so multi-control toolbars expand cleanly. */
+  stackActionOnMobile?: boolean;
   children: ReactNode;
   className?: string;
   id?: string;
@@ -55,7 +57,15 @@ export interface BentoCardProps {
 /**
  * Elevated surface card styled after the ACRU Bento layout on the Zenvinus canvas.
  */
-export function BentoCard({ title, subtitle, action, children, className, id }: BentoCardProps) {
+export function BentoCard({
+  title,
+  subtitle,
+  action,
+  stackActionOnMobile = false,
+  children,
+  className,
+  id,
+}: BentoCardProps) {
   return (
     <div
       id={id}
@@ -65,7 +75,14 @@ export function BentoCard({ title, subtitle, action, children, className, id }: 
       )}
     >
       {(title || subtitle || action) && (
-        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div
+          className={cn(
+            'mb-4 flex gap-3',
+            stackActionOnMobile
+              ? 'flex-col sm:flex-row sm:items-start sm:justify-between'
+              : 'flex-wrap items-start justify-between',
+          )}
+        >
           <div className="min-w-0">
             {title && (
               <h2 className="m-0 text-[15px] font-semibold text-ink leading-snug">{title}</h2>
@@ -74,7 +91,11 @@ export function BentoCard({ title, subtitle, action, children, className, id }: 
               <p className="mt-0.5 mb-0 text-xs text-ink-muted leading-snug">{subtitle}</p>
             )}
           </div>
-          {action && <div className="shrink-0">{action}</div>}
+          {action && (
+            <div className={cn(stackActionOnMobile ? 'w-full sm:w-auto sm:shrink-0' : 'shrink-0')}>
+              {action}
+            </div>
+          )}
         </div>
       )}
       {children}

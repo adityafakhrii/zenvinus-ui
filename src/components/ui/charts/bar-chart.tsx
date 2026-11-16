@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '../cn';
 
 export interface BarChartSeries {
@@ -44,9 +44,24 @@ export function CustomBarChart({
   formatValue = DEFAULT_FORMAT,
   className,
 }: CustomBarChartProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(640);
   const fallbackIndex = data.length > 0 ? (defaultActiveIndex ?? data.length - 1) : -1;
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const activeIndex = hoveredIndex ?? fallbackIndex;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const sync = () => {
+      const next = el.clientWidth;
+      if (next > 0) setContainerWidth(next);
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   if (data.length === 0) return null;
 
@@ -62,21 +77,32 @@ export function CustomBarChart({
   const maxVal = Math.ceil(rawMax / niceStep) * niceStep;
   const ticks = [0, 0.33, 0.66, 1].map((r) => Math.round(maxVal * r));
 
-  const viewWidth = 640;
-  const padLeft = 44;
-  const padRight = 14;
+  const compact = containerWidth < 460;
+  const viewWidth = compact ? 360 : 640;
+  const padLeft = compact ? 36 : 44;
+  const padRight = compact ? 8 : 14;
   const padTop = 16;
   const padBottom = 30;
   const plotW = viewWidth - padLeft - padRight;
   const plotH = height - padTop - padBottom;
   const colWidth = plotW / data.length;
-  const barWidth = Math.min(42, Math.max(16, colWidth * 0.54));
+  const barWidth = Math.min(42, Math.max(compact ? 12 : 16, colWidth * 0.56));
 
   const activeDatum = activeIndex >= 0 && activeIndex < data.length ? data[activeIndex] : null;
-  const tooltipLeftPct = activeIndex >= 0 ? ((padLeft + colWidth * (activeIndex + 0.5)) / viewWidth) * 100 : 50;
+  const tooltipLeftPct =
+    activeIndex >= 0 ? ((padLeft + colWidth * (activeIndex + 0.5)) / viewWidth) * 100 : 50;
+
+  // Snap outer bars flush inside container bounds so mobile popovers never clip or overflow.
+  const tooltipPositionStyle: React.CSSProperties =
+    tooltipLeftPct <= 32
+      ? { left: 0 }
+      : tooltipLeftPct >= 68
+        ? { right: 0 }
+        : { left: `${tooltipLeftPct}%`, transform: 'translateX(-50%)' };
 
   return (
     <div
+      ref={containerRef}
       className={cn('relative w-full select-none', className)}
       onMouseLeave={() => setHoveredIndex(null)}
     >
@@ -133,6 +159,9 @@ export function CustomBarChart({
                 },
               ];
 
+          const showXLabel =
+            !compact || data.length <= 7 || (data.length - 1 - idx) % 2 === 0;
+
           return (
             <g
               key={`${datum.label}-${idx}`}
@@ -141,6 +170,7 @@ export function CustomBarChart({
               aria-label={`${datum.title ?? datum.label}: ${formatValue(totals[idx] ?? 0)}`}
               onMouseEnter={() => setHoveredIndex(idx)}
               onFocus={() => setHoveredIndex(idx)}
+              onClick={() => setHoveredIndex(idx)}
               className="cursor-pointer focus:outline-none"
             >
               <rect
@@ -170,17 +200,19 @@ export function CustomBarChart({
                   />
                 );
               })}
-              <text
-                x={xCenter}
-                y={height - 6}
-                textAnchor="middle"
-                className={cn(
-                  'text-[11px] font-medium transition-colors duration-150',
-                  isActive ? 'fill-[#020626]' : 'fill-[#6B7280]',
-                )}
-              >
-                {datum.label}
-              </text>
+              {showXLabel && (
+                <text
+                  x={xCenter}
+                  y={height - 6}
+                  textAnchor="middle"
+                  className={cn(
+                    'text-[11px] font-medium transition-colors duration-150',
+                    isActive ? 'fill-[#020626]' : 'fill-[#6B7280]',
+                  )}
+                >
+                  {datum.label}
+                </text>
+              )}
             </g>
           );
         })}
@@ -188,11 +220,8 @@ export function CustomBarChart({
 
       {activeDatum && (
         <div
-          style={{
-            left: `${Math.max(16, Math.min(84, tooltipLeftPct))}%`,
-            transform: 'translateX(-50%)',
-          }}
-          className="pointer-events-none absolute top-2 z-20 min-w-[152px] rounded-xl border border-[rgba(8,13,53,0.10)] bg-surface px-3 py-2 shadow-[var(--shadow-popover)] zv-animate-fade"
+          style={tooltipPositionStyle}
+          className="pointer-events-none absolute top-2 z-20 min-w-[144px] max-w-[calc(100%-0.5rem)] rounded-xl border border-[rgba(8,13,53,0.10)] bg-surface px-3 py-2 shadow-[var(--shadow-popover)] zv-animate-fade"
         >
           <p className="m-0 mb-1.5 text-[11px] font-medium text-ink-muted">
             {activeDatum.title ?? activeDatum.label}

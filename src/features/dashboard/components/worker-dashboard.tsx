@@ -457,14 +457,15 @@ const ContributorArea = () => {
         className="mt-5"
         title={t('My Active Tasks')}
         subtitle={t('Jobs assigned to you from the marketplace')}
+        stackActionOnMobile
         action={
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex w-full sm:w-auto flex-wrap items-center gap-2.5">
             <SearchInput
               value={search}
               onChange={setSearch}
               placeholder={t('Search tasks')}
               size="sm"
-              containerClassName="w-48 sm:w-56"
+              containerClassName="w-full sm:w-56"
             />
             <CustomSelect
               value={statusFilter}
@@ -472,7 +473,7 @@ const ContributorArea = () => {
               options={statusOptions}
               size="sm"
               ariaLabel={t('Filter by status')}
-              containerClassName="w-40"
+              containerClassName="w-full sm:w-40"
             />
           </div>
         }

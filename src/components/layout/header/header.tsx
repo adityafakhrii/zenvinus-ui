@@ -47,10 +47,10 @@ const HeaderOne = () => {
           scrolled && 'shadow-[0_4px_16px_rgba(2,6,38,0.06)]',
         )}
       >
-        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-6">
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4 lg:gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline" aria-label="Zenvinus">
-              <Image src={Logo} alt="Zenvinus" priority className="h-5 w-auto object-contain" />
+              <Image src={Logo} alt="Zenvinus" priority className="h-4 sm:h-5 w-auto object-contain" />
             </Link>
 
             <nav className="hidden lg:flex items-center" aria-label={t('Main menu')}>
@@ -58,12 +58,12 @@ const HeaderOne = () => {
             </nav>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label={t('Search')}
-              className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-canvas text-ink-secondary transition-colors hover:border-ink/25 hover:text-ink cursor-pointer"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-canvas text-ink-secondary transition-colors hover:border-ink/25 hover:text-ink cursor-pointer"
             >
               <Search className="h-4 w-4" strokeWidth={1.6} />
             </button>

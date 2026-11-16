@@ -429,14 +429,15 @@ const InternalArea = () => {
         className="mt-5"
         title={t('Proposal Queue & Project Management')}
         subtitle={t('Review enterprise proposals, manage projects and workforce assignments')}
+        stackActionOnMobile
         action={
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex w-full sm:w-auto flex-wrap items-center gap-2.5">
             <SearchInput
               value={search}
               onChange={setSearch}
               placeholder={t('Search projects')}
               size="sm"
-              containerClassName="w-48 sm:w-56"
+              containerClassName="w-full sm:w-56"
             />
             <CustomSelect
               value={stageFilter}
@@ -444,7 +445,7 @@ const InternalArea = () => {
               options={stageOptions}
               size="sm"
               ariaLabel={t('Filter by stage')}
-              containerClassName="w-44"
+              containerClassName="w-full sm:w-44"
             />
           </div>
         }

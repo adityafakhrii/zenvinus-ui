@@ -1,4 +1,6 @@
-/** Joins non-empty class strings safely without external dependencies. */
+import { twMerge } from 'tailwind-merge';
+
+/** Merges conditional Tailwind class strings with conflict resolution. */
 export function cn(...parts: Array<string | false | null | undefined>): string {
-  return parts.filter(Boolean).join(' ');
+  return twMerge(parts);
 }

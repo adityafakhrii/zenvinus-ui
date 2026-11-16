@@ -90,7 +90,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
   const activeRole = ROLES.find((r) => r.key === as) ?? ROLES[0];
 
   return (
-    <div ref={rootRef} className={cn('fixed bottom-5 right-5 z-50', className)}>
+    <div ref={rootRef} className={cn('fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-50', className)}>
       {open && !minimized && (
         <div
           role="menu"
@@ -136,46 +136,46 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
           onClick={() => setMinState(false)}
           aria-label={t('Show role switcher')}
           title={`${t('Switch role')}: ${t(activeRole.label)}`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy pl-1.5 pr-2.5 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-teal hover:bg-navy-hover active:scale-[0.97] cursor-pointer"
+          className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy pl-1 pr-2 sm:pl-1.5 sm:pr-2.5 text-xs sm:text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-teal hover:bg-navy-hover active:scale-[0.97] cursor-pointer"
         >
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
+          <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-teal text-navy">
             <RoleIcon role={activeRole.key} />
           </span>
-          <ChevronUp className="h-4 w-4 text-white/75" strokeWidth={1.75} />
+          <ChevronUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/75" strokeWidth={1.75} />
         </button>
       ) : (
-        <div className="inline-flex h-11 items-center rounded-full border border-[rgba(255,255,255,0.16)] bg-navy text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)]">
+        <div className="inline-flex h-9 sm:h-11 items-center rounded-full border border-[rgba(255,255,255,0.16)] bg-navy text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)]">
           <button
             type="button"
             aria-haspopup="menu"
             aria-expanded={open}
             aria-label={t('Switch role')}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-full items-center gap-2.5 rounded-l-full pl-2 pr-3.5 text-[13px] font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 active:scale-[0.98] cursor-pointer"
+            className="inline-flex h-full items-center gap-2 sm:gap-2.5 rounded-l-full pl-1.5 pr-2.5 sm:pl-2 sm:pr-3.5 text-xs sm:text-[13px] font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 active:scale-[0.98] cursor-pointer"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
+            <span className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-teal text-navy">
               <RoleIcon role={activeRole.key} />
             </span>
             <span>{t(activeRole.label)}</span>
             <ChevronUp
               className={cn(
-                'h-4 w-4 text-white/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                'h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
                 open && 'rotate-180 text-teal',
               )}
               strokeWidth={1.75}
             />
           </button>
 
-          <span className="h-5 w-px bg-white/15" aria-hidden="true" />
+          <span className="h-4 sm:h-5 w-px bg-white/15" aria-hidden="true" />
 
           <button
             type="button"
             onClick={() => setMinState(true)}
             aria-label={t('Minimize role switcher')}
             title={t('Minimize role switcher')}
-            className="inline-flex h-full w-10 items-center justify-center rounded-r-full text-white/70 transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 hover:text-white active:scale-[0.95] cursor-pointer"
+            className="inline-flex h-full w-8 sm:w-10 items-center justify-center rounded-r-full text-white/70 transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 hover:text-white active:scale-[0.95] cursor-pointer"
           >
-            <Minus className="h-4 w-4" strokeWidth={1.75} />
+            <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.75} />
           </button>
         </div>
       )}
