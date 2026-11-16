@@ -16,7 +16,28 @@ Sebelum menyentuh kode komponen atau stylesheet apa pun, AI agent **wajib** memb
 
 ---
 
-## 2. Unslop Direction untuk Zenvinus UI
+## 2. Stack Styling Wajib: Utamakan Tailwind CSS
+
+Saat melakukan revamp, **utamakan menggunakan Tailwind CSS** sebagai sistem styling utama untuk seluruh komponen, layout, custom controls, dan halaman baru — menggantikan pendekatan lama berbasis Bootstrap 5 + SCSS template (`public/assets/scss` dan class legacy `.edash-*` / `.tflow-*` / `.zv-*`).
+
+### Aturan Implementasi Tailwind CSS
+1. **Setup Awal (Belum Terpasang Saat Ini):** Saat memulai Fase 1, pasang Tailwind CSS (`tailwindcss`, `@tailwindcss/postcss`, `postcss` — disarankan Tailwind v4) menggunakan `bun add -d` dan muat dari entry CSS global (`src/styles/globals.css` / `index.scss`).
+2. **Design Tokens di `@theme` / CSS Variables:** Petakan seluruh palet dari [ai-guidelines/color-system.md](color-system.md) dan skala `4px` dari `unslop` ke dalam token Tailwind (`@theme`), seperti:
+   - Brand & Surfaces: `--color-navy: #020626`, `--color-teal: #05DAC3`, `--color-teal-ink: #0D9488`, `--color-canvas: #F5F6F8`, `--color-surface: #FFFFFF`, `--color-tint-cyan: #F3FBFE`, `--color-tint-mint: #F1FBFA`
+   - Semantic 6-Tone: `blue`, `mint`, `purple`, `orange`, `amber`, `red` (pair `bg` + `text`)
+   - Motion & Radius: `--ease-out-smooth: cubic-bezier(0.22, 1, 0.36, 1)`
+3. **Utility-First, Hindari SCSS Baru:** Semua halaman dan komponen hasil revamp **wajib** ditulis dengan utility classes Tailwind (`flex`, `grid`, `gap-4`, `rounded-xl`, `tabular-nums`, responsif `sm:`, `md:`, `lg:`, `xl:`). **Jangan** membuat file `.scss` baru atau menambah class CSS custom manual kecuali untuk token `@theme`, `@keyframes`, atau reset tipis yang tidak bisa diekspresikan di utility class.
+4. **Aturan Tailwind dari `unslop`:**
+   - Gunakan skala spacing kelipatan `4px` (`p-4`, `p-6`, `gap-3`, `gap-6`, dll.) — hindari arbitrary value aneh seperti `mt-[13px]` atau `py-[11px]`.
+   - Untuk transisi, **dilarang** `transition-all`. Selalu sebutkan properti eksplisit seperti `transition-colors`, `transition-opacity`, atau `transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]`.
+   - **Dilarang** `animate-pulse`, `animate-bounce`, atau `hover:scale-*` dekoratif.
+5. **Migrasi Aman dari Bootstrap/SCSS Legacy:**
+   - Selama proses revamp berjalan bertahap per grup halaman, jaga agar style Bootstrap legacy tidak menimpa komponen Tailwind (hindari konflik class Bootstrap seperti `.btn`, `.card`, `.row`, `.badge`, `.modal` pada komponen baru).
+   - Setelah seluruh Grup A–E selesai dirombak ke Tailwind, hapus dependency `bootstrap`, `@types/bootstrap`, `bootstrap/dist/js/bootstrap` di `_app.tsx`, `wowjs`, serta import `public/assets/scss/main` agar bundle bersih dan ringan.
+
+---
+
+## 3. Unslop Direction untuk Zenvinus UI
 
 Sesuai metode `unslop`, setiap keputusan layout, tipografi, komponen, dan copy di seluruh website wajib berakar pada **5 baris Direction** berikut:
 
@@ -30,7 +51,7 @@ Sesuai metode `unslop`, setiap keputusan layout, tipografi, komponen, dan copy d
 
 ---
 
-## 3. Bahasa Desain & Terjemahan Referensi Visual (ACRU Style → Zenvinus)
+## 4. Bahasa Desain & Terjemahan Referensi Visual (ACRU Style → Zenvinus)
 
 Mengacu pada layout dashboard referensi yang dilampirkan, terapkan bahasa visual berikut ke seluruh aplikasi:
 
@@ -60,7 +81,7 @@ Mengacu pada layout dashboard referensi yang dilampirkan, terapkan bahasa visual
 
 ---
 
-## 4. Sistem Navigasi Ganda (Top Navbar Default & Sidebar Opsional)
+## 5. Sistem Navigasi Ganda (Top Navbar Default & Sidebar Opsional)
 
 Salah satu persyaratan utama revamp adalah **fleksibilitas mode navigasi** pada area aplikasi (`/dashboard/*`, `/lab`, `/task-*`, `/studio/*`):
 
@@ -90,7 +111,7 @@ Salah satu persyaratan utama revamp adalah **fleksibilitas mode navigasi** pada 
 
 ---
 
-## 5. Sistem Custom Component (Dilarang Style Bawaan Browser)
+## 6. Sistem Custom Component (Dilarang Style Bawaan Browser)
 
 AI agent **wajib membangun atau menstandarkan seluruh komponen input dan overlay secara custom** di `src/components/ui/` sehingga tidak ada satu pun elemen di seluruh 45 halaman yang tampil dengan gaya OS/browser bawaan (`<select>` native, kalender OS `<input type="date">`, `window.confirm`, radio/checkbox bawaan browser, atau scrollbar/tooltip kasar).
 
@@ -110,7 +131,7 @@ Berikut daftar komponen custom wajib dan penggantian yang harus dilakukan:
 
 ---
 
-## 6. Strategi Responsive Multi-Layar
+## 7. Strategi Responsive Multi-Layar
 
 Semua 45 halaman wajib diuji dan didesain untuk 5 breakpoint utama:
 
@@ -124,7 +145,7 @@ Semua 45 halaman wajib diuji dan didesain untuk 5 breakpoint utama:
 
 ---
 
-## 7. Urutan Eksekusi 9-Pass Unslop (Wajib Diikuti AI Agent)
+## 8. Urutan Eksekusi 9-Pass Unslop (Wajib Diikuti AI Agent)
 
 Saat merombak setiap halaman/komponen, terapkan 9 pass `unslop` secara berurutan:
 1. **Spacing:** Standarkan semua margin, padding, gap, dan tinggi ke kelipatan `4px` (`4, 8, 12, 16, 20, 24, 32, 48, 64, 80, 96`). Samakan padding antar-kartu sejenis.
@@ -139,7 +160,7 @@ Saat merombak setiap halaman/komponen, terapkan 9 pass `unslop` secara berurutan
 
 ---
 
-## 8. Peta Perombakan Total Seluruh Halaman (45 Route)
+## 9. Peta Perombakan Total Seluruh Halaman (45 Route)
 
 **Seluruh halaman yang dianalisis pada repo ini WAJIB dirombak** menggunakan design system baru (tanpa meninggalkan halaman lama yang masih memakai styling Bootstrap/Technix template mentah):
 
@@ -210,23 +231,24 @@ Saat merombak setiap halaman/komponen, terapkan 9 pass `unslop` secara berurutan
 
 ---
 
-## 9. Urutan Implementasi Revamp yang Direkomendasikan
+## 10. Urutan Implementasi Revamp yang Direkomendasikan
 
 Saat mulai mengeksekusi revamp di kode nanti, jalankan dalam fase berikut agar aplikasi tetap jalan dan terverifikasi (`bun run typecheck` + `bun run lint` + `bun run next build --webpack`) di setiap fase:
 
-1. **Fase 1 — Design Foundation & Custom UI Kit (`src/styles/` & `src/components/ui/`):**
-   - Definisikan CSS tokens lengkap (warna dari `color-system.md`, spacing 4px scale, radius, motion curve, font scale).
-   - Bangun seluruh custom primitives (`CustomSelect`, `CustomDatePicker`, `CustomRadioGroup`/`Card`, `CustomCheckbox`/`Switch`, `Modal`/`ConfirmDialog`, `Drawer`, `Popover`/`Tooltip`, `SegmentedControl`, `FileDropzone`, `Toast`).
-   - Hapus ketergantungan animasi `wowjs` dan kurangi CSS template Bootstrap yang bertabrakan.
+1. **Fase 1 — Tailwind Setup, Design Foundation & Custom UI Kit (`src/styles/` & `src/components/ui/`):**
+   - Pasang **Tailwind CSS** (`bun add -d tailwindcss @tailwindcss/postcss postcss`) dan definisikan seluruh `@theme` tokens (warna dari `color-system.md`, spacing 4px scale, radius, motion curve, font scale).
+   - Bangun seluruh custom primitives berbasis Tailwind CSS (`CustomSelect`, `CustomDatePicker`, `CustomRadioGroup`/`Card`, `CustomCheckbox`/`Switch`, `Modal`/`ConfirmDialog`, `Drawer`, `Popover`/`Tooltip`, `SegmentedControl`, `FileDropzone`, `Toast`).
+   - Pastikan class komponen baru bebas dari tabrakan selector Bootstrap legacy.
 2. **Fase 2 — Dual-Mode App Shell (`Top Navbar` Default + `Sidebar` Switchable):**
    - Tambah Redux slice preferensi layout navigasi (`navMode: 'topbar' | 'sidebar'`, default `'topbar'`, persisted di `localStorage`).
-   - Bangun `DashboardShell` yang mendukung kedua mode + Mobile Drawer responsif + Global Quick Search.
+   - Bangun `DashboardShell` dengan Tailwind CSS yang mendukung kedua mode + Mobile Drawer responsif + Global Quick Search.
    - Integrasikan pemilih mode navigasi di `/dashboard/settings`.
 3. **Fase 3 — Revamp 4 Role Dashboards (`/dashboard`):**
-   - Terapkan Bento Grid asimetris ala referensi untuk Enterprise, Community, Internal, dan Expert.
+   - Terapkan Bento Grid asimetris (`grid-cols-12`) ala referensi untuk Enterprise, Community, Internal, dan Expert.
 4. **Fase 4 — Revamp Public Site, Catalog, Blog/News & Login:**
-   - Rombak `/`, `/about`, `/contact`, `/service*`, `/blog*`, `/news*`, `/datasets*`, `/models*`, `/login`, `/404`.
+   - Rombak `/`, `/about`, `/contact`, `/service*`, `/blog*`, `/news*`, `/datasets*`, `/models*`, `/login`, `/404` ke Tailwind CSS.
 5. **Fase 5 — Revamp Task Flow, Annotation Studio, Dataset Studio, Projects, Lab & Support:**
-   - Pastikan seluruh `<select>`, `<input type="date">`, checkbox, radio, dan dialog di semua wizard & workspace telah diganti 100% ke komponen custom.
-6. **Fase 6 — Audit Akhir `unslop` & Responsive QA:**
+   - Pastikan seluruh `<select>`, `<input type="date">`, checkbox, radio, dan dialog di semua wizard & workspace telah diganti 100% ke komponen custom berbasis Tailwind.
+6. **Fase 6 — Cleanup Legacy Bootstrap/SCSS & Audit Akhir `unslop`:**
+   - Cabut `bootstrap`, `wowjs`, dan stylesheet template Technix yang tidak lagi terpakai.
    - Periksa seluruh checklist 20 poin di `SKILL.md` pada viewport `375px`, `768px`, `1280px`, dan `1440px`.
