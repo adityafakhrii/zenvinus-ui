@@ -142,3 +142,15 @@
     animation: none;
   }
 }
+
+/* Coordinates sidebar shell offset across all dashboard/flow/studio/support routes without touching un-revamped pages */
+@media (min-width: 1024px) {
+  .zv-shell-sidebar-anchor[data-collapsed="false"] ~ main,
+  .zv-shell-sidebar-anchor[data-collapsed="false"] ~ footer {
+    padding-left: 256px;
+  }
+  .zv-shell-sidebar-anchor[data-collapsed="true"] ~ main,
+  .zv-shell-sidebar-anchor[data-collapsed="true"] ~ footer {
+    padding-left: 72px;
+  }
+}

@@ -485,6 +485,30 @@ const id: Dictionary = {
   'Request ID': 'ID Permintaan',
   'Funds are held in Zenvinus escrow and released per approved batch.':
     'Dana ditahan di escrow Zenvinus dan dilepas per batch yang disetujui.',
+
+  // Dual-mode navigation settings & custom controls (Phase 2)
+  'Navigation & Appearance': 'Navigasi & Tampilan',
+  'Choose how workspace navigation appears across your dashboard, studio, and task flows.':
+    'Pilih tampilan navigasi ruang kerja di dasbor, studio, dan alur tugas Anda.',
+  'Navigation mode': 'Mode navigasi',
+  'Default horizontal header bar with workspace switcher below.':
+    'Bilah header horizontal bawaan dengan pengalih ruang kerja di bawahnya.',
+  'Collapsible left navigation rail with top search utility bar.':
+    'Rel navigasi kiri yang dapat diciutkan dengan bilah utilitas pencarian di atas.',
+  'Compact collapsed sidebar': 'Bilah samping ringkas',
+  'Show icons only in the desktop sidebar rail (72px).':
+    'Tampilkan ikon saja pada rel bilah samping desktop (72px).',
+  'Navigation layout updated': 'Tata letak navigasi diperbarui',
+  'PNG, JPG, or SVG up to 2 MB': 'PNG, JPG, atau SVG hingga 2 MB',
+  'Choose file': 'Pilih berkas',
+  'or drag and drop here': 'atau seret dan lepas di sini',
+  'Select industry': 'Pilih industri',
+  'Changes saved locally for UI preview.': 'Perubahan disimpan secara lokal untuk pratinjau UI.',
+  'Action previewed in local dummy mode.': 'Tindakan dipratinjau dalam mode data lokal.',
+  Reset: 'Atur Ulang',
+  'Passwords do not match.': 'Kata sandi tidak cocok.',
+  'Are you sure you want to proceed with {action}? This action cannot be undone.':
+    'Apakah Anda yakin ingin melanjutkan {action}? Tindakan ini tidak dapat dibatalkan.',
 };
 
 export default id;

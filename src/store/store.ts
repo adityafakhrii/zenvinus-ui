@@ -7,6 +7,7 @@
  */
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { languagePersistence, languageReducer } from '@/i18n/language-slice';
+import { layoutPersistence, layoutReducer } from '@/features/dashboard';
 import {
   projectsPersistence,
   projectsReducer,
@@ -19,6 +20,7 @@ import { createPersistenceMiddleware, hydrateSlices, persistenceReducer, type Pe
 const rootReducer = combineReducers({
   persistence: persistenceReducer,
   language: languageReducer,
+  layout: layoutReducer,
   projects: projectsReducer,
   requestDraft: requestDraftReducer,
   submissions: submissionsReducer,
@@ -30,6 +32,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 /** Slices saved across reloads, with their storage format */
 const persisted: PersistedSlices<RootState> = {
   language: languagePersistence,
+  layout: layoutPersistence,
   projects: projectsPersistence,
   requestDraft: requestDraftPersistence,
   submissions: submissionsPersistence,
