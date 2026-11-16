@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, Loader2, PackageOpen } from 'lucide-react';
 import useTaskRoute, { taskSlugOf } from '../../hooks/use-task-route';
 import { useAppDispatch, useAppSelector, useAppStore } from '@/store/hooks';
 import {
@@ -21,6 +22,7 @@ import StudioSidebar from './studio-sidebar';
 import StudioBottombar from './studio-bottombar';
 import ReviewBanner from './review-banner';
 import { useT } from '@/i18n';
+import { BentoSkeleton, EmptyState } from '@/components/ui';
 
 /**
  * Annotation Studio — the contributor's full-screen working environment.
@@ -68,9 +70,7 @@ const TaskStudio = () => {
   // the task's items don't match the editor shape (an audio item has no
   // `labels`, a tabular item has no `regions`, …). Render a complete example
   // for that type instead — see src/features/tasks/data/workspace-examples.ts.
-  const example = isDev && devType && task && devType !== task.type
-    ? WORKSPACE_EXAMPLES[devType]
-    : null;
+  const example = isDev && devType && task && devType !== task.type ? WORKSPACE_EXAMPLES[devType] : null;
   const demoMode = Boolean(example);
   const items: readonly TaskItem[] = example ? example.items : task?.items || [];
   const guidelines: readonly string[] = example ? example.guidelines : task?.guidelines || [];
@@ -107,9 +107,15 @@ const TaskStudio = () => {
     if (!task || !initialized) return;
     const item = items[itemIdx];
     if (!item) return;
-    if (reviewMode) { setAnswer({}); return; }
+    if (reviewMode) {
+      setAnswer({});
+      return;
+    }
     const draft = loadDraft(task.slug, item.id);
-    if (draft) { setAnswer(draft); return; }
+    if (draft) {
+      setAnswer(draft);
+      return;
+    }
     const last = loadLastSubmission(task.slug);
     setAnswer(last && last.itemId === item.id ? last.answer || {} : {});
     setDraftSavedAt(null);
@@ -134,7 +140,11 @@ const TaskStudio = () => {
   const goToItem = (idx: number) => {
     const it = items[idx];
     if (!task || !it) return;
-    if (reviewMode) { setAnswer({}); setItemIdx(Math.max(0, Math.min(items.length - 1, idx))); return; }
+    if (reviewMode) {
+      setAnswer({});
+      setItemIdx(Math.max(0, Math.min(items.length - 1, idx)));
+      return;
+    }
     // seed the answer synchronously with the switch so shape-carrying
     // workspaces never render one frame of another item's geometry
     const draft = loadDraft(task.slug, it.id);
@@ -152,8 +162,10 @@ const TaskStudio = () => {
   // Keyboard: ←/→ move between items, G toggles the guidelines panel.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = e.target instanceof HTMLElement ? e.target.tagName : undefined;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const tag = target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (target?.closest('[role="combobox"], [role="listbox"]')) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === 'ArrowLeft') goToItem(itemIdx - 1);
       else if (e.key === 'ArrowRight') goToItem(itemIdx + 1);
@@ -164,7 +176,13 @@ const TaskStudio = () => {
   }, [itemIdx, items.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!ready || !task) {
-    return <div className="tflow-studio tflow-loading"><span className="spinner-border"></span></div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F9FAFB] p-6">
+        <div className="w-full max-w-4xl">
+          <BentoSkeleton />
+        </div>
+      </div>
+    );
   }
 
   const item: TaskItem | undefined = items[itemIdx];
@@ -193,7 +211,7 @@ const TaskStudio = () => {
   }));
 
   return (
-    <div className="tflow-studio">
+    <div className="relative flex min-h-screen flex-col bg-[#F9FAFB] lg:h-dvh lg:overflow-hidden">
       {reviewMode && review && (
         <ReviewBanner
           review={review}
@@ -215,24 +233,38 @@ const TaskStudio = () => {
         demoMode={demoMode}
       />
 
-      <div className={`tflow-studio-main${guidelinesOpen ? '' : ' tflow-studio-main-full'}`}>
-        <div className="tflow-studio-canvas">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">
           {!workspace && (
-            <div className="tflow-studio-empty">
-              <i className="fa-solid fa-triangle-exclamation"></i>
-              <h4>{t('Workspace not available yet')}</h4>
-              <p>{t('Task type {type} has no editor yet. Please contact the task manager.', { type: <code>{task.type}</code> })}</p>
+            <div className="flex flex-1 items-center justify-center">
+              <EmptyState
+                icon={<AlertTriangle className="h-6 w-6" strokeWidth={1.6} />}
+                title={t('Workspace not available yet')}
+                action={
+                  <p className="m-0 text-sm text-ink-secondary">
+                    {t('Task type {type} has no editor yet. Please contact the task manager.', {
+                      type: <code className="rounded bg-[#F4F4F5] px-1.5 py-0.5 font-mono text-xs">{task.type}</code>,
+                    })}
+                  </p>
+                }
+              />
             </div>
           )}
+
           {workspace && !item && (
-            <div className="tflow-studio-empty">
-              <i className="fa-solid fa-box-open"></i>
-              <h4>{t('No items yet')}</h4>
-              <p>{t('This task has no items to work on yet.')}</p>
+            <div className="flex flex-1 items-center justify-center">
+              <EmptyState
+                icon={<PackageOpen className="h-6 w-6" strokeWidth={1.6} />}
+                title={t('No items yet')}
+                description={t('This task has no items to work on yet.')}
+              />
             </div>
           )}
+
           {workspace && item && effectiveType && (
-            <WorkspaceView type={effectiveType} item={item} answer={answer} onChange={handleChange} />
+            <div className="mx-auto flex h-full w-full max-w-6xl flex-col">
+              <WorkspaceView type={effectiveType} item={item} answer={answer} onChange={handleChange} />
+            </div>
           )}
         </div>
 
@@ -275,11 +307,13 @@ const TaskStudio = () => {
       )}
 
       {submitting && (
-        <div className="tflow-submit-overlay">
-          <div className="tflow-submit-card">
-            <span className="spinner-border"></span>
-            <h4>{reviewMode ? t('Recording decision…') : t('Submitting item…')}</h4>
-            <p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#132B45]/40 p-4 backdrop-blur-[2px]">
+          <div className="flex w-full max-w-sm flex-col items-center rounded-2xl border border-[#EAEAEA] bg-white p-6 text-center shadow-xl">
+            <Loader2 className="mb-3 h-7 w-7 animate-spin text-[#00B2A9]" strokeWidth={1.75} />
+            <h4 className="text-base font-semibold text-[#18181B]">
+              {reviewMode ? t('Recording decision…') : t('Submitting item…')}
+            </h4>
+            <p className="mt-1 text-sm text-[#6B7280]">
               {reviewMode
                 ? t('Your decision is being sent to the Expert Workspace.')
                 : t('Your answer is being sent to Quality Check.')}

@@ -1,105 +1,205 @@
-import Link from "next/link";
-import React from "react";
-import { DashboardHeader, DashboardFooter, KpiGrid, type KpiItem } from "@/features/dashboard";
-import { useRouter } from "next/router";
-import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import useMounted from "@/hooks/use-mounted";
-import { OrdersView } from "./order-view";
-import { POSTED_TASK_STATUS_FLOW } from "@/features/tasks";
-import { REQUEST_ACTIONS, buildProposal, budgetLabel, formatDate } from "../data/project-store";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { changeRequestStatus, selectPostedProjects } from "../store/projects-slice";
-import { useT } from "@/i18n";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  Check,
+  Clock,
+  CreditCard,
+  Download,
+  FileArchive,
+  FlaskConical,
+  FolderKanban,
+  Handshake,
+  Layers,
+  Plus,
+  RotateCw,
+  UserCheck,
+  Users,
+  Wallet,
+} from 'lucide-react';
+import {
+  Badge,
+  BentoSkeleton,
+  Button,
+  CustomProgressBar,
+  CustomSelect,
+  CustomSemiCircleGauge,
+  EmptyState,
+  SearchInput,
+  cn,
+} from '@/components/ui';
+import type { SelectOption } from '@/components/ui';
+import { DashboardFooter, DashboardHeader, KpiGrid, type KpiItem } from '@/features/dashboard';
+import { POSTED_TASK_STATUS_FLOW } from '@/features/tasks';
+import useMounted from '@/hooks/use-mounted';
+import { useT } from '@/i18n';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   getCompanyProjects,
-  getProjectById,
-  getProjectStatus,
   getProjectBatches,
-  getProjectWorkforce,
+  getProjectById,
   getProjectDeliverables,
   getProjectQa,
+  getProjectStatus,
   getProjectTeam,
-} from "../data/company-projects";
-import type { HistoryEntry, RequestActionSet } from "../types/project";
+  getProjectWorkforce,
+} from '../data/company-projects';
+import { REQUEST_ACTIONS, buildProposal, budgetLabel, formatDate } from '../data/project-store';
+import { changeRequestStatus, selectPostedProjects } from '../store/projects-slice';
+import type { HistoryEntry, RequestActionSet } from '../types/project';
+import { OrdersView } from './order-view';
+import { ProjectIcon, badgeToneOf, iconTileClassOf } from './project-icons';
 
 const money = (n: number, locale: string) => `$${n.toLocaleString(locale)}`;
-
-/** A string query value (?id=PRJ-1041); repeated keys count as absent */
-const queryString = (value: string | string[] | undefined): string | null => (typeof value === "string" ? value : null);
+const queryString = (value: string | string[] | undefined): string | null =>
+  typeof value === 'string' ? value : null;
 
 const ProjectList = () => {
   const { t, locale } = useT();
   const posted = useAppSelector(selectPostedProjects);
-  const projects = getCompanyProjects(posted);
+  const allProjects = getCompanyProjects(posted);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const statusOptions: SelectOption[] = useMemo(() => {
+    const uniq = Array.from(new Set(allProjects.map((p) => p.status)));
+    return [
+      { value: 'all', label: t('All statuses') },
+      ...uniq.map((st) => ({ value: st, label: t(st) })),
+    ];
+  }, [allProjects, t]);
+
+  const projects = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return allProjects.filter((p) => {
+      const okStatus = statusFilter === 'all' || p.status === statusFilter;
+      const okQuery =
+        !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+      return okStatus && okQuery;
+    });
+  }, [allProjects, search, statusFilter]);
 
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <div className="edash-head">
+    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="edash-title">{t("Projects")}</h3>
-            <p className="edash-sub">
-              {t("All annotation jobs posted by your team — click a project for the full drill-down.")}
+            <h1 className="m-0 text-[24px] font-semibold tracking-[-0.025em] text-ink sm:text-[28px]">
+              {t('Projects')}
+            </h1>
+            <p className="mt-1 mb-0 text-sm text-ink-secondary">
+              {t('All annotation jobs posted by your team — click a project for the full drill-down.')}
             </p>
           </div>
-          <div className="edash-head-actions">
-            <Link href="/dashboard/new-project" className="edash-btn">
-              <i className="fa-solid fa-plus"></i> {t("Post New Task")}
-            </Link>
-          </div>
+          <Button
+            href="/dashboard/new-project"
+            variant="primary"
+            size="sm"
+            leftIcon={<Plus className="h-4 w-4" strokeWidth={1.75} />}
+          >
+            {t('Post New Task')}
+          </Button>
         </div>
 
-        <div className="row g-4">
-          {projects.map((p) => (
-            <div className="col-xl-6" key={p.id}>
-              <Link
-                href={`/dashboard/projects?id=${p.id}`}
-                className="edash-card edash-project-card"
+        <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-4">
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder={t('Search projects...')}
+            size="sm"
+            containerClassName="w-full sm:w-64"
+          />
+          <CustomSelect
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={statusOptions}
+            size="sm"
+            ariaLabel={t('Filter by status')}
+            containerClassName="w-48"
+          />
+        </div>
+
+        {projects.length === 0 ? (
+          <EmptyState
+            title={t('No matching projects.')}
+            action={
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setSearch('');
+                  setStatusFilter('all');
+                }}
               >
-                <div className="edash-project-card-top">
-                  <span className={`edash-tone-${p.tone} edash-project-icon`}>
-                    <i className={p.icon}></i>
-                  </span>
-                  <div className="edash-project-card-title">
-                    <h4>
-                      {t(p.name)}
-                      {p.kind === "posted" && (
-                        <span className="edash-new-badge">{t("NEW")}</span>
-                      )}
-                    </h4>
-                    <span className="edash-project-id">
-                      {p.id} · {t(p.typeLabel)}
+                {t('Reset')}
+              </Button>
+            }
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            {projects.map((p) => (
+              <Link
+                key={p.id}
+                href={`/dashboard/projects?id=${p.id}`}
+                className="group flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 text-ink no-underline shadow-[0_1px_2px_rgba(2,6,38,0.03)] transition-[border-color,box-shadow] duration-150 hover:border-teal-ink/40 hover:shadow-[0_6px_18px_rgba(2,6,38,0.05)]"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-start gap-3.5">
+                      <span
+                        className={cn(
+                          'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
+                          iconTileClassOf(p.tone),
+                        )}
+                      >
+                        <ProjectIcon icon={p.icon} className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h2 className="m-0 truncate text-base font-semibold text-ink group-hover:text-teal-ink">
+                            {t(p.name)}
+                          </h2>
+                          {p.kind === 'posted' && <Badge tone="mint">{t('NEW')}</Badge>}
+                        </div>
+                        <span className="font-mono text-xs text-ink-muted">
+                          {p.id} · {t(p.typeLabel)}
+                        </span>
+                      </div>
+                    </div>
+                    <Badge tone={badgeToneOf(p.statusTone)} dot>
+                      {t(p.status)}
+                    </Badge>
+                  </div>
+
+                  <p className="mt-3 mb-4 text-[13px] leading-relaxed text-ink-secondary">{t(p.desc)}</p>
+
+                  <CustomProgressBar value={p.delivered} tone="teal" height="sm" rightLabel={`${p.delivered}%`} />
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-4 text-xs text-ink-secondary">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="inline-flex items-center gap-1.5 font-mono tabular-nums">
+                      <Layers className="h-3.5 w-3.5 text-ink-muted" strokeWidth={1.5} />
+                      {p.items ? t('{count} items', { count: p.items.toLocaleString(locale) }) : t('Size TBD')}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 font-mono tabular-nums">
+                      <Wallet className="h-3.5 w-3.5 text-ink-muted" strokeWidth={1.5} />
+                      {budgetLabel(p.budgetRange) || money(p.spend, locale)}
                     </span>
                   </div>
-                  <span className={`edash-status edash-status-${p.statusTone}`}>
-                    {t(p.status)}
+                  <span className="inline-flex items-center gap-1 font-semibold text-teal-ink">
+                    <span>{t('View detail')}</span>
+                    <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                   </span>
-                </div>
-                <p className="edash-project-card-desc">{t(p.desc)}</p>
-                <div className="edash-progress-cell">
-                  <div className="tflow-progress">
-                    <span style={{ width: `${p.delivered}%` }}></span>
-                  </div>
-                  <em>{p.delivered}%</em>
-                </div>
-                <div className="edash-project-card-foot">
-                  <span>
-                    <i className="fa-solid fa-layer-group"></i>{" "}
-                    {p.items ? t("{count} items", { count: p.items.toLocaleString(locale) }) : t("Size TBD")}
-                  </span>
-                  <span>
-                    <i className="fa-solid fa-wallet"></i>{" "}
-                    {budgetLabel(p.budgetRange) || money(p.spend, locale)}
-                  </span>
-                  <strong>
-                    {t("View detail")} <i className="fa-regular fa-angle-right"></i>
-                  </strong>
                 </div>
               </Link>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -110,32 +210,28 @@ const StatusCard = ({ id }: { id: string }) => {
   const posted = useAppSelector(selectPostedProjects);
   const st = getProjectStatus(posted, id);
   const idx = POSTED_TASK_STATUS_FLOW.findIndex((s) => s.key === st.key);
+
   return (
-    <div className="edash-card h-100">
-      <div className="edash-card-head">
+    <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+      <div className="mb-4 flex items-center justify-between gap-2">
         <div>
-          <h4 className="edash-card-title">{t("Status")}</h4>
-          <p className="edash-card-sub">
-            {t("Lifecycle stage {current} of {total}", { current: idx + 1, total: POSTED_TASK_STATUS_FLOW.length })}
+          <h2 className="m-0 text-base font-semibold text-ink">{t('Status')}</h2>
+          <p className="mt-0.5 mb-0 text-xs text-ink-muted">
+            {t('Lifecycle stage {current} of {total}', {
+              current: idx + 1,
+              total: POSTED_TASK_STATUS_FLOW.length,
+            })}
           </p>
         </div>
-        <span
-          className={`edash-status ${
-            idx === POSTED_TASK_STATUS_FLOW.length - 1
-              ? "edash-status-mint"
-              : "edash-status-amber"
-            }`}
-        >
+        <Badge tone={idx === POSTED_TASK_STATUS_FLOW.length - 1 ? 'mint' : 'amber'} dot>
           {t(st.label)}
-        </span>
+        </Badge>
       </div>
-      <div className="edash-project">
-        <span className="edash-tone-blue edash-project-icon">
-          <i className={st.icon}></i>
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tone-blue-bg text-tone-blue-fg">
+          <ProjectIcon icon={st.icon} />
         </span>
-        <p className="edash-project-card-desc" style={{ margin: 0 }}>
-          {t(st.desc)}
-        </p>
+        <p className="m-0 text-sm leading-relaxed text-ink-secondary">{t(st.desc)}</p>
       </div>
     </div>
   );
@@ -144,83 +240,109 @@ const StatusCard = ({ id }: { id: string }) => {
 const PipelineChildCard = ({ id }: { id: string }) => {
   const { t } = useT();
   return (
-  <div className="edash-card h-100">
-    <div className="edash-card-head">
+    <div className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
       <div>
-        <h4 className="edash-card-title">{t("Order Pipeline")}</h4>
-        <p className="edash-card-sub">
-          {t("8 stages — request, expert review, proposal, milestone payments, delivery")}
+        <h2 className="m-0 text-base font-semibold text-ink">{t('Order Pipeline')}</h2>
+        <p className="mt-0.5 mb-3 text-xs text-ink-muted">
+          {t('8 stages — request, expert review, proposal, milestone payments, delivery')}
+        </p>
+        <p className="m-0 text-sm text-ink-secondary">
+          {t('The order pages are children of this project — each stage has its own page.')}
         </p>
       </div>
+      <div className="mt-5">
+        <Button
+          href={`/dashboard/projects?id=${id}&pipeline=1`}
+          variant="secondary"
+          size="sm"
+          block
+          leftIcon={<FolderKanban className="h-4 w-4" strokeWidth={1.5} />}
+        >
+          {t('Open Pipeline')}
+        </Button>
+      </div>
     </div>
-    <p className="edash-project-card-desc" style={{ margin: "0 0 16px" }}>
-      {t("The order pages are children of this project — each stage has its own page.")}
-    </p>
-    <Link href={`/dashboard/projects?id=${id}&pipeline=1`} className="edash-btn-ghost w-100">
-      <i className="fa-solid fa-diagram-project"></i> {t("Open Pipeline")}
-    </Link>
-  </div>
   );
 };
 
-interface TeamCardProps {
-  id?: string;
-  /** Team not assigned yet (posted request under review) */
-  pending?: boolean;
-}
-
-const TeamCard = ({ id, pending }: TeamCardProps) => {
+const TeamCard = ({ id, pending }: { id?: string; pending?: boolean }) => {
   const { t } = useT();
   const posted = useAppSelector(selectPostedProjects);
+
   if (pending || !id) {
     return (
-      <div className="edash-card h-100">
-        <div className="edash-card-head">
-          <div>
-            <h4 className="edash-card-title">{t("Project Team")}</h4>
-            <p className="edash-card-sub">{t("Assigned once the internal review is complete")}</p>
-          </div>
-        </div>
-        <p className="edash-project-card-desc" style={{ margin: 0 }}>
-          {t("The Zenvinus PIC, QA reviewer and annotators will appear here once the proposal is approved.")}
+      <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+        <h2 className="m-0 text-base font-semibold text-ink">{t('Project Team')}</h2>
+        <p className="mt-0.5 mb-3 text-xs text-ink-muted">
+          {t('Assigned once the internal review is complete')}
+        </p>
+        <p className="m-0 text-sm text-ink-secondary">
+          {t('The Zenvinus PIC, QA reviewer and annotators will appear here once the proposal is approved.')}
         </p>
       </div>
     );
   }
+
   const team = getProjectTeam(posted, id);
   return (
-    <div className="edash-card h-100">
-      <div className="edash-card-head">
-        <div>
-          <h4 className="edash-card-title">{t("Project Team")}</h4>
-          <p className="edash-card-sub">{t("{count} people working on this project", { count: team.count })}</p>
-        </div>
+    <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+      <div className="mb-4">
+        <h2 className="m-0 text-base font-semibold text-ink">{t('Project Team')}</h2>
+        <p className="mt-0.5 mb-0 text-xs text-ink-muted">
+          {t('{count} people working on this project', { count: team.count })}
+        </p>
       </div>
-      <div className="edash-team-grid">
-        <div className="edash-team-person">
-          <span className="edash-tone-purple edash-activity-icon edash-initial">{team.pic.initials}</span>
-          <div className="edash-activity-body">
-            <span className="edash-team-role">{t("Zenvinus PIC")}</span>
-            <h5>{team.pic.name}</h5>
-            <p>{t(team.pic.role)} · {team.pic.email}</p>
-          </div>
-        </div>
-        <div className="edash-team-person">
-          <span className={`edash-tone-${team.reviewer.tone} edash-activity-icon edash-initial`}>{team.reviewer.initials}</span>
-          <div className="edash-activity-body">
-            <span className="edash-team-role">{t("Reviewer (QA)")}</span>
-            <h5>{team.reviewer.name}</h5>
-            <p>{t(team.reviewer.role)} · {t("double-pass sampling")}</p>
-          </div>
-        </div>
-        <div className="edash-team-person">
-          <span className="edash-tone-orange edash-activity-icon edash-initial">
-            <i className="fa-solid fa-users"></i>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="flex items-start gap-3 rounded-xl bg-canvas p-4">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tone-purple-bg text-xs font-semibold text-tone-purple-fg">
+            {team.pic.initials}
           </span>
-          <div className="edash-activity-body">
-            <span className="edash-team-role">{t("Annotators")}</span>
-            <h5>{team.annotators.map((w) => w.name.split(" ")[0]).join(", ")}</h5>
-            <p>{t("{count} active annotators · accuracy details in Top Workforce", { count: team.count })}</p>
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+              {t('Zenvinus PIC')}
+            </div>
+            <div className="mt-0.5 truncate text-sm font-semibold text-ink">{team.pic.name}</div>
+            <div className="truncate text-xs text-ink-secondary">
+              {t(team.pic.role)} · {team.pic.email}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-xl bg-canvas p-4">
+          <span
+            className={cn(
+              'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
+              iconTileClassOf(team.reviewer.tone),
+            )}
+          >
+            {team.reviewer.initials}
+          </span>
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+              {t('Reviewer (QA)')}
+            </div>
+            <div className="mt-0.5 truncate text-sm font-semibold text-ink">{team.reviewer.name}</div>
+            <div className="truncate text-xs text-ink-secondary">
+              {t(team.reviewer.role)} · {t('double-pass sampling')}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-xl bg-canvas p-4">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tone-orange-bg text-tone-orange-fg">
+            <Users className="h-4 w-4" strokeWidth={1.6} />
+          </span>
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+              {t('Annotators')}
+            </div>
+            <div className="mt-0.5 truncate text-sm font-semibold text-ink">
+              {team.annotators.map((w) => w.name.split(' ')[0]).join(', ')}
+            </div>
+            <div className="truncate text-xs text-ink-secondary">
+              {t('{count} active annotators · accuracy details in Top Workforce', { count: team.count })}
+            </div>
           </div>
         </div>
       </div>
@@ -228,7 +350,7 @@ const TeamCard = ({ id, pending }: TeamCardProps) => {
   );
 };
 
-const NO_ACTIONS: RequestActionSet = { company: [], zenvinus: null, sla: "" };
+const NO_ACTIONS: RequestActionSet = { company: [], zenvinus: null, sla: '' };
 
 const PostedProjectDetail = ({ id }: { id: string }) => {
   const { t } = useT();
@@ -237,294 +359,305 @@ const PostedProjectDetail = ({ id }: { id: string }) => {
   const found = getProjectById(posted, id);
   const st = getProjectStatus(posted, id);
   const actions = REQUEST_ACTIONS[st.key] || NO_ACTIONS;
-  // Only rendered for posted requests (ProjectDetail checks kind first)
-  if (!found || found.kind !== "posted") return null;
+
+  if (!found || found.kind !== 'posted') return null;
   const p = found;
-  // The store update re-renders this view; no manual refresh is needed
-  const act = (to: string, note: string) => {
-    dispatch(changeRequestStatus(id, to, note));
-  };
-  const proposal = ["awaiting_dp", "in_progress", "awaiting_full", "completed"].includes(
-    st.key
-  )
+  const act = (to: string, note: string) => dispatch(changeRequestStatus(id, to, note));
+  const proposal = ['awaiting_dp', 'in_progress', 'awaiting_full', 'completed'].includes(st.key)
     ? buildProposal(p)
     : null;
   const history: HistoryEntry[] = p.history || [
-    { at: p.started, title: "REQUEST_SUBMITTED", detail: "Created via Create AI Project Request wizard." },
+    { at: p.started, title: 'REQUEST_SUBMITTED', detail: 'Created via Create AI Project Request wizard.' },
   ];
 
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <Link href="/dashboard/projects" className="edash-back-link">
-          <i className="fa-solid fa-arrow-left"></i> {t("Back to Projects")}
+    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <Link
+          href="/dashboard/projects"
+          className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-muted no-underline transition-colors hover:text-ink"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.6} />
+          <span>{t('Back to Projects')}</span>
         </Link>
 
-        <div className="edash-card edash-dhero">
-          <div className="edash-dhero-main">
-            <span className={`edash-tone-${p.tone} edash-dhero-icon`}>
-              <i className={p.icon}></i>
+        {/* Project Hero */}
+        <div className="grid grid-cols-1 gap-6 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] lg:grid-cols-12">
+          <div className="flex items-start gap-4 lg:col-span-8">
+            <span
+              className={cn(
+                'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
+                iconTileClassOf(p.tone),
+              )}
+            >
+              <ProjectIcon icon={p.icon} className="h-5 w-5" />
             </span>
-            <div>
-              <div className="edash-dhero-title-row">
-                <h3 className="edash-dhero-title">{p.name}</h3>
-                <span className={`edash-status edash-status-${p.statusTone}`}>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="m-0 text-xl font-semibold text-ink sm:text-2xl">{p.name}</h1>
+                <Badge tone={badgeToneOf(p.statusTone)} dot>
                   {t(p.status)}
-                </span>
+                </Badge>
               </div>
-              <span className="edash-project-id">
+              <div className="mt-1 font-mono text-xs text-ink-muted">
                 {p.id} · {t(p.typeLabel)}
-                {p.useCase ? ` · ${t(p.useCase)}` : ""}
-              </span>
-              <p className="edash-dhero-desc">{p.desc}</p>
-              <div className="edash-meta-row">
-                <span>
-                  <i className="fa-regular fa-calendar"></i> {t("Posted {date}", { date: formatDate(p.started) })}
+                {p.useCase ? ` · ${t(p.useCase)}` : ''}
+              </div>
+              <p className="mt-2.5 mb-3 text-sm leading-relaxed text-ink-secondary">{p.desc}</p>
+              <div className="flex flex-wrap items-center gap-4 text-xs text-ink-muted">
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t('Posted {date}', { date: formatDate(p.started) })}</span>
                 </span>
-                <span>
-                  <i className="fa-regular fa-clock"></i>{" "}
-                  {p.deadline ? t("Target {date}", { date: formatDate(p.deadline) }) : t("No fixed deadline")}
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>
+                    {p.deadline ? t('Target {date}', { date: formatDate(p.deadline) }) : t('No fixed deadline')}
+                  </span>
                 </span>
-                <span>
-                  <i className="fa-solid fa-user-tie"></i> {t(p.owner)}
+                <span className="inline-flex items-center gap-1.5">
+                  <UserCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t(p.owner)}</span>
                 </span>
               </div>
             </div>
           </div>
-          <div className="edash-dhero-side">
-            <div className="edash-dhero-price">
-              <strong>{budgetLabel(p.budgetRange) || t("To be discussed")}</strong>
-              <span>{t("budget range")}</span>
+
+          <div className="flex flex-col justify-between rounded-xl border border-line-subtle bg-canvas p-4 lg:col-span-4">
+            <div>
+              <div className="text-xs text-ink-muted">{t('budget range')}</div>
+              <div className="mt-1 text-xl font-semibold text-ink">
+                {budgetLabel(p.budgetRange) || t('To be discussed')}
+              </div>
             </div>
-            <em>{t("Urgency: {level}", { level: t(p.delivery?.urgency || "Standard") })}</em>
+            <div className="mt-3 text-xs text-teal-ink font-medium">
+              {t('Urgency: {level}', { level: t(p.delivery?.urgency || 'Standard') })}
+            </div>
           </div>
         </div>
 
-        <div className="row g-4 edash-mid">
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Status")}</h4>
-                  <p className="edash-card-sub">
-                    {t("Lifecycle stage {current} of {total}", {
-                      current: POSTED_TASK_STATUS_FLOW.findIndex((s) => s.key === st.key) + 1,
-                      total: POSTED_TASK_STATUS_FLOW.length,
-                    })}
-                  </p>
-                </div>
-                <span
-                  className={`edash-status ${
-                    st.key === "completed" ? "edash-status-mint" : "edash-status-amber"
-                  }`}
-                >
-                  {t(st.label)}
-                </span>
-              </div>
-              <div className="edash-project">
-                <span className="edash-tone-blue edash-project-icon">
-                  <i className={st.icon}></i>
-                </span>
-                <p className="edash-project-card-desc" style={{ margin: 0 }}>
-                  {t(st.desc)}
-                </p>
-              </div>
-              <p className="edash-field-hint" style={{ marginTop: 12 }}>
-                <i className="fa-solid fa-hourglass-half"></i> {t(actions.sla)}
-              </p>
-              {actions.zenvinus && (
-                <p className="edash-field-hint">
-                  <i className="fa-solid fa-flask-vial"></i>{" "}
-                  {t("This step is handled by the Zenvinus team — follow its progress in {link}.", {
-                    link: <Link href={`/lab?id=${id}`}>AI Research Lab</Link>,
+        {/* Status & Activity Trail */}
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <div className="flex flex-col gap-4 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] xl:col-span-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h2 className="m-0 text-base font-semibold text-ink">{t('Status')}</h2>
+                <p className="mt-0.5 mb-0 text-xs text-ink-muted">
+                  {t('Lifecycle stage {current} of {total}', {
+                    current: POSTED_TASK_STATUS_FLOW.findIndex((s) => s.key === st.key) + 1,
+                    total: POSTED_TASK_STATUS_FLOW.length,
                   })}
                 </p>
-              )}
-            </div>
-          </div>
-          <div className="col-xl-8">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Activity")}</h4>
-                  <p className="edash-card-sub">{t("Audit trail of your request")}</p>
-                </div>
               </div>
-              <ul className="edash-activity">
-                {history.slice(0, 6).map((h, i) => (
-                  <li key={i}>
-                    <span
-                      className={`edash-activity-icon ${
-                        i === 0 ? "edash-tone-blue" : "edash-tone-mint"
-                      }`}
-                    >
-                      <i className={i === 0 ? "fa-solid fa-clock" : "fa-solid fa-check"}></i>
-                    </span>
-                    <div className="edash-activity-body">
-                      <h5>{t(h.title)}</h5>
-                      <p>{t(h.detail)}</p>
-                    </div>
-                    <span className="edash-activity-time">{h.at}</span>
-                  </li>
-                ))}
-              </ul>
+              <Badge tone={st.key === 'completed' ? 'mint' : 'amber'} dot>
+                {t(st.label)}
+              </Badge>
             </div>
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tone-blue-bg text-tone-blue-fg">
+                <ProjectIcon icon={st.icon} />
+              </span>
+              <p className="m-0 text-sm text-ink-secondary">{t(st.desc)}</p>
+            </div>
+            {actions.sla && (
+              <div className="flex items-center gap-2 rounded-xl bg-canvas px-3.5 py-2.5 text-xs text-ink-secondary">
+                <Clock className="h-3.5 w-3.5 shrink-0 text-ink-muted" strokeWidth={1.5} />
+                <span>{t(actions.sla)}</span>
+              </div>
+            )}
+            {actions.zenvinus && (
+              <div className="flex items-start gap-2 rounded-xl bg-tint-mint px-3.5 py-2.5 text-xs text-teal-ink">
+                <FlaskConical className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.6} />
+                <span>
+                  {t('This step is handled by the Zenvinus team — follow its progress in {link}.', {
+                    link: (
+                      <Link href={`/lab?id=${id}`} className="font-semibold underline text-teal-ink">
+                        AI Research Lab
+                      </Link>
+                    ),
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] xl:col-span-8">
+            <div className="mb-4">
+              <h2 className="m-0 text-base font-semibold text-ink">{t('Activity')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-ink-muted">{t('Audit trail of your request')}</p>
+            </div>
+            <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle p-0">
+              {history.slice(0, 6).map((h, i) => (
+                <li key={i} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                  <span
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                      i === 0 ? 'bg-tone-blue-bg text-tone-blue-fg' : 'bg-tone-mint-bg text-tone-mint-fg',
+                    )}
+                  >
+                    {i === 0 ? <Clock className="h-4 w-4" strokeWidth={1.6} /> : <Check className="h-4 w-4" strokeWidth={1.75} />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-ink">{t(h.title)}</div>
+                    <div className="text-xs text-ink-muted">{t(h.detail)}</div>
+                  </div>
+                  <span className="shrink-0 font-mono text-xs text-ink-muted">{h.at}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
+        {/* Proposal Document */}
         {proposal && (
-          <div className="edash-card edash-mid">
-            <div className="edash-card-head">
+          <div className="mt-6 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h4 className="edash-card-title">
-                  {t("Proposal {id}", { id: proposal.docId })}
-                </h4>
-                <p className="edash-card-sub">
-                  {t("Prepared by Zenvinus expert team · valid {period}", { period: proposal.validUntil })}
+                <h2 className="m-0 text-base font-semibold text-ink">
+                  {t('Proposal {id}', { id: proposal.docId })}
+                </h2>
+                <p className="mt-0.5 mb-0 text-xs text-ink-muted">
+                  {t('Prepared by Zenvinus expert team · valid {period}', { period: proposal.validUntil })}
                 </p>
               </div>
-              <span className={`edash-status edash-status-${st.key === "awaiting_dp" ? "blue" : "mint"}`}>
-                {st.key === "awaiting_dp" ? t("Attached — review & pay DP") : t("Accepted")}
-              </span>
+              <Badge tone={st.key === 'awaiting_dp' ? 'blue' : 'mint'} dot>
+                {st.key === 'awaiting_dp' ? t('Attached — review & pay DP') : t('Accepted')}
+              </Badge>
             </div>
-            <div className="edash-budget-box" style={{ background: "var(--tp-grey-2)" }}>
-              {proposal.items.map((row) => (
-                <div className="edash-budget-row" key={row.label}>
-                  <span>{t(row.label)}</span>
-                  <span>{row.value}</span>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <dl className="m-0 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas p-4 text-sm">
+                {proposal.items.map((row) => (
+                  <div key={row.label} className="flex items-center justify-between gap-3 py-2">
+                    <dt className="text-ink-secondary">{t(row.label)}</dt>
+                    <dd className="m-0 font-medium text-ink">{row.value}</dd>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <dt className="text-ink-secondary">{t('Deliverables')}</dt>
+                  <dd className="m-0 font-medium text-ink text-right">{proposal.deliverables.join(' · ')}</dd>
                 </div>
-              ))}
-              <div className="edash-budget-row">
-                <span>{t("Deliverables")}</span>
-                <span>{proposal.deliverables.join(" · ")}</span>
-              </div>
+              </dl>
+
+              <dl className="m-0 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface p-4 text-sm">
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <dt className="text-ink-secondary">{t('Total contract')}</dt>
+                  <dd className="m-0 font-mono font-medium text-ink">{proposal.price.total}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <dt className="text-ink-secondary">{t('Down payment (50%)')}</dt>
+                  <dd className="m-0 font-mono font-medium text-ink">{proposal.price.upfront}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <dt className="font-semibold text-ink">{t('Final payment (50%)')}</dt>
+                  <dd className="m-0 font-mono font-semibold text-teal-ink">{proposal.price.final}</dd>
+                </div>
+                <p className="mt-3 mb-0 pt-2 text-xs text-ink-muted">{proposal.price.note}</p>
+              </dl>
             </div>
-            <div className="edash-budget-box" style={{ marginTop: 14 }}>
-              <div className="edash-budget-row">
-                <span>{t("Total contract")}</span>
-                <span>{proposal.price.total}</span>
-              </div>
-              <div className="edash-budget-row">
-                <span>{t("Down payment (50%)")}</span>
-                <span>{proposal.price.upfront}</span>
-              </div>
-              <div className="edash-budget-row edash-budget-total">
-                <span>{t("Final payment (50%)")}</span>
-                <strong>{proposal.price.final}</strong>
-              </div>
-              <p>{proposal.price.note}</p>
-            </div>
-            {st.key === "proposal_ready" && (
-              <div className="edash-stage-actions">
+
+            {st.key === 'proposal_ready' && (
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 {actions.company.map((c) => (
-                  <button
+                  <Button
                     key={c.to}
                     type="button"
-                    className={c.primary ? "edash-btn" : "edash-btn-ghost"}
+                    variant={c.primary ? 'primary' : 'secondary'}
+                    size="sm"
+                    leftIcon={c.primary ? <Handshake className="h-4 w-4" strokeWidth={1.6} /> : <RotateCw className="h-4 w-4" strokeWidth={1.6} />}
                     onClick={() =>
                       act(
                         c.to,
-                        c.primary
-                          ? "Proposal accepted by company."
-                          : "Company requested changes to the proposal."
+                        c.primary ? 'Proposal accepted by company.' : 'Company requested changes to the proposal.',
                       )
                     }
                   >
-                    <i className={`fa-solid ${c.primary ? "fa-handshake" : "fa-rotate"}`}></i>{" "}
                     {t(c.label)}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
           </div>
         )}
 
-        {st.key === "awaiting_dp" && (
-          <div className="edash-card edash-mid">
-            <div className="edash-card-head">
-              <div>
-                <h4 className="edash-card-title">{t("Down Payment")}</h4>
-                <p className="edash-card-sub">
-                  {t("50% of {amount} — held in escrow, released per approved batch", {
-                    amount: proposal ? proposal.price.total : budgetLabel(p.budgetRange),
-                  })}
-                </p>
-              </div>
+        {/* Stage Action Panels */}
+        {st.key === 'awaiting_dp' && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-ink/25 bg-tint-mint p-6">
+            <div>
+              <h2 className="m-0 text-base font-semibold text-ink">{t('Down Payment')}</h2>
+              <p className="mt-1 mb-0 text-xs text-ink-secondary">
+                {t('50% of {amount} — held in escrow, released per approved batch', {
+                  amount: proposal ? proposal.price.total : budgetLabel(p.budgetRange),
+                })}
+              </p>
             </div>
-            <div className="edash-stage-actions">
-              <Link
+            <div className="flex flex-wrap gap-2.5">
+              <Button
                 href={`/dashboard/pay?id=${id}&type=dp`}
-                className="edash-btn"
+                variant="primary"
+                size="sm"
+                leftIcon={<CreditCard className="h-4 w-4" strokeWidth={1.6} />}
               >
-                <i className="fa-solid fa-credit-card"></i> {t("Pay 50% Down Payment")}
-              </Link>
-              <Link href={`/dashboard/projects?id=${id}`} className="edash-btn-ghost">
-                {t("Cancel")}
-              </Link>
+                {t('Pay 50% Down Payment')}
+              </Button>
+              <Button href={`/dashboard/projects?id=${id}`} variant="secondary" size="sm">
+                {t('Cancel')}
+              </Button>
             </div>
           </div>
         )}
 
-        {(st.key === "in_progress" || st.key === "revision") && (
-          <div className="edash-card edash-mid">
-            <div className="edash-card-head">
-              <div>
-                <h4 className="edash-card-title">
-                  {st.key === "revision" ? t("Revision in progress") : t("Work in progress")}
-                </h4>
-                <p className="edash-card-sub">
-                  {st.key === "revision"
-                    ? t("Flagged items are being re-worked before the QA gate.")
-                    : t("Batches are being delivered progressively — track them in the pipeline.")}
-                </p>
-              </div>
+        {(st.key === 'in_progress' || st.key === 'revision') && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6">
+            <div>
+              <h2 className="m-0 text-base font-semibold text-ink">
+                {st.key === 'revision' ? t('Revision in progress') : t('Work in progress')}
+              </h2>
+              <p className="mt-1 mb-0 text-xs text-ink-muted">
+                {st.key === 'revision'
+                  ? t('Flagged items are being re-worked before the QA gate.')
+                  : t('Batches are being delivered progressively — track them in the pipeline.')}
+              </p>
             </div>
-            <div className="edash-stage-actions">
+            <div className="flex flex-wrap gap-2">
               {actions.company.map((c) => (
-                <button
+                <Button
                   key={c.to}
                   type="button"
-                  className="edash-btn-ghost"
-                  onClick={() => act(c.to, "Revision requested by company.")}
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<RotateCw className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                  onClick={() => act(c.to, 'Revision requested by company.')}
                 >
-                  <i className="fa-solid fa-rotate"></i> {t(c.label)}
-                </button>
+                  {t(c.label)}
+                </Button>
               ))}
             </div>
           </div>
         )}
 
-        {st.key === "awaiting_full" && (
-          <div className="edash-card edash-mid">
-            <div className="edash-card-head">
-              <div>
-                <h4 className="edash-card-title">{t("Final Payment")}</h4>
-                <p className="edash-card-sub">
-                  {t("Work completed & QA-approved — pay the remaining 50% to unlock delivery")}
-                </p>
-              </div>
+        {st.key === 'awaiting_full' && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-teal-ink/25 bg-tint-mint p-6">
+            <div>
+              <h2 className="m-0 text-base font-semibold text-ink">{t('Final Payment')}</h2>
+              <p className="mt-1 mb-0 text-xs text-ink-secondary">
+                {t('Work completed & QA-approved — pay the remaining 50% to unlock delivery')}
+              </p>
             </div>
-            <div className="edash-stage-actions">
-              <Link
-                href={`/dashboard/pay?id=${id}&type=final`}
-                className="edash-btn"
-              >
-                <i className="fa-solid fa-credit-card"></i> {t("Pay 50% Final & Unlock Delivery")}
-              </Link>
-              <Link href={`/dashboard/projects?id=${id}`} className="edash-btn-ghost">
-                {t("Cancel")}
-              </Link>
-            </div>
+            <Button
+              href={`/dashboard/pay?id=${id}&type=final`}
+              variant="primary"
+              size="sm"
+              leftIcon={<CreditCard className="h-4 w-4" strokeWidth={1.6} />}
+            >
+              {t('Pay 50% Final & Unlock Delivery')}
+            </Button>
           </div>
         )}
 
-        <div className="row g-4">
-          <div className="col-xl-6">
-            <PipelineChildCard id={id} />
-          </div>
-          <div className="col-xl-6">
-            <TeamCard pending />
-          </div>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <PipelineChildCard id={id} />
+          <TeamCard pending />
         </div>
       </div>
     </section>
@@ -535,239 +668,280 @@ const ProjectDetail = ({ id }: { id: string }) => {
   const { t, locale } = useT();
   const posted = useAppSelector(selectPostedProjects);
   const p = getProjectById(posted, id);
-  // WHY: An unknown or removed project id in the URL used to crash the page on p.kind
+
   if (!p) {
     return (
-      <div className="pf2-empty">
-        {t("Project not found.")}{" "}
-        <Link href="/dashboard/projects">{t("Back to projects")}</Link>
-      </div>
+      <section className="min-h-[70vh] bg-canvas py-16">
+        <div className="mx-auto max-w-lg px-4">
+          <EmptyState
+            title={t('Project not found.')}
+            action={
+              <Button href="/dashboard/projects" variant="primary" size="sm">
+                {t('Back to projects')}
+              </Button>
+            }
+          />
+        </div>
+      </section>
     );
   }
-  if (p.kind === "posted") return <PostedProjectDetail id={id} />;
+  if (p.kind === 'posted') return <PostedProjectDetail id={id} />;
+
   const batches = getProjectBatches(posted, id);
   const workforce = getProjectWorkforce(posted, id);
   const files = getProjectDeliverables(posted, id);
   const qa = getProjectQa(posted, id);
   const budgetPct = Math.round((p.spend / p.budget) * 100);
   const kpis: KpiItem[] = [
-    { id: "items", label: "Total Items", value: p.items.toLocaleString(locale), icon: "fa-solid fa-layer-group", tone: "blue", note: t("across {count} batches", { count: batches.length }) },
-    { id: "delivered", label: "Delivered", value: p.delivered, valueSuffix: "%", icon: "fa-solid fa-truck-fast", tone: "mint", note: t("{count} items accepted", { count: Math.round((p.delivered / 100) * p.items).toLocaleString(locale) }) },
-    { id: "qa", label: "QA Pass Rate", value: p.qaPass.toLocaleString(locale), valueSuffix: "%", icon: "fa-solid fa-clipboard-check", tone: "purple", note: t("double-pass sampling") },
-    { id: "wf", label: "Active Workforce", value: p.workforce, icon: "fa-solid fa-users", tone: "orange", note: t("labelers assigned") },
+    { id: 'items', label: 'Total Items', value: p.items.toLocaleString(locale), icon: 'fa-solid fa-layer-group', tone: 'blue', note: t('across {count} batches', { count: batches.length }) },
+    { id: 'delivered', label: 'Delivered', value: p.delivered, valueSuffix: '%', icon: 'fa-solid fa-truck-fast', tone: 'mint', note: t('{count} items accepted', { count: Math.round((p.delivered / 100) * p.items).toLocaleString(locale) }) },
+    { id: 'qa', label: 'QA Pass Rate', value: p.qaPass.toLocaleString(locale), valueSuffix: '%', icon: 'fa-solid fa-clipboard-check', tone: 'purple', note: t('double-pass sampling') },
+    { id: 'wf', label: 'Active Workforce', value: p.workforce, icon: 'fa-solid fa-users', tone: 'orange', note: t('labelers assigned') },
   ];
 
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <Link href="/dashboard/projects" className="edash-back-link">
-          <i className="fa-solid fa-arrow-left"></i> {t("Back to Projects")}
+    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <Link
+          href="/dashboard/projects"
+          className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-muted no-underline transition-colors hover:text-ink"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.6} />
+          <span>{t('Back to Projects')}</span>
         </Link>
 
-        <div className="edash-card edash-dhero">
-          <div className="edash-dhero-main">
-            <span className={`edash-tone-${p.tone} edash-dhero-icon`}>
-              <i className={p.icon}></i>
+        {/* Project Detail Hero */}
+        <div className="mb-6 grid grid-cols-1 gap-6 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] lg:grid-cols-12">
+          <div className="flex items-start gap-4 lg:col-span-8">
+            <span
+              className={cn(
+                'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl',
+                iconTileClassOf(p.tone),
+              )}
+            >
+              <ProjectIcon icon={p.icon} className="h-5 w-5" />
             </span>
-            <div>
-              <div className="edash-dhero-title-row">
-                <h3 className="edash-dhero-title">{t(p.name)}</h3>
-                <span className={`edash-status edash-status-${p.statusTone}`}>{t(p.status)}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="m-0 text-xl font-semibold text-ink sm:text-2xl">{t(p.name)}</h1>
+                <Badge tone={badgeToneOf(p.statusTone)} dot>
+                  {t(p.status)}
+                </Badge>
               </div>
-              <span className="edash-project-id">
+              <div className="mt-1 font-mono text-xs text-ink-muted">
                 {p.id} · {t(p.typeLabel)}
-              </span>
-              <p className="edash-dhero-desc">{t(p.desc)}</p>
-              <div className="edash-meta-row">
-                <span>
-                  <i className="fa-regular fa-calendar"></i> {t("Started {date}", { date: formatDate(p.started) })}
+              </div>
+              <p className="mt-2.5 mb-3 text-sm leading-relaxed text-ink-secondary">{t(p.desc)}</p>
+              <div className="flex flex-wrap items-center gap-4 text-xs text-ink-muted">
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t('Started {date}', { date: formatDate(p.started) })}</span>
                 </span>
-                <span>
-                  <i className="fa-regular fa-clock"></i> {t("Due {date}", { date: formatDate(p.deadline) })}
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t('Due {date}', { date: formatDate(p.deadline) })}</span>
                 </span>
-                <span>
-                  <i className="fa-solid fa-user-tie"></i> {t("Owner: {name}", { name: p.owner })}
+                <span className="inline-flex items-center gap-1.5">
+                  <UserCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t('Owner: {name}', { name: p.owner })}</span>
                 </span>
               </div>
             </div>
           </div>
-          <div className="edash-dhero-side">
-            <div className="edash-dhero-price">
-              <strong>{money(p.spend, locale)}</strong>
-              <span>{t("of {amount} budget", { amount: money(p.budget, locale) })}</span>
+
+          <div className="flex flex-col justify-between rounded-xl border border-line-subtle bg-canvas p-4 lg:col-span-4">
+            <div>
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-mono text-2xl font-semibold text-ink tabular-nums">
+                  {money(p.spend, locale)}
+                </span>
+                <span className="text-xs text-ink-muted">
+                  {t('of {amount} budget', { amount: money(p.budget, locale) })}
+                </span>
+              </div>
             </div>
-            <div className="tflow-progress">
-              <span style={{ width: `${budgetPct}%` }}></span>
+            <div className="mt-4">
+              <CustomProgressBar
+                value={budgetPct}
+                tone="teal"
+                height="sm"
+                leftLabel={t('{percent}% of budget used', { percent: budgetPct })}
+              />
             </div>
-            <em>{t("{percent}% of budget used", { percent: budgetPct })}</em>
           </div>
         </div>
 
-        <div className="row g-4 edash-mid">
-          <div className="col-xl-6">
-            <StatusCard id={id} />
-          </div>
-          <div className="col-xl-6">
-            <PipelineChildCard id={id} />
-          </div>
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <StatusCard id={id} />
+          <PipelineChildCard id={id} />
         </div>
 
-        <div className="row g-4 edash-mid">
-          <div className="col-xl-12">
-            <TeamCard id={id} />
-          </div>
+        <div className="mb-6">
+          <TeamCard id={id} />
         </div>
 
         <KpiGrid items={kpis} />
 
-        <div className="row g-4 edash-mid">
-          <div className="col-xl-8">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Batch Progress")}</h4>
-                  <p className="edash-card-sub">{t("Delivery status per dataset batch")}</p>
-                </div>
-              </div>
-              <div className="edash-table-wrap">
-                <table className="edash-table">
-                  <thead>
-                    <tr>
-                      <th>{t("Batch")}</th>
-                      <th>{t("Items")}</th>
-                      <th>{t("Progress")}</th>
-                      <th>{t("Due")}</th>
-                      <th>{t("Status")}</th>
+        {/* Batches + QA Semi-Circular Gauge */}
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] xl:col-span-8">
+            <div className="mb-4">
+              <h2 className="m-0 text-base font-semibold text-ink">{t('Batch Progress')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-ink-muted">{t('Delivery status per dataset batch')}</p>
+            </div>
+            <div className="overflow-x-auto rounded-xl border border-line-subtle">
+              <table className="w-full min-w-[600px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                    <th className="px-4 py-3 font-medium">{t('Batch')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Items')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Progress')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Due')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Status')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-subtle bg-surface">
+                  {batches.map((b) => (
+                    <tr key={b.id} className="hover:bg-canvas/60">
+                      <td className="px-4 py-3.5">
+                        <div className="font-medium text-ink">{b.label}</div>
+                        <div className="font-mono text-xs text-ink-muted">{b.id}</div>
+                      </td>
+                      <td className="px-4 py-3.5 text-right font-mono text-xs text-ink tabular-nums">
+                        {b.items.toLocaleString(locale)}
+                      </td>
+                      <td className="w-44 px-4 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <CustomProgressBar value={b.delivered} height="sm" className="flex-1" />
+                          <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                            {b.delivered}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 font-mono text-xs text-ink-secondary">{b.due}</td>
+                      <td className="px-4 py-3.5">
+                        <Badge tone={badgeToneOf(b.statusTone)} dot>
+                          {t(b.status)}
+                        </Badge>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {batches.map((b) => (
-                      <tr key={b.id}>
-                        <td>
-                          <h5 className="edash-project-name">{b.label}</h5>
-                          <span className="edash-project-id">{b.id}</span>
-                        </td>
-                        <td className="edash-td-num">{b.items.toLocaleString(locale)}</td>
-                        <td>
-                          <div className="edash-progress-cell">
-                            <div className="tflow-progress">
-                              <span style={{ width: `${b.delivered}%` }}></span>
-                            </div>
-                            <em>{b.delivered}%</em>
-                          </div>
-                        </td>
-                        <td className="edash-td-num">{b.due}</td>
-                        <td>
-                          <span className={`edash-status edash-status-${b.statusTone}`}>{t(b.status)}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("QA Summary")}</h4>
-                  <p className="edash-card-sub">{t("{count} items reviewed", { count: qa.reviewed.toLocaleString(locale) })}</p>
-                </div>
-              </div>
-              <div className="edash-quality-body">
-                <div className="edash-quality-ring">
-                  <CircularProgressbar value={qa.passRate} text={`${qa.passRate.toLocaleString(locale)}%`} strokeWidth={6} />
-                </div>
-                <ul className="edash-quality-list">
-                  <li>
-                    <span>{t("Re-work required")}</span>
-                    <strong>{qa.rework.toLocaleString(locale)}%</strong>
-                  </li>
-                  <li>
-                    <span>{t("Avg. review time")}</span>
-                    <strong>{t(qa.avgReview)}</strong>
-                  </li>
-                </ul>
-              </div>
+
+          <div className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)] xl:col-span-4">
+            <div>
+              <h2 className="m-0 text-base font-semibold text-ink">{t('QA Summary')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-ink-muted">
+                {t('{count} items reviewed', { count: qa.reviewed.toLocaleString(locale) })}
+              </p>
             </div>
+            <div className="my-4">
+              <CustomSemiCircleGauge value={qa.passRate} label={t('QA Pass Rate')} />
+            </div>
+            <dl className="m-0 divide-y divide-line-subtle text-sm">
+              <div className="flex items-center justify-between py-2.5">
+                <dt className="text-ink-secondary">{t('Re-work required')}</dt>
+                <dd className="m-0 font-mono font-semibold text-ink">{qa.rework.toLocaleString(locale)}%</dd>
+              </div>
+              <div className="flex items-center justify-between py-2.5">
+                <dt className="text-ink-secondary">{t('Avg. review time')}</dt>
+                <dd className="m-0 font-semibold text-ink">{t(qa.avgReview)}</dd>
+              </div>
+            </dl>
           </div>
         </div>
 
-        <div className="row g-4">
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Deliverables")}</h4>
-                  <p className="edash-card-sub">{t("Approved dataset exports")}</p>
-                </div>
-              </div>
-              <ul className="edash-activity">
-                {files.map((f) => (
-                  <li key={f.name}>
-                    <span className={`edash-tone-${f.tone} edash-activity-icon`}>
-                      <i className="fa-solid fa-file-zipper"></i>
+        {/* Bottom 3-Column Bento */}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+            <h2 className="m-0 text-base font-semibold text-ink">{t('Deliverables')}</h2>
+            <p className="mt-0.5 mb-4 text-xs text-ink-muted">{t('Approved dataset exports')}</p>
+            <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle p-0">
+              {files.map((f) => (
+                <li key={f.name} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                        iconTileClassOf(f.tone),
+                      )}
+                    >
+                      <FileArchive className="h-4 w-4" strokeWidth={1.6} />
                     </span>
-                    <div className="edash-activity-body">
-                      <h5>{f.name}</h5>
-                      <p>
-                        {f.items ? `${t("{count} items", { count: f.items.toLocaleString(locale) })} · ` : ""}
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium text-ink">{f.name}</div>
+                      <div className="text-xs text-ink-muted">
+                        {f.items ? `${t('{count} items', { count: f.items.toLocaleString(locale) })} · ` : ''}
                         {f.size} · {t(f.date)}
-                      </p>
+                      </div>
                     </div>
-                    <button type="button" className="edash-icon-btn" title={t("Download {name}", { name: f.name })}>
-                      <i className="fa-solid fa-download"></i>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </div>
+                  <button
+                    type="button"
+                    title={t('Download {name}', { name: f.name })}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line-subtle bg-surface text-ink-muted hover:bg-canvas hover:text-ink cursor-pointer"
+                  >
+                    <Download className="h-3.5 w-3.5" strokeWidth={1.6} />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Top Workforce")}</h4>
-                  <p className="edash-card-sub">{t("Most items delivered")}</p>
-                </div>
-              </div>
-              <ul className="edash-activity">
-                {workforce.map((w) => (
-                  <li key={w.name}>
-                    <span className={`edash-tone-${w.tone} edash-activity-icon edash-initial`}>{w.initials}</span>
-                    <div className="edash-activity-body">
-                      <h5>{w.name}</h5>
-                      <p>{t("{count} items", { count: w.items.toLocaleString(locale) })}</p>
-                    </div>
-                    <strong className="edash-accuracy">{w.accuracy.toLocaleString(locale)}%</strong>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("QA Flags")}</h4>
-                  <p className="edash-card-sub">{t("Latest review events")}</p>
-                </div>
-              </div>
-              <ul className="edash-activity">
-                {qa.flags.map((flag) => (
-                  <li key={flag.title}>
-                    <span className={`edash-tone-${flag.tone} edash-activity-icon`}>
-                      <i className={flag.icon}></i>
+
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+            <h2 className="m-0 text-base font-semibold text-ink">{t('Top Workforce')}</h2>
+            <p className="mt-0.5 mb-4 text-xs text-ink-muted">{t('Most items delivered')}</p>
+            <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle p-0">
+              {workforce.map((w) => (
+                <li key={w.name} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
+                        iconTileClassOf(w.tone),
+                      )}
+                    >
+                      {w.initials}
                     </span>
-                    <div className="edash-activity-body">
-                      <h5>{t(flag.title)}</h5>
-                      <p>{t(flag.meta)}</p>
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium text-ink">{w.name}</div>
+                      <div className="text-xs text-ink-muted">
+                        {t('{count} items', { count: w.items.toLocaleString(locale) })}
+                      </div>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </div>
+                  <span className="font-mono text-xs font-semibold text-teal-ink tabular-nums">
+                    {w.accuracy.toLocaleString(locale)}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+            <h2 className="m-0 text-base font-semibold text-ink">{t('QA Flags')}</h2>
+            <p className="mt-0.5 mb-4 text-xs text-ink-muted">{t('Latest review events')}</p>
+            <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle p-0">
+              {qa.flags.map((flag) => (
+                <li key={flag.title} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                  <span
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                      iconTileClassOf(flag.tone),
+                    )}
+                  >
+                    <ProjectIcon icon={flag.icon} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-ink">{t(flag.title)}</div>
+                    <div className="text-xs text-ink-muted">{t(flag.meta)}</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -783,21 +957,26 @@ const CompanyProjects = () => {
   const stage = queryString(router.query.stage) ?? undefined;
   const isChild = Boolean(router.query.pipeline || router.query.stage);
 
-  // Custom order (REQ-*): its detail is the pipeline itself — back goes to the dashboard.
-  if (id && id.startsWith("REQ")) {
+  const renderLoading = () => (
+    <div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8">
+      <BentoSkeleton />
+    </div>
+  );
+
+  if (id && id.startsWith('REQ')) {
     return (
       <>
         <DashboardHeader />
-        <main>
+        <main className="min-h-screen bg-canvas">
           {ready ? (
             <OrdersView
               id={id}
               stage={stage}
               backHref="/dashboard"
-              backLabel={t("Back to Dashboard")}
+              backLabel={t('Back to Dashboard')}
             />
           ) : (
-            <div className="tflow-loading"><span className="spinner-border"></span></div>
+            renderLoading()
           )}
         </main>
         <DashboardFooter />
@@ -805,21 +984,20 @@ const CompanyProjects = () => {
     );
   }
 
-  // The pipeline is a child of the project (PRJ-*): ?pipeline=1 / &stage=
   if (id && isChild) {
     return (
       <>
         <DashboardHeader />
-        <main>
+        <main className="min-h-screen bg-canvas">
           {ready ? (
             <OrdersView
               id={id}
               stage={stage}
               backHref={`/dashboard/projects?id=${id}`}
-              backLabel={t("Back to Project")}
+              backLabel={t('Back to Project')}
             />
           ) : (
-            <div className="tflow-loading"><span className="spinner-border"></span></div>
+            renderLoading()
           )}
         </main>
         <DashboardFooter />
@@ -830,10 +1008,8 @@ const CompanyProjects = () => {
   return (
     <>
       <DashboardHeader />
-      <main>
-        {ready ? (id ? <ProjectDetail id={id} /> : <ProjectList />) : (
-          <div className="tflow-loading"><span className="spinner-border"></span></div>
-        )}
+      <main className="min-h-screen bg-canvas">
+        {ready ? id ? <ProjectDetail id={id} /> : <ProjectList /> : renderLoading()}
       </main>
       <DashboardFooter />
     </>

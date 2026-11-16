@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import useTaskRoute from '../../hooks/use-task-route';
-import FlowStepper from './flow-stepper';
+import React, { useMemo, useState } from 'react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Coins,
+  Landmark,
+  Layers,
+  LayoutDashboard,
+  Pencil,
+  Send,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react';
+import {
+  Badge,
+  BentoSkeleton,
+  Button,
+  CustomRadioGroup,
+} from '@/components/ui';
+import type { RadioOption } from '@/components/ui';
+import { useT } from '@/i18n';
 import { useAppSelector } from '@/store/hooks';
+import useTaskRoute from '../../hooks/use-task-route';
 import { selectProgress } from '../../store/submissions-slice';
 import { resolveWorkspace } from '../workspaces/registry';
-import { useT } from '@/i18n';
-import Button from '@/components/ui/button';
+import FlowStepper from './flow-stepper';
 
 const PAYOUTS = [
-  { id: 'bank', icon: 'fa-solid fa-building-columns', label: 'Bank Transfer', desc: 'BCA · BNI · Mandiri — 1–2 business days' },
-  { id: 'ewallet', icon: 'fa-solid fa-wallet', label: 'E-Wallet', desc: 'GoPay · OVO · DANA — instant' },
-  { id: 'crypto', icon: 'fa-brands fa-bitcoin', label: 'Crypto (USDT)', desc: 'TRC-20 — after confirmation' },
-];
+  { id: 'bank', icon: Landmark, label: 'Bank Transfer', desc: 'BCA · BNI · Mandiri — 1–2 business days' },
+  { id: 'ewallet', icon: Wallet, label: 'E-Wallet', desc: 'GoPay · OVO · DANA — instant' },
+  { id: 'crypto', icon: Coins, label: 'Crypto (USDT)', desc: 'TRC-20 — after confirmation' },
+] as const;
 
+/**
+ * Contributor reward calculation & custom payout method withdrawal screen (/task-reward).
+ */
 const TaskRewardArea = () => {
   const { ready, task } = useTaskRoute();
   const { t, locale } = useT();
@@ -22,34 +43,67 @@ const TaskRewardArea = () => {
   const stored = useAppSelector((state) => (task ? selectProgress(state, task.slug) : null));
   const progress = ready && task ? stored : null;
 
+  const payoutOptions: RadioOption[] = useMemo(
+    () =>
+      PAYOUTS.map((p) => {
+        const Icon = p.icon;
+        return {
+          value: p.id,
+          label: (
+            <span className="inline-flex items-center gap-2">
+              <Icon className="h-4 w-4 text-teal-ink" strokeWidth={1.6} />
+              <span>{t(p.label)}</span>
+            </span>
+          ),
+          description: t(p.desc),
+        };
+      }),
+    [t],
+  );
+
   if (!ready || !task) {
-    return <div className="tflow-loading"><span className="spinner-border"></span></div>;
+    return (
+      <section className="min-h-screen bg-canvas py-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <BentoSkeleton />
+        </div>
+      </section>
+    );
   }
 
-  // Belum ada item disetujui untuk task ini — jangan spinner abadi,
-  // tampilkan empty state agar route tetap bermakna saat dibuka langsung.
   if (!progress || progress.accepted.length === 0) {
     return (
-      <section className="tflow-area pt-40 pb-120">
-        <div className="container">
+      <section className="min-h-screen bg-canvas py-8 sm:py-12">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <FlowStepper current="reward" />
-          <div className="tflow-narrow">
-            <div className="tflow-panel tflow-result">
-              <span className="tflow-result-icon tflow-result-icon-sm">
-                <i className="fa-solid fa-coins"></i>
-              </span>
-              <h3 className="tflow-title">{t('No rewards to withdraw yet')}</h3>
-              <p className="tflow-desc">
-                {t('Rewards appear once your submissions pass the quality check. Finish the items in {title}, then come back to this page.', { title: <strong>{task.title}</strong> })}
-              </p>
-              <div className="tflow-actions tflow-actions-center">
-                <Button href={`/task-studio?task=${task.slug}`} className="tflow-btn">
-                  <i className="fa-solid fa-pen-to-square"></i> {t('Continue Working')}
-                </Button>
-                <Link href="/dashboard?as=community" className="tflow-btn-ghost">
-                  <i className="fa-solid fa-gauge-high"></i> {t('Community Dashboard')}
-                </Link>
-              </div>
+          <div className="mx-auto max-w-xl rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-8 text-center shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-canvas text-ink-muted">
+              <Coins className="h-5 w-5" strokeWidth={1.6} />
+            </span>
+            <h1 className="mt-4 mb-2 text-xl font-semibold text-ink">{t('No rewards to withdraw yet')}</h1>
+            <p className="m-0 text-sm leading-relaxed text-ink-secondary">
+              {t(
+                'Rewards appear once your submissions pass the quality check. Finish the items in {title}, then come back to this page.',
+                { title: <strong className="font-semibold text-ink">{task.title}</strong> },
+              )}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Button
+                href={`/task-studio?task=${task.slug}`}
+                variant="primary"
+                size="md"
+                leftIcon={<Pencil className="h-4 w-4" strokeWidth={1.6} />}
+              >
+                {t('Continue Working')}
+              </Button>
+              <Button
+                href="/dashboard?as=community"
+                variant="secondary"
+                size="md"
+                leftIcon={<LayoutDashboard className="h-4 w-4" strokeWidth={1.5} />}
+              >
+                {t('Community Dashboard')}
+              </Button>
             </div>
           </div>
         </div>
@@ -65,82 +119,123 @@ const TaskRewardArea = () => {
   const meta = workspace?.meta;
 
   return (
-    <section className="tflow-area pt-40 pb-120">
-      <div className="container">
+    <section className="min-h-screen bg-canvas py-8 sm:py-12">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <FlowStepper current="reward" />
 
-        <div className="tflow-narrow">
-          <div className="tflow-panel">
-            <div className="tflow-qual-head">
-              <div>
-                <h3 className="tflow-title">{t('Reward')} — {task.title}</h3>
-                <p className="tflow-desc">{t('Workspace {name} · {count} items approved', { name: meta?.label ? t(meta.label) : '', count: accepted })}</p>
-              </div>
-              <span className="tflow-badge-soft tflow-badge-open">
-                <i className="fa-solid fa-coins"></i> Rp {total.toLocaleString(locale)}
-              </span>
+        <div className="mx-auto max-w-2xl rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.04)] sm:p-8">
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-line-subtle pb-4">
+            <div>
+              <h1 className="m-0 text-xl font-semibold text-ink sm:text-2xl">
+                {t('Reward')} — {task.title}
+              </h1>
+              <p className="mt-1 mb-0 text-xs text-ink-secondary">
+                {t('Workspace {name} · {count} items approved', {
+                  name: meta?.label ? t(meta.label) : '',
+                  count: accepted,
+                })}
+              </p>
             </div>
+            <Badge tone="mint" dot mono>
+              <Coins className="h-3 w-3" strokeWidth={1.75} />
+              <span>Rp {total.toLocaleString(locale)}</span>
+            </Badge>
+          </div>
 
-            <div className="tflow-reward-breakdown">
-              <div className="tflow-reward-row">
-                <span><i className="fa-solid fa-layer-group"></i> {t('Base ({count} × Rp {amount})', { count: accepted, amount: task.rewardPerItem.toLocaleString(locale) })}</span>
-                <strong>Rp {base.toLocaleString(locale)}</strong>
-              </div>
-              <div className="tflow-reward-row">
-                <span><i className="fa-solid fa-arrow-trend-up"></i> {t('Accuracy bonus ({pct}%)', { pct: task.bonusPct })}</span>
-                <strong>Rp {bonus.toLocaleString(locale)}</strong>
-              </div>
-              <div className="tflow-reward-row tflow-reward-total">
-                <span>{t('Total reward')}</span>
-                <strong>Rp {total.toLocaleString(locale)}</strong>
-              </div>
-            </div>
-
-            {!claimed ? (
-              <>
-                <h4 className="tflow-subtitle"><i className="fa-solid fa-wallet"></i> {t('Payout method')}</h4>
-                <div className="tflow-payout-grid">
-                  {PAYOUTS.map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      className={`tflow-payout${payout === p.id ? ' tflow-payout-active' : ''}`}
-                      onClick={() => setPayout(p.id)}
-                    >
-                      <i className={p.icon}></i>
-                      <strong>{t(p.label)}</strong>
-                      <span>{t(p.desc)}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="tflow-actions">
-                  <Link href={`/task-completed?task=${task.slug}`} className="tflow-btn-ghost">
-                    <i className="fa-solid fa-arrow-left"></i> {t('Back')}
-                  </Link>
-                  <Button className="tflow-btn" onClick={() => setClaimed(true)}>
-                    {t('Claim Reward')} <i className="fa-solid fa-paper-plane"></i>
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="tflow-claim-done">
-                <span className="tflow-result-icon tflow-result-pass tflow-result-icon-sm">
-                  <i className="fa-solid fa-circle-check"></i>
-                </span>
-                <h4>{t('Reward claimed!')}</h4>
-                <p>
-                  {t('Rp {amount} is on its way to {method}. You will be notified when the funds arrive.', {
-                    amount: total.toLocaleString(locale),
-                    method: t(PAYOUTS.find((p) => p.id === payout)?.label ?? ''),
+          <dl className="m-0 mb-6 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas p-4 text-sm">
+            <div className="flex items-center justify-between gap-3 py-2.5 first:pt-0">
+              <dt className="inline-flex items-center gap-2 text-ink-secondary">
+                <Layers className="h-4 w-4 text-ink-muted" strokeWidth={1.5} />
+                <span>
+                  {t('Base ({count} × Rp {amount})', {
+                    count: accepted,
+                    amount: task.rewardPerItem.toLocaleString(locale),
                   })}
-                </p>
-                <Button href="/dashboard/tasks" className="tflow-btn">
-                  {t('Find Next Task')} <i className="fa-solid fa-arrow-right"></i>
+                </span>
+              </dt>
+              <dd className="m-0 font-mono font-semibold text-ink tabular-nums">
+                Rp {base.toLocaleString(locale)}
+              </dd>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 py-2.5">
+              <dt className="inline-flex items-center gap-2 text-ink-secondary">
+                <TrendingUp className="h-4 w-4 text-teal-ink" strokeWidth={1.6} />
+                <span>{t('Accuracy bonus ({pct}%)', { pct: task.bonusPct })}</span>
+              </dt>
+              <dd className="m-0 font-mono font-semibold text-teal-ink tabular-nums">
+                Rp {bonus.toLocaleString(locale)}
+              </dd>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-3">
+              <dt className="font-semibold text-ink">{t('Total reward')}</dt>
+              <dd className="m-0 font-mono text-lg font-semibold text-ink tabular-nums">
+                Rp {total.toLocaleString(locale)}
+              </dd>
+            </div>
+          </dl>
+
+          {!claimed ? (
+            <>
+              <div className="mb-3 flex items-center gap-2">
+                <Wallet className="h-4 w-4 text-teal-ink" strokeWidth={1.6} />
+                <h2 className="m-0 text-base font-semibold text-ink">{t('Payout method')}</h2>
+              </div>
+
+              <CustomRadioGroup
+                name="task-reward-payout"
+                value={payout}
+                onChange={setPayout}
+                variant="card"
+                columnsClassName="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                options={payoutOptions}
+              />
+
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-5">
+                <Button
+                  href={`/task-completed?task=${task.slug}`}
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<ArrowLeft className="h-4 w-4" strokeWidth={1.6} />}
+                >
+                  {t('Back')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="md"
+                  onClick={() => setClaimed(true)}
+                  rightIcon={<Send className="h-4 w-4" strokeWidth={1.6} />}
+                >
+                  {t('Claim Reward')}
                 </Button>
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="rounded-2xl border border-teal-ink/25 bg-tint-mint p-6 text-center">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-surface text-teal-ink">
+                <CheckCircle2 className="h-5 w-5" strokeWidth={1.75} />
+              </span>
+              <h2 className="mt-3 mb-1.5 text-lg font-semibold text-ink">{t('Reward claimed!')}</h2>
+              <p className="m-0 text-sm text-ink-secondary">
+                {t('Rp {amount} is on its way to {method}. You will be notified when the funds arrive.', {
+                  amount: total.toLocaleString(locale),
+                  method: t(PAYOUTS.find((p) => p.id === payout)?.label ?? ''),
+                })}
+              </p>
+              <div className="mt-5">
+                <Button
+                  href="/dashboard/tasks"
+                  variant="primary"
+                  size="md"
+                  rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.6} />}
+                >
+                  {t('Find Next Task')}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

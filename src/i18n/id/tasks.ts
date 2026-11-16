@@ -349,6 +349,9 @@ const id: Dictionary = {
   'Rp {amount} is on its way to {method}. You will be notified when the funds arrive.':
     'Rp {amount} sedang dikirim ke {method}. Anda akan menerima notifikasi saat dana masuk.',
   'Find Next Task': 'Cari Tugas Berikutnya',
+  'Task flow': 'Alur tugas',
+  'Qualification score': 'Skor kualifikasi',
+  'Quality score': 'Skor kualitas',
 };
 
 export default id;

@@ -1,10 +1,11 @@
-import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Send } from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { useT } from '@/i18n';
+import { Button, CustomSelect, TextInput, Textarea } from '@/components/ui';
 import { SUPPORT_TOPICS, type SupportTopic } from '../data/faq';
 import { createTicket, supportKeys } from '../services/support-api';
 import { ticketHref, workspaceOf } from '../utils/links';
@@ -25,6 +26,27 @@ const RequestForm = ({ topic }: RequestFormProps) => {
   const queryClient = useQueryClient();
   const { user, isLoading: sessionLoading } = useAuth();
 
+  const [pickedTopic, setPickedTopic] = useState<string>(topic ?? '');
+  const [subject, setSubject] = useState('');
+  const [reference, setReference] = useState('');
+  const [message, setMessage] = useState('');
+  const [topicError, setTopicError] = useState('');
+
+  useEffect(() => {
+    if (topic) {
+      setPickedTopic(topic);
+      setTopicError('');
+    }
+  }, [topic]);
+
+  const topicOptions = useMemo(
+    () => [
+      ...SUPPORT_TOPICS.map((tp) => ({ value: tp.key, label: t(tp.label) })),
+      { value: 'other', label: t('Something else') },
+    ],
+    [t],
+  );
+
   const create = useMutation({
     mutationFn: createTicket,
     onSuccess: (ticket) => {
@@ -35,57 +57,105 @@ const RequestForm = ({ topic }: RequestFormProps) => {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    const field = (name: string) => String(f.get(name) ?? '').trim();
-    const picked = field('topic');
-    if (!isTopic(picked)) return;
-    create.mutate({ topic: picked, subject: field('subject'), reference: field('reference'), message: field('message') });
+    if (!isTopic(pickedTopic)) {
+      setTopicError(t('Choose a topic'));
+      return;
+    }
+    setTopicError('');
+    create.mutate({
+      topic: pickedTopic,
+      subject: subject.trim(),
+      reference: reference.trim(),
+      message: message.trim(),
+    });
   };
 
   const signedOut = !user && !sessionLoading;
 
   return (
-    <div className="edash-card" id="request">
-      <div className="edash-card-head">
-        <div>
-          <h4 className="edash-card-title">{t('Send a request')}</h4>
-          <p className="edash-card-sub">{t('Add the project, task or invoice ID so we can find it faster.')}</p>
-        </div>
+    <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6" id="request">
+      <div className="mb-4 border-b border-[#F0F0F2] pb-3">
+        <h3 className="m-0 text-base font-semibold text-[#18181B]">{t('Send a request')}</h3>
+        <p className="mt-1 mb-0 text-xs text-[#6B7280]">
+          {t('Add the project, task or invoice ID so we can find it faster.')}
+        </p>
       </div>
+
       {signedOut ? (
-        <div className="zv-tickets-empty">
-          <p>{t('Sign in to send a request and follow the replies here.')}</p>
-          <Link href={`/login?next=${encodeURIComponent(router.asPath || '/dashboard/support')}`} className="edash-btn edash-btn-sm">{t('Sign in')}</Link>
+        <div className="space-y-3 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] p-4 text-center">
+          <p className="m-0 text-xs text-[#6B7280]">{t('Sign in to send a request and follow the replies here.')}</p>
+          <Button
+            variant="primary"
+            size="sm"
+            href={`/login?next=${encodeURIComponent(router.asPath || '/dashboard/support')}`}
+          >
+            {t('Sign in')}
+          </Button>
         </div>
       ) : (
-        <form className="zv-support-form" onSubmit={onSubmit}>
-          <fieldset disabled={create.isPending || !user}>
-            <div className="edash-field">
-              <label htmlFor="sp-topic">{t('Topic')} *</label>
-              <select id="sp-topic" name="topic" className="edash-input" required defaultValue={topic ?? ''} key={topic ?? 'none'}>
-                <option value="" disabled>{t('Choose a topic')}</option>
-                {SUPPORT_TOPICS.map((tp) => <option key={tp.key} value={tp.key}>{t(tp.label)}</option>)}
-                <option value="other">{t('Something else')}</option>
-              </select>
-            </div>
-            <div className="edash-field">
-              <label htmlFor="sp-subject">{t('Subject')} *</label>
-              <input id="sp-subject" name="subject" className="edash-input" required minLength={3} maxLength={200} />
-            </div>
-            <div className="edash-field">
-              <label htmlFor="sp-reference">{t('Project, task or invoice ID')}</label>
-              <input id="sp-reference" name="reference" className="edash-input" placeholder="PRJ-1041" maxLength={60} />
-            </div>
-            <div className="edash-field">
-              <label htmlFor="sp-message">{t('What happened?')} *</label>
-              <textarea id="sp-message" name="message" className="edash-input" rows={5} required maxLength={5000} placeholder={t('What you did, what you expected, and what you saw instead.')}></textarea>
-            </div>
-            <button type="submit" className="edash-btn w-100">
-              <i className="fa-solid fa-paper-plane"></i> {create.isPending ? t('Sending…') : t('Send request')}
-            </button>
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <fieldset disabled={create.isPending || !user} className="space-y-4 border-0 p-0">
+            <CustomSelect
+              id="sp-topic"
+              label={`${t('Topic')} *`}
+              placeholder={t('Choose a topic')}
+              options={topicOptions}
+              value={pickedTopic}
+              error={topicError || undefined}
+              onChange={(val) => {
+                setPickedTopic(val);
+                setTopicError('');
+              }}
+            />
+
+            <TextInput
+              id="sp-subject"
+              label={`${t('Subject')} *`}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+              minLength={3}
+              maxLength={200}
+            />
+
+            <TextInput
+              id="sp-reference"
+              label={t('Project, task or invoice ID')}
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              placeholder="PRJ-1041"
+              maxLength={60}
+            />
+
+            <Textarea
+              id="sp-message"
+              label={`${t('What happened?')} *`}
+              rows={5}
+              required
+              maxLength={5000}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={t('What you did, what you expected, and what you saw instead.')}
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              block
+              disabled={create.isPending || !user}
+              loading={create.isPending}
+              leftIcon={<Send className="h-4 w-4" strokeWidth={1.6} />}
+            >
+              {create.isPending ? t('Sending…') : t('Send request')}
+            </Button>
           </fieldset>
-          {create.isError && <p className="zv-support-error" role="alert">{t(create.error.message)}</p>}
-          <p className="zv-support-note">{t('Replies appear in "Your requests" above.')}</p>
+
+          {create.isError && (
+            <p className="m-0 text-xs font-medium text-[#DC2626]" role="alert">
+              {t(create.error.message)}
+            </p>
+          )}
+          <p className="m-0 text-xs text-[#6B7280]">{t('Replies appear in "Your requests" above.')}</p>
         </form>
       )}
     </div>

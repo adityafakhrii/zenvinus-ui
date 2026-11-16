@@ -1,14 +1,47 @@
-import React, { useEffect, useRef, useState } from 'react';
-import type { ChangeEvent, ReactNode } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  AlertCircle,
+  AlertTriangle,
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Circle,
+  ExternalLink,
+  Globe,
+  Info,
+  Lock,
+  Save,
+  Table2,
+  Upload,
+} from 'lucide-react';
 import { useAuth } from '@/features/auth';
 import { ApiError } from '@/services/api';
-import { createStudioDataset, getStudioDataset, getStudioLicenses, importStudioCsv, updateStudioDataset } from '../services/studio-api';
+import {
+  createStudioDataset,
+  getStudioDataset,
+  getStudioLicenses,
+  importStudioCsv,
+  updateStudioDataset,
+} from '../services/studio-api';
 import { DATA_TYPE_OPTIONS, STUDIO_PERMS, studioBase } from '../constants';
 import type { ImportResult, StudioDatasetDetail, StudioDatasetInput } from '../types/studio';
 import { useT } from '@/i18n';
+import {
+  Badge,
+  BentoSkeleton,
+  Button,
+  CustomSelect,
+  EmptyState,
+  ErrorState,
+  FileDropzone,
+  TextInput,
+  Textarea,
+  type BadgeTone,
+} from '@/components/ui';
 
 /** The editable fields of step 1 */
 interface DetailsForm {
@@ -19,12 +52,21 @@ interface DetailsForm {
   license: string;
 }
 
-type FormElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-
 const EMPTY: DetailsForm = { name: '', summary: '', card: '', dataType: 'tabular', license: '' };
 const SPLIT_PATTERN = /^[a-z0-9][a-z0-9_-]{0,49}$/;
 
-const STATUS_LABEL: Readonly<Record<string, string>> = { draft: 'Draft', published: 'Published', archived: 'Archived' };
+const STATUS_LABEL: Readonly<Record<string, string>> = {
+  draft: 'Draft',
+  published: 'Published',
+  archived: 'Archived',
+};
+
+const STATUS_TONE: Readonly<Record<string, BadgeTone>> = {
+  draft: 'amber',
+  published: 'mint',
+  archived: 'neutral',
+};
+
 const STATUS_HINT: Readonly<Record<string, string>> = {
   draft: 'Draft: only studio users can see this dataset.',
   published: 'Published: anyone can see this dataset on the public Datasets page.',
@@ -40,9 +82,15 @@ interface StepProps {
 
 function Step({ number, title, done, children }: StepProps) {
   return (
-    <section className="hf-card studio-step-card">
-      <h4 className="hf-section-title">
-        <span className={`studio-step-num${done ? ' is-done' : ''}`}>{done ? <i className="fa-solid fa-check"></i> : number}</span>
+    <section className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
+      <h4 className="mb-4 flex items-center gap-2.5 text-base font-semibold text-[#18181B]">
+        <span
+          className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+            done ? 'bg-[#00B2A9] text-white' : 'bg-[#132B45] text-white'
+          }`}
+        >
+          {done ? <Check className="h-4 w-4" strokeWidth={2.25} /> : number}
+        </span>
         {title}
       </h4>
       {children}
@@ -61,85 +109,176 @@ function DataStep({ dataset, onImported }: DataStepProps) {
   const [split, setSplit] = useState(dataset.splits[0]?.name || 'train');
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+
   const mutation = useMutation({
     mutationFn: (selected: File) => importStudioCsv(dataset.slug, split, selected),
     onSuccess: (res) => {
       setResult(res);
       setFile(null);
-      if (inputRef.current) inputRef.current.value = '';
       onImported();
     },
   });
+
   const splitValid = SPLIT_PATTERN.test(split);
   const replaces = dataset.splits.find((s) => s.name === split);
+  const splitPresets = ['train', 'validation', 'test', ...dataset.splits.map((s) => s.name)].filter(
+    (v, i, a) => a.indexOf(v) === i,
+  );
 
   return (
-    <>
+    <div className="space-y-5">
       {dataset.splits.length > 0 ? (
-        <div className="hf-viewer studio-splits">
-          <table>
-            <thead><tr><th>{t('Split')}</th><th>{t('Rows')}</th><th></th></tr></thead>
-            <tbody>
+        <div className="overflow-hidden rounded-xl border border-[#EAEAEA]">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#EAEAEA] bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+                <th className="px-4 py-2.5">{t('Split')}</th>
+                <th className="px-4 py-2.5">{t('Rows')}</th>
+                <th className="px-4 py-2.5 text-right" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F0F0F2]">
               {dataset.splits.map((s) => (
                 <tr key={s.name}>
-                  <td><strong>{s.name}</strong></td>
-                  <td>{s.rows.toLocaleString(locale)}</td>
-                  <td><Link href={`${base}/explore?slug=${dataset.slug}&split=${s.name}`}>{t('View data')}</Link></td>
+                  <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#18181B]">{s.name}</td>
+                  <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-[#52525B]">
+                    {s.rows.toLocaleString(locale)}
+                  </td>
+                  <td className="px-4 py-2.5 text-right">
+                    <Link
+                      href={`${base}/explore?slug=${dataset.slug}&split=${s.name}`}
+                      className="text-xs font-medium text-[#008C85] hover:underline"
+                    >
+                      {t('View data')}
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <p className="studio-callout"><i className="fa-solid fa-circle-info"></i><span>{t('This dataset has no data yet. Upload a CSV file below.')}</span></p>
+        <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#52525B]">
+          <Info className="h-4 w-4 shrink-0 text-[#00B2A9]" strokeWidth={1.75} />
+          <span>{t('This dataset has no data yet. Upload a CSV file below.')}</span>
+        </div>
       )}
 
-      <form className="studio-form" onSubmit={(e) => { e.preventDefault(); setResult(null); if (file) mutation.mutate(file); }}>
-        <div className="studio-form-row">
-          <label>
-            <span>{t('CSV file')}</span>
-            <input ref={inputRef} type="file" accept=".csv,text/csv" onChange={(e) => setFile(e.target.files?.[0] || null)} required />
-            <em className="studio-hint">{t('The first line must hold the column names. Up to {size} and {rows} rows.', { size: '25 MB', rows: (50000).toLocaleString(locale) })}</em>
-          </label>
-          <label>
-            <span>{t('Upload as split')}</span>
-            <input value={split} onChange={(e) => setSplit(e.target.value.trim().toLowerCase())} list="studio-splits" maxLength={50} required />
-            <datalist id="studio-splits">
-              {['train', 'validation', 'test', ...dataset.splits.map((s) => s.name)].filter((v, i, a) => a.indexOf(v) === i).map((s) => <option key={s} value={s} />)}
-            </datalist>
-            {splitValid
-              ? <em className="studio-hint">{t('A split is one part of the dataset: {train} to learn from, {validation} and {test} to check results. With a single file, keep {train}.', { train: <b>train</b>, validation: <b>validation</b>, test: <b>test</b> })}</em>
-              : <em className="studio-error">{t('Use lowercase letters, digits, - and _ only.')}</em>}
-          </label>
+      <form
+        className="space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          setResult(null);
+          if (file) mutation.mutate(file);
+        }}
+      >
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <FileDropzone
+            label={t('CSV file')}
+            hint={t('The first line must hold the column names. Up to {size} and {rows} rows.', {
+              size: '25 MB',
+              rows: (50000).toLocaleString(locale),
+            })}
+            accept=".csv,text/csv"
+            files={file ? [file] : []}
+            onFilesChange={(files) => setFile(files[0] ?? null)}
+          />
+
+          <div className="space-y-2.5">
+            <TextInput
+              label={t('Upload as split')}
+              value={split}
+              onChange={(e) => setSplit(e.target.value.trim().toLowerCase())}
+              maxLength={50}
+              required
+              error={!splitValid ? t('Use lowercase letters, digits, - and _ only.') : undefined}
+            />
+            <div className="flex flex-wrap gap-1.5">
+              {splitPresets.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setSplit(preset)}
+                  className={`rounded-lg border px-2.5 py-1 font-mono text-[11px] font-medium transition-colors ${
+                    split === preset
+                      ? 'border-[#132B45] bg-[#132B45] text-white'
+                      : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white'
+                  }`}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+            {splitValid && (
+              <p className="m-0 text-xs text-[#6B7280]">
+                {t('A split is one part of the dataset: {train} to learn from, {validation} and {test} to check results. With a single file, keep {train}.', {
+                  train: <strong className="font-mono text-[#18181B]">train</strong>,
+                  validation: <strong className="font-mono text-[#18181B]">validation</strong>,
+                  test: <strong className="font-mono text-[#18181B]">test</strong>,
+                })}
+              </p>
+            )}
+          </div>
         </div>
+
         {file && replaces && splitValid && (
-          <p className="studio-callout studio-callout-warn">
-            <i className="fa-solid fa-triangle-exclamation"></i>
-            <span>{t('The split {split} already has {rows} rows. Uploading replaces them. Type another name to add a new split instead.', { split: <b>{split}</b>, rows: replaces.rows.toLocaleString(locale) })}</span>
-          </p>
+          <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" strokeWidth={1.75} />
+            <span>
+              {t('The split {split} already has {rows} rows. Uploading replaces them. Type another name to add a new split instead.', {
+                split: <strong className="font-mono">{split}</strong>,
+                rows: replaces.rows.toLocaleString(locale),
+              })}
+            </span>
+          </div>
         )}
-        <div className="studio-form-actions">
-          <button type="submit" className="hf-primary studio-btn" disabled={!file || !splitValid || mutation.isPending}>
-            <i className="fa-solid fa-upload"></i> {mutation.isPending ? t('Uploading…') : t('Upload CSV')}
-          </button>
-          {!file && <span className="studio-hint">{t('Choose a file first.')}</span>}
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={!file || !splitValid || mutation.isPending}
+            loading={mutation.isPending}
+            leftIcon={<Upload className="h-4 w-4" strokeWidth={1.75} />}
+          >
+            {mutation.isPending ? t('Uploading…') : t('Upload CSV')}
+          </Button>
+          {!file && <span className="text-xs text-[#9CA3AF]">{t('Choose a file first.')}</span>}
         </div>
       </form>
-      {mutation.isError && <p className="studio-error" role="alert">{t(mutation.error.message)}</p>}
-      {result && (
-        <p className="studio-success" role="status">
-          <i className="fa-solid fa-check"></i>{' '}
-          {t('Uploaded {rows} rows into {split}, with columns {columns}.', {
-            rows: result.rows.toLocaleString(locale),
-            split: <strong>{result.split}</strong>,
-            columns: result.columns.map((c) => `${c.name} (${c.type})`).join(', '),
-          })}{' '}
-          <Link href={`${base}/explore?slug=${dataset.slug}&split=${result.split}`}>{t('View data')}</Link>
+
+      {mutation.isError && (
+        <p className="m-0 text-xs font-medium text-[#DC2626]" role="alert">
+          {t(mutation.error.message)}
         </p>
       )}
-      <p className="studio-hint">{t('The original file is kept and listed under Files and versions on the dataset page.')}</p>
-    </>
+
+      {result && (
+        <div
+          className="flex items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-900"
+          role="status"
+        >
+          <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2} />
+          <span>
+            {t('Uploaded {rows} rows into {split}, with columns {columns}.', {
+              rows: result.rows.toLocaleString(locale),
+              split: <strong className="font-mono">{result.split}</strong>,
+              columns: result.columns.map((c) => `${c.name} (${c.type})`).join(', '),
+            })}{' '}
+            <Link
+              href={`${base}/explore?slug=${dataset.slug}&split=${result.split}`}
+              className="font-semibold underline"
+            >
+              {t('View data')}
+            </Link>
+          </span>
+        </div>
+      )}
+
+      <p className="m-0 text-xs text-[#6B7280]">
+        {t('The original file is kept and listed under Files and versions on the dataset page.')}
+      </p>
+    </div>
   );
 }
 
@@ -155,15 +294,24 @@ const StudioEditor = () => {
   const [saved, setSaved] = useState('');
 
   const licenses = useQuery({ queryKey: ['studio', 'licenses'], queryFn: getStudioLicenses });
-  const datasetQuery = useQuery({ queryKey: ['studio', 'dataset', slug], queryFn: () => getStudioDataset(slug), enabled: !isNew });
+  const datasetQuery = useQuery({
+    queryKey: ['studio', 'dataset', slug],
+    queryFn: () => getStudioDataset(slug),
+    enabled: !isNew,
+  });
   const dataset = datasetQuery.data;
 
-  // WHY: Fill the form once per dataset. Refetches (after a CSV upload or on window focus) must not overwrite unsaved edits
   const loadedSlug = useRef('');
   useEffect(() => {
     if (dataset && loadedSlug.current !== dataset.slug) {
       loadedSlug.current = dataset.slug;
-      setForm({ name: dataset.name, summary: dataset.summary || '', card: dataset.card || '', dataType: dataset.dataType || 'tabular', license: dataset.license || '' });
+      setForm({
+        name: dataset.name,
+        summary: dataset.summary || '',
+        card: dataset.card || '',
+        dataType: dataset.dataType || 'tabular',
+        license: dataset.license || '',
+      });
     }
   }, [dataset]);
 
@@ -172,34 +320,77 @@ const StudioEditor = () => {
   };
 
   const save = useMutation({
-    mutationFn: (extra: StudioDatasetInput) => (isNew ? createStudioDataset({ ...form, ...extra }) : updateStudioDataset(slug, { ...form, ...extra })),
+    mutationFn: (extra: StudioDatasetInput) =>
+      isNew ? createStudioDataset({ ...form, ...extra }) : updateStudioDataset(slug, { ...form, ...extra }),
     onSuccess: (d, extra) => {
       refresh();
-      setSaved(extra?.status === 'published' ? 'Published.' : extra?.status === 'draft' ? 'Moved back to draft.' : 'Saved.');
+      setSaved(
+        extra?.status === 'published' ? 'Published.' : extra?.status === 'draft' ? 'Moved back to draft.' : 'Saved.',
+      );
       if (isNew) router.replace({ pathname: router.pathname, query: { slug: d.slug } }, undefined, { shallow: true });
     },
     onError: () => setSaved(''),
   });
 
+  const dataTypeOptions = useMemo(
+    () => DATA_TYPE_OPTIONS.map(([v, l]) => ({ value: v, label: t(l) })),
+    [t],
+  );
+
+  const licenseOptions = useMemo(
+    () => [
+      { value: '', label: t('Choose a license…') },
+      ...(licenses.data || []).map((l) => ({ value: l.slug, label: l.name })),
+    ],
+    [licenses.data, t],
+  );
+
   if (isNew && !(can(STUDIO_PERMS.manage) || can(STUDIO_PERMS.contribute))) {
-    return <p className="pf2-empty">{t('Your role can look through datasets but not create them.')}</p>;
-  }
-  if (!isNew && datasetQuery.isLoading) return <div className="tflow-loading"><span className="spinner-border"></span></div>;
-  if (!isNew && datasetQuery.isError) {
-    const { error } = datasetQuery;
-    return <p className="pf2-empty">{error instanceof ApiError && error.status === 404 ? t('Dataset not found.') : t(error.message)} <Link href={base}>{t('Back to the studio')}</Link></p>;
-  }
-  if (dataset && !dataset.canEdit) {
-    return <p className="pf2-empty">{t('You can view this dataset but not edit it.')} <Link href={`${base}/explore?slug=${slug}`}>{t('View data')}</Link></p>;
+    return (
+      <EmptyState
+        title={t('Your role can look through datasets but not create them.')}
+        action={
+          <Button variant="secondary" href={base}>
+            {t('All datasets')}
+          </Button>
+        }
+      />
+    );
   }
 
-  const field = (key: keyof DetailsForm) => ({
-    value: form[key],
-    onChange: (e: ChangeEvent<FormElement>) => { setSaved(''); setForm({ ...form, [key]: e.target.value }); },
-  });
+  if (!isNew && datasetQuery.isLoading) return <BentoSkeleton />;
+
+  if (!isNew && datasetQuery.isError) {
+    const { error } = datasetQuery;
+    return (
+      <ErrorState
+        title={error instanceof ApiError && error.status === 404 ? t('Dataset not found.') : t(error.message)}
+        message={t(error.message)}
+        onRetry={() => datasetQuery.refetch()}
+      />
+    );
+  }
+
+  if (dataset && !dataset.canEdit) {
+    return (
+      <EmptyState
+        title={t('You can view this dataset but not edit it.')}
+        action={
+          <Button variant="secondary" href={`${base}/explore?slug=${slug}`}>
+            {t('View data')}
+          </Button>
+        }
+      />
+    );
+  }
+
+  const updateField = (key: keyof DetailsForm, value: string) => {
+    setSaved('');
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
   const rows = dataset ? dataset.splits.reduce((n, s) => n + s.rows, 0) : 0;
   const published = dataset?.status === 'published';
-  /** [done, label, what to do, optional]; label and todo are English i18n keys */
   const checklist: ReadonlyArray<readonly [boolean, string, string, boolean?]> = [
     [!!form.name.trim(), 'Name', 'Fill in the name in step 1.'],
     [!!form.license, 'License', 'Choose a license in step 1.'],
@@ -208,105 +399,214 @@ const StudioEditor = () => {
   const canPublish = checklist.every(([ok, , , optional]) => ok || optional);
 
   return (
-    <>
-      <div className="studio-toolbar">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href={base} className="studio-back"><i className="fa-solid fa-arrow-left"></i> {t('All datasets')}</Link>
-          <h4 className="studio-dataset-name">
-            {isNew ? t('New dataset') : dataset?.name}{' '}
-            {dataset && <span className={`studio-status studio-status-${dataset.status}`}>{t(STATUS_LABEL[dataset.status] || dataset.status)}</span>}
-          </h4>
-          {dataset && <p className="studio-hint studio-status-hint">{t(STATUS_HINT[dataset.status])}</p>}
+          <Link
+            href={base}
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#18181B]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
+            {t('All datasets')}
+          </Link>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h2 className="m-0 text-xl font-bold tracking-tight text-[#18181B]">
+              {isNew ? t('New dataset') : dataset?.name}
+            </h2>
+            {dataset && (
+              <Badge tone={STATUS_TONE[dataset.status] || 'neutral'} dot>
+                {t(STATUS_LABEL[dataset.status] || dataset.status)}
+              </Badge>
+            )}
+          </div>
+          {dataset && <p className="mt-1 mb-0 text-xs text-[#6B7280]">{t(STATUS_HINT[dataset.status])}</p>}
         </div>
+
         {dataset && (
-          <div className="studio-actions">
-            <Link href={`${base}/explore?slug=${dataset.slug}`} className="studio-btn studio-btn-light"><i className="fa-solid fa-table"></i> {t('View data')}</Link>
-            {published && <Link href={`/dataset-details?slug=${dataset.slug}`} className="studio-btn studio-btn-light"><i className="fa-solid fa-arrow-up-right-from-square"></i> {t('Public page')}</Link>}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              href={`${base}/explore?slug=${dataset.slug}`}
+              leftIcon={<Table2 className="h-3.5 w-3.5" strokeWidth={1.6} />}
+            >
+              {t('View data')}
+            </Button>
+            {published && (
+              <Button
+                variant="secondary"
+                size="sm"
+                href={`/dataset-details?slug=${dataset.slug}`}
+                rightIcon={<ExternalLink className="h-3.5 w-3.5" strokeWidth={1.6} />}
+              >
+                {t('Public page')}
+              </Button>
+            )}
           </div>
         )}
       </div>
 
       <Step number={1} title={t('Details')} done={!!dataset}>
-        <form className="studio-form" onSubmit={(e) => { e.preventDefault(); save.mutate({}); }}>
-          <label>
-            <span>{t('Name')}</span>
-            <input {...field('name')} required minLength={3} maxLength={300} placeholder={t('e.g. {example}', { example: 'Ulasan Produk Bahasa Indonesia' })} />
-            {isNew && form.name && <em className="studio-hint">{t('Page address:')} /dataset-details?slug={form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}</em>}
-          </label>
-          <label>
-            <span>{t('Summary')}</span>
-            <input {...field('summary')} maxLength={1000} placeholder={t('e.g. 50,000 product reviews labeled with sentiment')} />
-          </label>
-          <div className="studio-form-row">
-            <label>
-              <span>{t('Data type')}</span>
-              <select {...field('dataType')}>
-                {DATA_TYPE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{t(l)}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>{t('License')}</span>
-              <select {...field('license')}>
-                <option value="">{t('Choose a license…')}</option>
-                {(licenses.data || []).map((l) => <option key={l.slug} value={l.slug}>{l.name}</option>)}
-              </select>
-              <em className="studio-hint">{t('Says how others may use the data. Needed to publish.')}</em>
-            </label>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save.mutate({});
+          }}
+        >
+          <TextInput
+            label={t('Name')}
+            value={form.name}
+            onChange={(e) => updateField('name', e.target.value)}
+            required
+            minLength={3}
+            maxLength={300}
+            placeholder={t('e.g. {example}', { example: 'Ulasan Produk Bahasa Indonesia' })}
+            hint={
+              isNew && form.name
+                ? `${t('Page address:')} /dataset-details?slug=${form.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '')}`
+                : undefined
+            }
+          />
+
+          <TextInput
+            label={t('Summary')}
+            value={form.summary}
+            onChange={(e) => updateField('summary', e.target.value)}
+            maxLength={1000}
+            placeholder={t('e.g. 50,000 product reviews labeled with sentiment')}
+          />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <CustomSelect
+              label={t('Data type')}
+              options={dataTypeOptions}
+              value={form.dataType}
+              onChange={(val) => updateField('dataType', val)}
+            />
+
+            <CustomSelect
+              label={t('License')}
+              searchable
+              options={licenseOptions}
+              value={form.license}
+              onChange={(val) => updateField('license', val)}
+              hint={t('Says how others may use the data. Needed to publish.')}
+            />
           </div>
-          <label>
-            <span>{t('Description')} <small className="studio-muted">{t('(optional, shown on the dataset page)')}</small></span>
-            <textarea {...field('card')} rows={12} maxLength={100000}
-              placeholder={t('## Dataset summary\n\nWhat it contains, where it comes from, and what it is for.\n\n## Limitations\n\n- ...')} />
-            <em className="studio-hint">{t('Use ## for headings, - for lists, and a blank line between paragraphs.')}</em>
-          </label>
-          <div className="studio-form-actions">
-            <button type="submit" className="hf-primary studio-btn" disabled={save.isPending}>
-              <i className="fa-solid fa-floppy-disk"></i> {save.isPending ? t('Saving…') : isNew ? t('Create dataset') : t('Save details')}
-            </button>
-            {save.isError && <span className="studio-error" role="alert">{t(save.error.message)}</span>}
-            {saved && <span className="studio-success" role="status"><i className="fa-solid fa-check"></i> {t(saved)}</span>}
+
+          <Textarea
+            label={`${t('Description')} ${t('(optional, shown on the dataset page)')}`}
+            rows={10}
+            maxLength={100000}
+            value={form.card}
+            onChange={(e) => updateField('card', e.target.value)}
+            placeholder={t(
+              '## Dataset summary\n\nWhat it contains, where it comes from, and what it is for.\n\n## Limitations\n\n- ...',
+            )}
+            hint={t('Use ## for headings, - for lists, and a blank line between paragraphs.')}
+          />
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={save.isPending}
+              loading={save.isPending}
+              leftIcon={<Save className="h-4 w-4" strokeWidth={1.6} />}
+            >
+              {save.isPending ? t('Saving…') : isNew ? t('Create dataset') : t('Save details')}
+            </Button>
+            {save.isError && (
+              <span className="text-xs font-medium text-[#DC2626]" role="alert">
+                {t(save.error.message)}
+              </span>
+            )}
+            {saved && (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-[#059669]" role="status">
+                <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                {t(saved)}
+              </span>
+            )}
           </div>
         </form>
       </Step>
 
       <Step number={2} title={t('Upload the data')} done={rows > 0}>
-        {dataset
-          ? <DataStep dataset={dataset} onImported={refresh} />
-          : <p className="studio-callout"><i className="fa-solid fa-lock"></i><span>{t('Create the dataset in step 1 first. Then you can upload CSV files here.')}</span></p>}
+        {dataset ? (
+          <DataStep dataset={dataset} onImported={refresh} />
+        ) : (
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#6B7280]">
+            <Lock className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+            <span>{t('Create the dataset in step 1 first. Then you can upload CSV files here.')}</span>
+          </div>
+        )}
       </Step>
 
       <Step number={3} title={t('Publish')} done={published}>
         {!dataset ? (
-          <p className="studio-callout"><i className="fa-solid fa-lock"></i><span>{t('Available after you create the dataset.')}</span></p>
+          <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#6B7280]">
+            <Lock className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+            <span>{t('Available after you create the dataset.')}</span>
+          </div>
         ) : (
-          <>
-            <ul className="studio-checklist">
+          <div className="space-y-4">
+            <ul className="space-y-2.5">
               {checklist.map(([ok, label, todo, optional]) => (
-                <li key={label} className={ok ? 'is-ok' : optional ? 'is-warn' : 'is-missing'}>
-                  <i className={ok ? 'fa-solid fa-circle-check' : optional ? 'fa-solid fa-circle-exclamation' : 'fa-regular fa-circle'}></i>
-                  <span><b>{t(label)}</b>{ok ? '' : ` — ${t(todo)}`}</span>
+                <li key={label} className="flex items-start gap-2.5 text-sm">
+                  {ok ? (
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#00B2A9]" strokeWidth={1.75} />
+                  ) : optional ? (
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" strokeWidth={1.75} />
+                  ) : (
+                    <Circle className="mt-0.5 h-4 w-4 shrink-0 text-[#9CA3AF]" strokeWidth={1.75} />
+                  )}
+                  <span className="text-[#52525B]">
+                    <strong className="font-semibold text-[#18181B]">{t(label)}</strong>
+                    {ok ? '' : ` — ${t(todo)}`}
+                  </span>
                 </li>
               ))}
             </ul>
-            <div className="studio-form-actions">
+
+            <div className="flex flex-wrap items-center gap-3">
               {published ? (
                 <>
-                  <span className="studio-success"><i className="fa-solid fa-globe"></i> {t('This dataset is public.')}</span>
-                  <button type="button" className="studio-btn studio-btn-light" disabled={save.isPending} onClick={() => save.mutate({ status: 'draft' })}>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#059669]">
+                    <Globe className="h-4 w-4" strokeWidth={1.75} />
+                    {t('This dataset is public.')}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={save.isPending}
+                    onClick={() => save.mutate({ status: 'draft' })}
+                  >
                     {t('Unpublish')}
-                  </button>
+                  </Button>
                 </>
               ) : (
-                <button type="button" className="hf-primary studio-btn" disabled={!canPublish || save.isPending} onClick={() => save.mutate({ status: 'published' })}>
-                  <i className="fa-solid fa-globe"></i> {t('Publish')}
-                </button>
+                <Button
+                  variant="primary"
+                  disabled={!canPublish || save.isPending}
+                  loading={save.isPending}
+                  leftIcon={<Globe className="h-4 w-4" strokeWidth={1.75} />}
+                  onClick={() => save.mutate({ status: 'published' })}
+                >
+                  {t('Publish')}
+                </Button>
               )}
-              {!published && !canPublish && <span className="studio-hint">{t('Complete the items above to publish.')}</span>}
+              {!published && !canPublish && (
+                <span className="text-xs text-[#6B7280]">{t('Complete the items above to publish.')}</span>
+              )}
             </div>
-          </>
+          </div>
         )}
       </Step>
-    </>
+    </div>
   );
 };
 

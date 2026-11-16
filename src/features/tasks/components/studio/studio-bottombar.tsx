@@ -1,6 +1,19 @@
 import React from 'react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  CheckCircle2,
+  CloudUpload,
+  PenSquare,
+  RotateCcw,
+  Send,
+  ShieldCheck,
+  X,
+} from 'lucide-react';
 import { useT } from '@/i18n';
-import Button from '@/components/ui/button';
+import { Button } from '@/components/ui';
 import type { ReviewAction } from '../../data/expert-workspace';
 
 interface BottombarBaseProps {
@@ -29,6 +42,33 @@ export interface ReviewBottombarProps extends BottombarBaseProps {
 
 export type StudioBottombarProps = SubmitBottombarProps | ReviewBottombarProps;
 
+const DECISION_META: Readonly<
+  Record<
+    string,
+    {
+      Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+      className: string;
+    }
+  >
+> = {
+  approved: {
+    Icon: Check,
+    className: 'border-[#10B981] bg-[#10B981] text-white hover:bg-[#059669]',
+  },
+  revision: {
+    Icon: RotateCcw,
+    className: 'border-[#FCD34D] bg-[#FFFBEB] text-[#B45309] hover:bg-[#FEF3C7]',
+  },
+  rejected: {
+    Icon: X,
+    className: 'border-[#FECACA] bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2]',
+  },
+  escalate: {
+    Icon: ArrowUpRight,
+    className: 'border-[#D4D4D8] bg-[#F4F4F5] text-[#132B45] hover:bg-[#E4E4E7]',
+  },
+};
+
 /**
  * Studio bottom bar: item navigation on the left, autosave status in the
  * middle, skip + submit on the right. Sticky so submit is always reachable.
@@ -40,57 +80,85 @@ export type StudioBottombarProps = SubmitBottombarProps | ReviewBottombarProps;
 const StudioBottombar = (props: StudioBottombarProps) => {
   const { itemIdx, total, draftSavedAt, submitting, disabled, onPrev, onNext } = props;
   const { t } = useT();
+
   return (
-    <footer className="tflow-studio-bottom">
-      <div className="tflow-studio-bottom-left">
-        <button type="button" className="tflow-btn-ghost" disabled={disabled || itemIdx === 0} onClick={onPrev}>
-          <i className="fa-solid fa-arrow-left"></i> {t('Previous')}
-        </button>
+    <footer className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAEAEA] bg-white px-4 py-2.5 sm:px-5">
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={disabled || itemIdx === 0}
+          onClick={onPrev}
+          leftIcon={<ArrowLeft className="h-4 w-4" strokeWidth={1.6} />}
+        >
+          {t('Previous')}
+        </Button>
       </div>
 
-      <div className="tflow-studio-savestate">
+      <div className="flex items-center gap-1.5 text-xs font-medium text-[#6B7280]">
         {props.reviewMode ? (
           <>
-            <i className="fa-solid fa-shield-halved"></i> {t('Inspect any item, then decide — the decision applies to the whole submission')}
+            <ShieldCheck className="h-4 w-4 text-[#132B45]" strokeWidth={1.6} />
+            <span>{t('Inspect any item, then decide — the decision applies to the whole submission')}</span>
           </>
         ) : draftSavedAt ? (
           <>
-            <i className="fa-solid fa-cloud-arrow-up"></i> {t('Draft saved automatically')}
+            <CloudUpload className="h-4 w-4 text-[#008C85]" strokeWidth={1.6} />
+            <span className="text-[#008C85]">{t('Draft saved automatically')}</span>
           </>
         ) : props.hasAnswer ? (
           <>
-            <i className="fa-solid fa-circle-check"></i> {t('Answer ready to submit')}
+            <CheckCircle2 className="h-4 w-4 text-[#10B981]" strokeWidth={1.6} />
+            <span className="text-[#059669]">{t('Answer ready to submit')}</span>
           </>
         ) : (
           <>
-            <i className="fa-regular fa-pen-to-square"></i> {t('No answer yet')}
+            <PenSquare className="h-4 w-4 text-[#9CA3AF]" strokeWidth={1.6} />
+            <span>{t('No answer yet')}</span>
           </>
         )}
       </div>
 
-      <div className="tflow-studio-bottom-right">
+      <div className="flex flex-wrap items-center gap-2">
         {props.reviewMode ? (
-          props.actions.map((a) => (
-            <button
-              key={a.key}
-              type="button"
-              className={`tflow-review-decide tflow-review-decide-${a.tone}`}
-              disabled={submitting}
-              title={t('Mark this submission as {status}', { status: t(a.to) })}
-              onClick={() => props.onDecision(a.key)}
-            >
-              <i className={a.icon}></i> {t(a.label)}
-            </button>
-          ))
+          props.actions.map((a) => {
+            const meta = DECISION_META[a.key] || DECISION_META.escalate;
+            const Icon = meta.Icon;
+            return (
+              <button
+                key={a.key}
+                type="button"
+                className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${meta.className}`}
+                disabled={submitting}
+                title={t('Mark this submission as {status}', { status: t(a.to) })}
+                onClick={() => props.onDecision(a.key)}
+              >
+                <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {t(a.label)}
+              </button>
+            );
+          })
         ) : (
           <>
             {itemIdx < total - 1 ? (
-              <button type="button" className="tflow-btn-ghost" disabled={disabled || submitting} onClick={onNext}>
-                {t('Skip for now')} <i className="fa-solid fa-arrow-right"></i>
-              </button>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={disabled || submitting}
+                onClick={onNext}
+                rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.6} />}
+              >
+                {t('Skip for now')}
+              </Button>
             ) : null}
-            <Button className="tflow-btn" disabled={disabled || submitting} onClick={props.onSubmit}>
-              {t('Submit Item')} <i className="fa-solid fa-paper-plane"></i>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={disabled || submitting}
+              onClick={props.onSubmit}
+              rightIcon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            >
+              {t('Submit Item')}
             </Button>
           </>
         )}

@@ -1,7 +1,20 @@
 import Link from 'next/link';
 import React, { useMemo, useState } from 'react';
+import {
+  ArrowRight,
+  ChevronDown,
+  Database,
+  Flag,
+  FolderKanban,
+  Handshake,
+  HelpCircle,
+  ListChecks,
+  Mail,
+  UserCog,
+} from 'lucide-react';
 import { DashboardFooter, DashboardHeader } from '@/features/dashboard';
 import { useT } from '@/i18n';
+import { SearchInput } from '@/components/ui';
 import { FAQ, SUPPORT_TOPICS, type SupportTopic } from '../data/faq';
 import RequestForm from './request-form';
 import TicketsCard from './tickets-card';
@@ -10,6 +23,14 @@ import TicketsCard from './tickets-card';
 const SUPPORT_EMAIL = 'info@zenvinus.co.id';
 
 type TopicFilter = SupportTopic | 'all';
+
+const TOPIC_ICON: Readonly<Record<SupportTopic, React.ComponentType<{ className?: string; strokeWidth?: number }>>> = {
+  start: Flag,
+  projects: FolderKanban,
+  tasks: ListChecks,
+  datasets: Database,
+  account: UserCog,
+};
 
 /**
  * Dashboard help: the user's support requests (tickets), then search and topic filter over the FAQ, and a request
@@ -24,75 +45,125 @@ const SupportPage = () => {
   // Search matches the question and answer in the language on screen
   const items = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return FAQ.filter((f) => (topic === 'all' || f.topic === topic) && (!q || `${t(f.question)} ${t(f.answer)}`.toLowerCase().includes(q)));
+    return FAQ.filter(
+      (f) => (topic === 'all' || f.topic === topic) && (!q || `${t(f.question)} ${t(f.answer)}`.toLowerCase().includes(q)),
+    );
   }, [query, topic, t]);
 
   return (
     <>
       <DashboardHeader />
       <main>
-        <section className="edash-area pt-40 pb-120 zv-support">
-          <div className="container">
-            <div className="edash-head">
-              <div>
-                <h3 className="edash-title">{t('Support')}</h3>
-                <p className="edash-sub">{t('Find an answer below, or send us a request and follow the replies here.')}</p>
-              </div>
+        <section className="min-h-[calc(100vh-140px)] bg-[#F9FAFB] py-8 sm:py-10">
+          <div className="mx-auto max-w-[1280px] space-y-6 px-4 sm:px-6">
+            <div>
+              <h1 className="m-0 text-2xl font-bold tracking-tight text-[#18181B]">{t('Support')}</h1>
+              <p className="mt-1 mb-0 text-sm text-[#6B7280]">
+                {t('Find an answer below, or send us a request and follow the replies here.')}
+              </p>
             </div>
 
             <TicketsCard />
 
-            <div className="edash-card zv-support-search">
-              <label htmlFor="zv-support-q" className="visually-hidden">{t('Search help')}</label>
-              <i className="fa-regular fa-magnifying-glass" aria-hidden="true"></i>
-              <input
+            <div className="space-y-3 rounded-2xl border border-[#EAEAEA] bg-white p-4 sm:p-5">
+              <SearchInput
                 id="zv-support-q"
-                type="search"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={setQuery}
                 placeholder={t('Search help, for example "payment" or "invite"')}
+                aria-label={t('Search help')}
+                clearLabel={t('Clear search')}
                 autoComplete="off"
               />
+
+              <nav className="flex flex-wrap gap-2" aria-label={t('Help topics')}>
+                <button
+                  type="button"
+                  aria-pressed={topic === 'all'}
+                  onClick={() => setTopic('all')}
+                  className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    topic === 'all'
+                      ? 'border-[#132B45] bg-[#132B45] text-white'
+                      : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                  }`}
+                >
+                  {t('All')}
+                </button>
+                {SUPPORT_TOPICS.map((tp) => {
+                  const Icon = TOPIC_ICON[tp.key] || HelpCircle;
+                  const active = topic === tp.key;
+                  return (
+                    <button
+                      key={tp.key}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setTopic(tp.key)}
+                      className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        active
+                          ? 'border-[#132B45] bg-[#132B45] text-white'
+                          : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
+                      {t(tp.label)}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            <nav className="zv-support-topics" aria-label={t('Help topics')}>
-              <button type="button" className={topic === 'all' ? 'is-active' : undefined} aria-pressed={topic === 'all'} onClick={() => setTopic('all')}>
-                {t('All')}
-              </button>
-              {SUPPORT_TOPICS.map((tp) => (
-                <button key={tp.key} type="button" className={topic === tp.key ? 'is-active' : undefined} aria-pressed={topic === tp.key} onClick={() => setTopic(tp.key)}>
-                  <i className={tp.icon} aria-hidden="true"></i> {t(tp.label)}
-                </button>
-              ))}
-            </nav>
-
-            <div className="row g-4">
-              <div className="col-xl-8">
-                <div className="edash-card">
-                  <div className="edash-card-head">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+              <div className="lg:col-span-8">
+                <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
+                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#F0F0F2] pb-3">
                     <div>
-                      <h4 className="edash-card-title">{t('Frequently asked questions')}</h4>
-                      <p className="edash-card-sub">{t('{count} answers', { count: items.length })}</p>
+                      <h2 className="m-0 text-base font-semibold text-[#18181B]">
+                        {t('Frequently asked questions')}
+                      </h2>
+                      <p className="mt-0.5 mb-0 text-xs text-[#6B7280]">
+                        {t('{count} answers', { count: items.length })}
+                      </p>
                     </div>
                   </div>
+
                   {items.length === 0 ? (
-                    <p className="zv-support-empty">
+                    <p className="m-0 py-6 text-center text-sm text-[#6B7280]">
                       {t('No answer matches your search. Send us a request and we will help.')}
                     </p>
                   ) : (
-                    <ul className="zv-support-faq">
+                    <ul className="m-0 list-none divide-y divide-[#F0F0F2] p-0">
                       {items.map((f) => {
                         const isOpen = open === f.id;
                         return (
-                          <li key={f.id} className={isOpen ? 'is-open' : undefined}>
-                            <button type="button" aria-expanded={isOpen} aria-controls={`faq-${f.id}`} onClick={() => setOpen(isOpen ? null : f.id)}>
+                          <li key={f.id}>
+                            <button
+                              type="button"
+                              aria-expanded={isOpen}
+                              aria-controls={`faq-${f.id}`}
+                              onClick={() => setOpen(isOpen ? null : f.id)}
+                              className="flex w-full items-center justify-between gap-4 py-3.5 text-left text-sm font-semibold text-[#18181B] transition-colors hover:text-[#008C85]"
+                            >
                               <span>{t(f.question)}</span>
-                              <i className="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                              <ChevronDown
+                                className={`h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-200 ${
+                                  isOpen ? 'rotate-180 text-[#008C85]' : ''
+                                }`}
+                                strokeWidth={1.75}
+                                aria-hidden="true"
+                              />
                             </button>
                             {isOpen && (
-                              <div id={`faq-${f.id}`} className="zv-support-answer">
-                                <p>{t(f.answer)}</p>
-                                {f.link && <Link href={f.link.href}>{t(f.link.label)} →</Link>}
+                              <div id={`faq-${f.id}`} className="pb-4 pr-6 text-sm leading-relaxed text-[#52525B]">
+                                <p className="m-0">{t(f.answer)}</p>
+                                {f.link && (
+                                  <Link
+                                    href={f.link.href}
+                                    className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#008C85] hover:underline"
+                                  >
+                                    {t(f.link.label)}
+                                    <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+                                  </Link>
+                                )}
                               </div>
                             )}
                           </li>
@@ -103,24 +174,32 @@ const SupportPage = () => {
                 </div>
               </div>
 
-              <div className="col-xl-4">
+              <div className="space-y-5 lg:col-span-4">
                 <RequestForm topic={topic === 'all' ? undefined : topic} />
 
-                <div className="edash-card mt-4">
-                  <h4 className="edash-card-title">{t('Other ways to reach us')}</h4>
-                  <ul className="zv-support-channels">
-                    <li>
-                      <i className="fa-regular fa-envelope" aria-hidden="true"></i>
+                <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
+                  <h3 className="mb-3 text-base font-semibold text-[#18181B]">{t('Other ways to reach us')}</h3>
+                  <ul className="m-0 list-none space-y-3 p-0 text-sm">
+                    <li className="flex items-start gap-3">
+                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F9FAFB] text-[#132B45]">
+                        <Mail className="h-4 w-4" strokeWidth={1.6} />
+                      </span>
                       <div>
-                        <span>{t('Email')}</span>
-                        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+                        <span className="block text-xs text-[#6B7280]">{t('Email')}</span>
+                        <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#18181B] hover:text-[#008C85]">
+                          {SUPPORT_EMAIL}
+                        </a>
                       </div>
                     </li>
-                    <li>
-                      <i className="fa-regular fa-handshake" aria-hidden="true"></i>
+                    <li className="flex items-start gap-3">
+                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F9FAFB] text-[#132B45]">
+                        <Handshake className="h-4 w-4" strokeWidth={1.6} />
+                      </span>
                       <div>
-                        <span>{t('Sales and partnerships')}</span>
-                        <Link href="/contact">{t('Contact page')}</Link>
+                        <span className="block text-xs text-[#6B7280]">{t('Sales and partnerships')}</span>
+                        <Link href="/contact" className="font-medium text-[#18181B] hover:text-[#008C85]">
+                          {t('Contact page')}
+                        </Link>
                       </div>
                     </li>
                   </ul>

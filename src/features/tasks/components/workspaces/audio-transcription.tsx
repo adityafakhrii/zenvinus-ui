@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Pause, Play, Users } from 'lucide-react';
 import { useT } from '@/i18n';
+import { Textarea } from '@/components/ui';
 import type { WorkspaceProps } from '../../types/workspace';
 
 /**
@@ -36,54 +38,86 @@ const AudioTranscription = ({ item, answer, onChange }: WorkspaceProps<'audio_tr
     setElapsed(0);
   }, [item.id]);
 
-  const bars = Array.from({ length: 42 }, (_, i) => 18 + Math.round(38 * Math.abs(Math.sin(i * 0.9) * Math.cos(i * 0.33))));
+  const bars = Array.from(
+    { length: 42 },
+    (_, i) => 18 + Math.round(38 * Math.abs(Math.sin(i * 0.9) * Math.cos(i * 0.33))),
+  );
 
   return (
-    <div className="tflow-ws-grid">
-      <div className="tflow-canvas tflow-canvas-audio">
-        <span className="tflow-canvas-tag">
-          {item.id} · {item.duration}
-        </span>
-        <div className="tflow-audio-head">
-          <span className="tflow-audio-meta">
-            <i className="fa-solid fa-user-group"></i> {t('{count} speakers', { count: item.speakers })}
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+      <div className="flex flex-col justify-between rounded-2xl border border-[#EAEAEA] bg-white p-6 lg:col-span-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="rounded-md border border-[#EAEAEA] bg-[#F9FAFB] px-2 py-0.5 font-mono text-[11px] font-medium text-[#52525B]">
+            {item.id} · {item.duration}
           </span>
-          <span className="tflow-audio-meta">{t(item.hint)}</span>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-[#6B7280]">
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#18181B]">
+              <Users className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+              {t('{count} speakers', { count: item.speakers })}
+            </span>
+            <span>{t(item.hint)}</span>
+          </div>
         </div>
-        <div className="tflow-wave">
-          {bars.map((h, i) => (
-            <span key={i} style={{ height: `${h}px` }} className={i / bars.length <= elapsed / total ? 'tflow-wave-on' : ''}></span>
-          ))}
+
+        <div className="my-8 flex h-20 items-end justify-between gap-1 rounded-xl border border-[#F0F0F2] bg-[#F9FAFB] px-4 py-3">
+          {bars.map((h, i) => {
+            const active = i / bars.length <= elapsed / total;
+            return (
+              <span
+                key={i}
+                style={{ height: `${h}px` }}
+                className={`w-1.5 flex-1 rounded-full transition-colors ${
+                  active ? 'bg-[#00B2A9]' : 'bg-[#D1D5DB]'
+                }`}
+              />
+            );
+          })}
         </div>
-        <div className="tflow-audio-controls">
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-label={playing ? 'Pause' : 'Play'}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#132B45] text-white transition-colors hover:bg-[#0D1E32]"
+              onClick={() => {
+                if (elapsed >= total) setElapsed(0);
+                setPlaying((p) => !p);
+              }}
+            >
+              {playing ? (
+                <Pause className="h-4 w-4" strokeWidth={2} />
+              ) : (
+                <Play className="ml-0.5 h-4 w-4" strokeWidth={2} />
+              )}
+            </button>
+            <span className="font-mono text-sm font-semibold tabular-nums text-[#18181B]">
+              00:{String(elapsed).padStart(2, '0')} <span className="text-[#9CA3AF]">/ {item.duration}</span>
+            </span>
+          </div>
           <button
             type="button"
-            className="tflow-play"
-            onClick={() => {
-              if (elapsed >= total) setElapsed(0);
-              setPlaying((p) => !p);
-            }}
+            className="rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-2.5 py-1 font-mono text-xs font-semibold text-[#52525B] transition-colors hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]"
+            onClick={() => setPlaying(false)}
           >
-            <i className={playing ? 'fa-solid fa-pause' : 'fa-solid fa-play'}></i>
-          </button>
-          <span className="tflow-audio-time">
-            00:{String(elapsed).padStart(2, '0')} / {item.duration}
-          </span>
-          <button type="button" className="tflow-audio-speed" onClick={() => setPlaying(false)}>
             1.0×
           </button>
         </div>
       </div>
-      <div className="tflow-ws-side">
-        <h4>{t('Verbatim transcript')}</h4>
-        <p>{t('Type exactly what you hear. Mark crosstalk with [overlap] and noise with [noise].')}</p>
-        <textarea
-          className="tflow-textarea"
-          rows={7}
-          placeholder={'Speaker 1: …\nSpeaker 2: …'}
-          value={answer.text || ''}
-          onChange={(e) => onChange({ ...answer, text: e.target.value })}
-        />
+
+      <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 lg:col-span-6">
+        <h4 className="text-base font-semibold text-[#18181B]">{t('Verbatim transcript')}</h4>
+        <p className="mt-1.5 text-sm leading-relaxed text-[#6B7280]">
+          {t('Type exactly what you hear. Mark crosstalk with [overlap] and noise with [noise].')}
+        </p>
+        <div className="mt-4">
+          <Textarea
+            rows={8}
+            placeholder={'Speaker 1: …\nSpeaker 2: …'}
+            value={answer.text || ''}
+            onChange={(e) => onChange({ ...answer, text: e.target.value })}
+          />
+        </div>
       </div>
     </div>
   );

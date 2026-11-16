@@ -1,4 +1,5 @@
 import React from 'react';
+import { Check } from 'lucide-react';
 import { useT } from '@/i18n';
 
 export interface LabelPickerProps {
@@ -13,18 +14,27 @@ export interface LabelPickerProps {
 const LabelPicker = ({ labels = [], value, onChange, name = 'label' }: LabelPickerProps) => {
   const { t } = useT();
   return (
-    <div className="tflow-chips" role="radiogroup" aria-label={name}>
-      {labels.map((label) => (
-        <button
-          key={label}
-          type="button"
-          className={`tflow-chip${value === label ? ' tflow-chip-active' : ''}`}
-          onClick={() => onChange(label)}
-        >
-          {value === label && <i className="fa-solid fa-check"></i>}
-          {t(label)}
-        </button>
-      ))}
+    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={name}>
+      {labels.map((label) => {
+        const active = value === label;
+        return (
+          <button
+            key={label}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
+              active
+                ? 'border-[#132B45] bg-[#132B45] text-white shadow-xs'
+                : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#18181B] hover:border-[#00B2A9]/60 hover:bg-white'
+            }`}
+            onClick={() => onChange(label)}
+          >
+            {active && <Check className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={2.25} />}
+            <span>{t(label)}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };

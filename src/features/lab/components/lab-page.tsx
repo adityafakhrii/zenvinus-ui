@@ -1,9 +1,28 @@
-import Link from "next/link";
-import React, { useState } from "react";
-import { DashboardFooter } from "@/features/dashboard";
-import { useRouter } from "next/router";
-import useMounted from "@/hooks/use-mounted";
-import { POSTED_TASK_STATUS_FLOW } from "@/features/tasks";
+import Link from 'next/link';
+import React, { useState } from 'react';
+import {
+  ArrowLeft,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  Database,
+  FileSignature,
+  FlaskConical,
+  FolderKanban,
+  Info,
+  Microchip,
+  Save,
+  Send,
+  Tag,
+  Wallet,
+  Zap,
+} from 'lucide-react';
+import { DashboardFooter } from '@/features/dashboard';
+import { useRouter } from 'next/router';
+import useMounted from '@/hooks/use-mounted';
+import { POSTED_TASK_STATUS_FLOW } from '@/features/tasks';
 import {
   REQUEST_ACTIONS,
   attachRequestProposal,
@@ -15,43 +34,101 @@ import {
   type PostedProject,
   type StatusStep,
   type Tone,
-} from "@/features/projects";
-import { useT } from "@/i18n";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+} from '@/features/projects';
+import { useT } from '@/i18n';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  Badge,
+  BentoSkeleton,
+  Button,
+  CustomDatePicker,
+  EmptyState,
+  TextInput,
+  Textarea,
+  type BadgeTone,
+} from '@/components/ui';
 
-const money = (n: number | string, locale = "en-US") => (typeof n === "string" ? n : `$${n.toLocaleString(locale)}`);
+const money = (n: number | string, locale = 'en-US') =>
+  typeof n === 'string' ? n : `$${n.toLocaleString(locale)}`;
 
-const findStatus = (key: string): StatusStep | undefined => POSTED_TASK_STATUS_FLOW.find((s) => s.key === key);
+const findStatus = (key: string): StatusStep | undefined =>
+  POSTED_TASK_STATUS_FLOW.find((s) => s.key === key);
+
+type Glyph = typeof FolderKanban;
+
+const ICON_MAP: Readonly<Record<string, Glyph>> = {
+  'fa-database': Database,
+  'fa-microchip': Microchip,
+  'fa-tags': Tag,
+  'fa-tag': Tag,
+  'fa-clipboard-check': ClipboardCheck,
+  'fa-flask': FlaskConical,
+  'fa-diagram-project': FolderKanban,
+};
+
+function LabGlyph({ icon, className = 'h-4 w-4' }: { icon?: string; className?: string }) {
+  const token = icon?.match(/fa-[a-z0-9-]+/g)?.find((t) => t !== 'fa-solid' && t !== 'fa-regular') ?? '';
+  const Icon = ICON_MAP[token] || FolderKanban;
+  return <Icon className={className} strokeWidth={1.6} aria-hidden="true" />;
+}
+
+const TONE_MAP: Readonly<Partial<Record<Tone, BadgeTone>>> = {
+  blue: 'blue',
+  mint: 'mint',
+  purple: 'blue',
+  orange: 'orange',
+  amber: 'amber',
+};
+
+const ICON_BG_MAP: Readonly<Partial<Record<Tone, string>>> = {
+  blue: 'bg-tone-blue-bg text-tone-blue-fg',
+  mint: 'bg-tone-mint-bg text-tone-mint-fg',
+  purple: 'bg-tone-blue-bg text-tone-blue-fg',
+  orange: 'bg-tone-orange-bg text-tone-orange-fg',
+  amber: 'bg-tone-amber-bg text-tone-amber-fg',
+};
 
 const LabTopbar = () => {
   const { t } = useT();
   return (
-  <header className="edash-topbar">
-    <div className="container">
-      <div className="edash-topbar-inner">
-        <div className="edash-topbar-left">
-          <Link href="/" className="edash-topbar-logo">
-            <i className="fa-solid fa-flask-vial" style={{ fontSize: 18, color: "var(--tp-theme-secondary)" }} />
+    <header className="sticky top-0 z-20 border-b border-[#EAEAEA] bg-white">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link
+            href="/"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#132B45] text-[#00B2A9]"
+            aria-label={t('AI Research Lab')}
+          >
+            <FlaskConical className="h-4.5 w-4.5" strokeWidth={1.75} />
           </Link>
-          <span className="edash-account-name" style={{ fontSize: 16 }}>
-            {t("AI Research Lab")}
+          <span className="truncate text-base font-bold tracking-tight text-[#18181B]">
+            {t('AI Research Lab')}
           </span>
-          <span className="edash-status edash-status-purple" style={{ background: "#e9e5fe", color: "#5337ef" }}>
-            {t("internal · Zenvinus")}
-          </span>
+          <Badge tone="blue" className="hidden sm:inline-flex">
+            {t('internal · Zenvinus')}
+          </Badge>
         </div>
-        <div className="edash-topbar-actions">
-          <Link href="/dashboard" className="edash-link">
-            <i className="fa-solid fa-arrow-left"></i> {t("Company view")}
-          </Link>
-          <div className="edash-account-chip">
-            <span className="edash-avatar">RW</span>
-            <span className="edash-account-name d-none d-lg-inline">Rani W. — Solutions Architect</span>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            href="/dashboard"
+            leftIcon={<ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} />}
+          >
+            {t('Company view')}
+          </Button>
+          <div className="flex items-center gap-2 rounded-full border border-[#EAEAEA] bg-[#F9FAFB] py-1 pl-1 pr-3">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#132B45] text-[11px] font-bold text-white">
+              RW
+            </span>
+            <span className="hidden text-xs font-medium text-[#18181B] lg:inline">
+              Rani W. — Solutions Architect
+            </span>
           </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
   );
 };
 
@@ -60,7 +137,9 @@ const LabTopbar = () => {
 /* ------------------------------------------------------------------ */
 
 const statusChip = (label: string, tone: Tone | undefined) => (
-  <span className={`edash-status edash-status-${tone || "amber"}`}>{label}</span>
+  <Badge tone={tone ? TONE_MAP[tone] : 'amber'} dot>
+    {label}
+  </Badge>
 );
 
 const LabQueue = () => {
@@ -69,90 +148,116 @@ const LabQueue = () => {
   const seeded = getCompanyOrders();
 
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <div className="edash-head">
-          <div>
-            <h3 className="edash-title">{t("Request Queue")}</h3>
-            <p className="edash-sub">
-              {t("AI project requests from companies — review them, prepare proposals, and move the pipeline forward.")}
-            </p>
-          </div>
+    <section className="min-h-[calc(100vh-140px)] bg-[#F9FAFB] py-8 sm:py-10">
+      <div className="mx-auto max-w-[1280px] space-y-6 px-4 sm:px-6">
+        <div>
+          <h1 className="m-0 text-2xl font-bold tracking-tight text-[#18181B]">{t('Request Queue')}</h1>
+          <p className="mt-1 mb-0 text-sm text-[#6B7280]">
+            {t('AI project requests from companies — review them, prepare proposals, and move the pipeline forward.')}
+          </p>
         </div>
 
-        <div className="edash-card">
-          <div className="edash-card-head">
+        <div className="overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#EAEAEA] px-5 py-4">
             <div>
-              <h4 className="edash-card-title">{t("Incoming Requests")}</h4>
-              <p className="edash-card-sub">
-                {t("{count} submitted by companies", { count: posted.length })} · {t("{count} sample orders", { count: seeded.length })}
+              <h2 className="m-0 text-base font-semibold text-[#18181B]">{t('Incoming Requests')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-[#6B7280]">
+                {t('{count} submitted by companies', { count: posted.length })} ·{' '}
+                {t('{count} sample orders', { count: seeded.length })}
               </p>
             </div>
           </div>
-          <div className="edash-table-wrap">
-            <table className="edash-table">
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[740px] border-collapse text-left text-sm">
               <thead>
-                <tr>
-                  <th>{t("Request")}</th>
-                  <th>{t("Company")}</th>
-                  <th>{t("Budget")}</th>
-                  <th>{t("Status")}</th>
-                  <th></th>
+                <tr className="border-b border-[#EAEAEA] bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+                  <th className="px-5 py-3">{t('Request')}</th>
+                  <th className="px-4 py-3">{t('Company')}</th>
+                  <th className="px-4 py-3">{t('Budget')}</th>
+                  <th className="px-4 py-3">{t('Status')}</th>
+                  <th className="px-5 py-3 text-right" />
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#F0F0F2]">
                 {posted.map((r) => (
-                  <tr key={r.id}>
-                    <td>
-                      <div className="edash-project">
-                        <span className={`edash-tone-${r.tone} edash-project-icon`}>
-                          <i className={r.icon}></i>
+                  <tr key={r.id} className="transition-colors hover:bg-[#FAFAFA]">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                            ICON_BG_MAP[r.tone] || 'bg-tone-blue-bg text-tone-blue-fg'
+                          }`}
+                        >
+                          <LabGlyph icon={r.icon} />
                         </span>
-                        <div>
-                          <h5 className="edash-project-name">
-                            <Link href={`/lab?id=${r.id}`}>{r.name}</Link>
-                          </h5>
-                          <span className="edash-project-id">
-                            {r.id} · {t(r.typeLabel)}
-                            {r.useCase ? ` · ${r.useCase}` : ""}
+                        <div className="min-w-0">
+                          <Link
+                            href={`/lab?id=${r.id}`}
+                            className="block truncate font-semibold text-[#18181B] hover:text-[#008C85]"
+                          >
+                            {r.name}
+                          </Link>
+                          <span className="text-xs text-[#6B7280]">
+                            <span className="font-mono">{r.id}</span> · {t(r.typeLabel)}
+                            {r.useCase ? ` · ${r.useCase}` : ''}
                           </span>
                         </div>
                       </div>
                     </td>
-                    <td className="edash-td-sm">{r.company?.name || r.owner}</td>
-                    <td className="edash-td-num">{r.budgetRange || t("TBD")}</td>
-                    <td>{statusChip(t(r.status), r.statusTone)}</td>
-                    <td className="edash-td-action">
-                      <Link href={`/lab?id=${r.id}`} className="edash-link">
-                        {r.statusKey === "pending" || r.statusKey === "in_review" ? t("Review") : t("Open")}{" "}
-                        <i className="fa-regular fa-angle-right"></i>
+                    <td className="px-4 py-3.5 text-sm text-[#52525B]">{r.company?.name || r.owner}</td>
+                    <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-[#18181B]">
+                      {r.budgetRange || t('TBD')}
+                    </td>
+                    <td className="px-4 py-3.5">{statusChip(t(r.status), r.statusTone)}</td>
+                    <td className="px-5 py-3.5 text-right">
+                      <Link
+                        href={`/lab?id=${r.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#132B45] hover:text-[#008C85]"
+                      >
+                        {r.statusKey === 'pending' || r.statusKey === 'in_review' ? t('Review') : t('Open')}
+                        <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                       </Link>
                     </td>
                   </tr>
                 ))}
+
                 {seeded.map((r) => (
-                  <tr key={r.id}>
-                    <td>
-                      <div className="edash-project">
-                        <span className={`edash-tone-${r.tone} edash-project-icon`}>
-                          <i className={r.icon}></i>
+                  <tr key={r.id} className="transition-colors hover:bg-[#FAFAFA]">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                            ICON_BG_MAP[r.tone] || 'bg-tone-blue-bg text-tone-blue-fg'
+                          }`}
+                        >
+                          <LabGlyph icon={r.icon} />
                         </span>
-                        <div>
-                          <h5 className="edash-project-name">
-                            <Link href={`/dashboard/projects?id=${r.id}`}>{r.title}</Link>
-                          </h5>
-                          <span className="edash-project-id">
-                            {r.id} · {t(r.type)} · {t("sample")}
+                        <div className="min-w-0">
+                          <Link
+                            href={`/dashboard/projects?id=${r.id}`}
+                            className="block truncate font-semibold text-[#18181B] hover:text-[#008C85]"
+                          >
+                            {r.title}
+                          </Link>
+                          <span className="text-xs text-[#6B7280]">
+                            <span className="font-mono">{r.id}</span> · {t(r.type)} · {t('sample')}
                           </span>
                         </div>
                       </div>
                     </td>
-                    <td className="edash-td-sm">{t("Sample order")}</td>
-                    <td className="edash-td-num">{money(r.amount, locale)}</td>
-                    <td>{statusChip(t(r.status), r.statusTone)}</td>
-                    <td className="edash-td-action">
-                      <Link href={`/dashboard/projects?id=${r.id}`} className="edash-link">
-                        {t("Pipeline")} <i className="fa-regular fa-angle-right"></i>
+                    <td className="px-4 py-3.5 text-sm text-[#6B7280]">{t('Sample order')}</td>
+                    <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-[#18181B]">
+                      {money(r.amount, locale)}
+                    </td>
+                    <td className="px-4 py-3.5">{statusChip(t(r.status), r.statusTone)}</td>
+                    <td className="px-5 py-3.5 text-right">
+                      <Link
+                        href={`/dashboard/projects?id=${r.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#132B45] hover:text-[#008C85]"
+                      >
+                        {t('Pipeline')}
+                        <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
                       </Link>
                     </td>
                   </tr>
@@ -179,9 +284,9 @@ interface RowProps {
 const Row = ({ label, value }: RowProps) => {
   const { t } = useT();
   return (
-    <li>
-      <span>{t(label)}</span>
-      <strong>{value || "—"}</strong>
+    <li className="flex flex-col gap-1 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+      <span className="text-xs font-medium text-[#6B7280] shrink-0">{t(label)}</span>
+      <strong className="text-sm font-semibold text-[#18181B] sm:text-right">{value || '—'}</strong>
     </li>
   );
 };
@@ -195,83 +300,84 @@ interface ProposalFormProps {
 const ProposalForm = ({ project, id }: ProposalFormProps) => {
   const { t } = useT();
   const dispatch = useAppDispatch();
-  const [price, setPrice] = useState<number | string>(
-    project.proposalDoc?.priceJuta ?? project.estimate ?? ""
-  );
-  const [validUntil, setValidUntil] = useState(
-    project.deadline || project.proposalDoc?.validUntil || ""
-  );
-  const [scope, setScope] = useState(
-    project.proposalDoc?.scopeNote || project.desc || ""
-  );
+  const [price, setPrice] = useState<string>(String(project.proposalDoc?.priceJuta ?? project.estimate ?? ''));
+  const [validUntil, setValidUntil] = useState(project.deadline || project.proposalDoc?.validUntil || '');
+  const [scope, setScope] = useState(project.proposalDoc?.scopeNote || project.desc || '');
   const [saved, setSaved] = useState(Boolean(project.proposalDoc));
 
   return (
-    <div className="edash-proposal-form">
-      <p className="edash-proposal-title">
-        <i className="fa-solid fa-file-signature"></i> {t("Attach Proposal")}
+    <div className="space-y-4">
+      <p className="flex items-center gap-2 text-sm font-semibold text-[#18181B]">
+        <FileSignature className="h-4 w-4 text-[#00B2A9]" strokeWidth={1.75} />
+        {t('Attach Proposal')}
       </p>
-      <div className="edash-field">
-        <label>{t("Final Price (Rp million) *")}</label>
-        <input
-          className="edash-input"
-          type="number"
-          min="1"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-        <p className="edash-field-hint">
-          <i className="fa-solid fa-circle-info"></i>{" "}
-          {t("Company budget range: {range} — you may set the final price above or below it.", { range: project.budgetRange || t("TBD") })}
-        </p>
-      </div>
-      <div className="edash-field">
-        <label>{t("Valid Until")}</label>
-        <input
-          className="edash-input"
-          type="date"
-          value={validUntil}
-          onChange={(e) => setValidUntil(e.target.value)}
-        />
-      </div>
-      <div className="edash-field">
-        <label>{t("Scope Notes")}</label>
-        <textarea
-          className="edash-input"
-          value={scope}
-          onChange={(e) => setScope(e.target.value)}
-        />
-      </div>
+
+      <TextInput
+        label={t('Final Price (Rp million) *')}
+        type="number"
+        min="1"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        hint={t('Company budget range: {range} — you may set the final price above or below it.', {
+          range: project.budgetRange || t('TBD'),
+        })}
+      />
+
+      <CustomDatePicker
+        label={t('Valid Until')}
+        value={validUntil}
+        onChange={setValidUntil}
+      />
+
+      <Textarea
+        label={t('Scope Notes')}
+        rows={4}
+        value={scope}
+        onChange={(e) => setScope(e.target.value)}
+      />
+
       {saved && (
-        <p className="edash-field-hint">
-          <i className="fa-solid fa-circle-check"></i>{" "}
-          {t("Proposal {doc} saved ({price}) — still internal; the company cannot see it yet.", { doc: project.proposalDoc?.docId, price: project.proposalDoc?.priceLabel })}
-        </p>
+        <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs text-emerald-900">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={1.75} />
+          <span>
+            {t('Proposal {doc} saved ({price}) — still internal; the company cannot see it yet.', {
+              doc: project.proposalDoc?.docId,
+              price: project.proposalDoc?.priceLabel,
+            })}
+          </span>
+        </div>
       )}
-      <div className="edash-stage-actions">
-        <button
-          type="button"
-          className="edash-btn-ghost"
+
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="secondary"
+          block
           disabled={!price || Number(price) <= 0}
+          leftIcon={<Save className="h-4 w-4" strokeWidth={1.6} />}
           onClick={() => {
             dispatch(attachRequestProposal(id, { priceJuta: Number(price), validUntil, scopeNote: scope }));
             setSaved(true);
           }}
         >
-          <i className="fa-regular fa-floppy-disk"></i> {t("Save Proposal")}
-        </button>
-        <button
-          type="button"
-          className="edash-btn"
+          {t('Save Proposal')}
+        </Button>
+        <Button
+          variant="primary"
+          block
           disabled={!saved}
-          title={saved ? t("Send the proposal to the company — they can then pay the down payment") : t("Save the proposal before sending it")}
+          title={
+            saved
+              ? t('Send the proposal to the company — they can then pay the down payment')
+              : t('Save the proposal before sending it')
+          }
+          leftIcon={<Send className="h-4 w-4" strokeWidth={1.6} />}
           onClick={() => {
             dispatch(attachRequestProposal(id, { priceJuta: Number(price), validUntil, scopeNote: scope }));
-            dispatch(changeRequestStatus(id, "awaiting_dp", `Proposal sent to company — ${idr(price)}.`));
+            dispatch(changeRequestStatus(id, 'awaiting_dp', `Proposal sent to company — ${idr(price)}.`));
           }}
         >
-          <i className="fa-solid fa-paper-plane"></i> {t("Send Proposal to Company")}
-        </button>
+          {t('Send Proposal to Company')}
+        </Button>
       </div>
     </div>
   );
@@ -279,222 +385,265 @@ const ProposalForm = ({ project, id }: ProposalFormProps) => {
 
 const idr = (m: number | string | null | undefined): string =>
   m === null || m === undefined || Number.isNaN(Number(m))
-    ? "To be discussed"
-    : `Rp ${String(Math.round(Number(m) * 10) / 10).replace(".", ",")} juta`;
+    ? 'To be discussed'
+    : `Rp ${String(Math.round(Number(m) * 10) / 10).replace('.', ',')} juta`;
 
 const LabDetail = ({ id }: { id: string }) => {
   const { t, locale } = useT();
   const dispatch = useAppDispatch();
   const posted = useAppSelector(selectPostedProjects);
-  // A posted request (r), or else a sample custom order (seeded); store updates re-render this view
   const r = useAppSelector((state) => selectPostedProject(state, id));
   const seeded = r ? null : getCompanyOrderDetail(posted, id);
   const st = r ? findStatus(r.statusKey) : undefined;
-  const actions = st ? REQUEST_ACTIONS[st?.key] : null;
+  const actions = st ? REQUEST_ACTIONS[st.key] : null;
   const zenvinusAction = actions?.zenvinus;
   const history = r ? r.history || [] : [];
 
   if (!r && !seeded) {
     return (
-      <section className="edash-area pt-40 pb-120">
-        <div className="container">
-          <div className="edash-card">{t("Request not found.")}</div>
+      <section className="min-h-[calc(100vh-140px)] bg-[#F9FAFB] py-10">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+          <EmptyState
+            title={t('Request not found.')}
+            action={
+              <Button variant="secondary" href="/lab">
+                {t('Back to Queue')}
+              </Button>
+            }
+          />
         </div>
       </section>
     );
   }
 
+  const summarySource = r ?? seeded;
+
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <Link href="/lab" className="edash-back-link">
-          <i className="fa-solid fa-arrow-left"></i> {t("Back to Queue")}
+    <section className="min-h-[calc(100vh-140px)] bg-[#F9FAFB] py-8 sm:py-10">
+      <div className="mx-auto max-w-[1280px] space-y-6 px-4 sm:px-6">
+        <Link
+          href="/lab"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#18181B]"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
+          {t('Back to Queue')}
         </Link>
 
-        <div className="edash-card edash-dhero">
-          <div className="edash-dhero-main">
-            <span className={`edash-tone-${(r ?? seeded)?.tone} edash-dhero-icon`}>
-              <i className={(r ?? seeded)?.icon}></i>
+        {/* Hero summary */}
+        <div className="rounded-2xl border border-[#EAEAEA] bg-white p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <span
+              className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                summarySource?.tone ? ICON_BG_MAP[summarySource.tone] : 'bg-tone-blue-bg text-tone-blue-fg'
+              }`}
+            >
+              <LabGlyph icon={summarySource?.icon} className="h-5 w-5" />
             </span>
-            <div>
-              <div className="edash-dhero-title-row">
-                <h3 className="edash-dhero-title">{r ? r.name : seeded?.title}</h3>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="m-0 text-xl font-bold tracking-tight text-[#18181B] sm:text-2xl">
+                  {r ? r.name : seeded?.title}
+                </h1>
                 {r
                   ? statusChip(t(r.status), r.statusTone)
-                  : statusChip(t(seeded?.status ?? ""), seeded?.statusTone)}
+                  : statusChip(t(seeded?.status ?? ''), seeded?.statusTone)}
               </div>
-              <span className="edash-project-id">
-                {(r ? r.id : seeded?.id) +
-                  " · " +
-                  (r ? t(r.typeLabel) + (r.useCase ? ` · ${r.useCase}` : "") : t(seeded?.type ?? ""))}
-              </span>
-              <p className="edash-dhero-desc">{r ? r.desc : t("Sample custom order.")}</p>
-              <div className="edash-meta-row">
-                <span>
-                  <i className="fa-regular fa-calendar"></i>{" "}
-                  {r ? t("Posted {date}", { date: r.started }) : t("Requested {date}", { date: seeded?.date })}
+
+              <p className="mt-1 mb-0 text-xs text-[#6B7280]">
+                <span className="font-mono">{r ? r.id : seeded?.id}</span> ·{' '}
+                {r ? t(r.typeLabel) + (r.useCase ? ` · ${r.useCase}` : '') : t(seeded?.type ?? '')}
+              </p>
+
+              <p className="mt-3 mb-0 text-sm leading-relaxed text-[#52525B]">
+                {r ? r.desc : t('Sample custom order.')}
+              </p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-[#F0F0F2] pt-3.5 text-xs text-[#6B7280]">
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+                  {r ? t('Posted {date}', { date: r.started }) : t('Requested {date}', { date: seeded?.date })}
                 </span>
-                <span>
-                  <i className="fa-solid fa-building"></i>{" "}
-                  {r ? r.company?.name || "—" : t("Sample company")}
+                <span className="inline-flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+                  {r ? r.company?.name || '—' : t('Sample company')}
                 </span>
-                <span>
-                  <i className="fa-solid fa-wallet"></i>{" "}
-                  {r ? r.budgetRange || t("TBD") : (seeded ? money(seeded.amount, locale) : "")}
+                <span className="inline-flex items-center gap-1.5 font-mono font-semibold text-[#18181B]">
+                  <Wallet className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+                  {r ? r.budgetRange || t('TBD') : seeded ? money(seeded.amount, locale) : ''}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="row g-4 edash-mid">
-          <div className="col-xl-8">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Request Details")}</h4>
-                  <p className="edash-card-sub">
-                    {r ? t("Form submitted by the company") : t("Sample order — summary")}
-                  </p>
-                </div>
-              </div>
-              {r ? (
-                <ul className="edash-quality-list">
-                  <Row label="Needs" value={(r.needs || []).map((n) => t(n)).join(" + ")} />
-                  <Row label="Domain / Use case" value={`${t(r.typeLabel)}${r.useCase ? ` · ${r.useCase}` : ""}`} />
-                  <Row label="Industry" value={r.industry} />
-                  {r.data && (
-                    <>
-                      <Row label="Data modality" value={(r.data.modalities || []).join(", ")} />
-                      <Row
-                        label="Data availability"
-                        value={
-                          r.data.haveData === "yes"
-                            ? t("Has its own data")
-                            : r.data.haveData === "partial"
-                            ? t("Partially available")
-                            : t("Needs to be collected")
-                        }
-                      />
-                      <Row
-                        label="Target size"
-                        value={
-                          r.data.targetSize
-                            ? `${Number(r.data.targetSize).toLocaleString(locale)} ${r.data.targetUnit}`
-                            : t("TBD")
-                        }
-                      />
-                      <Row label="Coverage / language" value={`${r.data.coverage || "—"} · ${r.data.language || "—"}`} />
-                      <Row label="Data sources" value={(r.data.sources || []).join(", ")} />
-                      <Row label="Diversity" value={(r.data.diversity || []).join(", ")} />
-                    </>
-                  )}
-                  {r.annotation && r.annotation.type && (
-                    <>
-                      <Row label="Annotation" value={`${r.annotation.type} · ${(r.annotation.methods || []).join(", ")}`} />
-                      <Row label="Classes" value={(r.annotation.classes || []).join(", ")} />
-                      <Row label="Workforce" value={t(WORKFORCES.find((w) => w.key === r.annotation?.workforce)?.label ?? "")} />
-                      <Row
-                        label="Quality"
-                        value={`${r.annotation.quality} · ${r.annotation.reviewLevel} · ${r.annotation.consensus}`}
-                      />
-                    </>
-                  )}
-                  {r.model && r.model.devType && (
-                    <>
-                      <Row
-                        label="Model"
-                        value={
-                          r.model.devType === "finetune"
-                            ? t("Fine-tune existing model")
-                            : r.model.devType === "train"
-                            ? t("Train new model")
-                            : r.model.devType === "unsure"
-                            ? t("Needs an approach recommendation")
-                            : r.model.devType
-                        }
-                      />
-                      <Row label="Preferred / platform" value={`${r.model.preferred || t("No preference")} · ${(r.model.platforms || []).join(", ")}`} />
-                      <Row
-                        label="Target metrics"
-                        value={
-                          [r.model.map && `mAP50 ${r.model.map}`, r.model.latency && t("latency {ms}ms", { ms: r.model.latency })]
-                            .filter(Boolean)
-                            .join(" · ") || "—"
-                        }
-                      />
-                    </>
-                  )}
-                  <Row label="Deliverables" value={(r.delivery?.items || []).map((d) => t(d)).join(", ")} />
-                  <Row label="Format" value={`${r.delivery?.datasetFormat || "—"} (dataset) · ${r.delivery?.modelFormat || "—"} (model)`} />
-                  {r.company && (
-                    <>
-                      <Row label="Contact" value={`${r.company.contact} · ${r.company.role || "—"}`} />
-                      <Row label="Email / WA" value={`${r.company.email} · ${r.company.phone || "—"}`} />
-                    </>
-                  )}
-                </ul>
-              ) : (
-                <ul className="edash-quality-list">
-                  <Row label="Type" value={t(seeded?.type ?? "")} />
-                  <Row label="Contract value" value={(seeded ? money(seeded.amount, locale) : "")} />
-                  <Row label="Stage" value={t("Stage {stage} of 8 — {label}", { stage: seeded?.stage, label: t(seeded?.stageLabel ?? "") })} />
-                  <Row label="Items" value={(seeded?.items || 0).toLocaleString(locale)} />
-                </ul>
-              )}
+        {/* Asymmetric 8/4 Bento split */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+          <div className="rounded-2xl border border-[#EAEAEA] bg-white p-6 lg:col-span-8">
+            <div className="mb-4 border-b border-[#F0F0F2] pb-3">
+              <h2 className="m-0 text-base font-semibold text-[#18181B]">{t('Request Details')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-[#6B7280]">
+                {r ? t('Form submitted by the company') : t('Sample order — summary')}
+              </p>
             </div>
+
+            {r ? (
+              <ul className="m-0 list-none divide-y divide-[#F0F0F2] p-0">
+                <Row label="Needs" value={(r.needs || []).map((n) => t(n)).join(' + ')} />
+                <Row label="Domain / Use case" value={`${t(r.typeLabel)}${r.useCase ? ` · ${r.useCase}` : ''}`} />
+                <Row label="Industry" value={r.industry} />
+                {r.data && (
+                  <>
+                    <Row label="Data modality" value={(r.data.modalities || []).join(', ')} />
+                    <Row
+                      label="Data availability"
+                      value={
+                        r.data.haveData === 'yes'
+                          ? t('Has its own data')
+                          : r.data.haveData === 'partial'
+                          ? t('Partially available')
+                          : t('Needs to be collected')
+                      }
+                    />
+                    <Row
+                      label="Target size"
+                      value={
+                        r.data.targetSize
+                          ? `${Number(r.data.targetSize).toLocaleString(locale)} ${r.data.targetUnit}`
+                          : t('TBD')
+                      }
+                    />
+                    <Row label="Coverage / language" value={`${r.data.coverage || '—'} · ${r.data.language || '—'}`} />
+                    <Row label="Data sources" value={(r.data.sources || []).join(', ')} />
+                    <Row label="Diversity" value={(r.data.diversity || []).join(', ')} />
+                  </>
+                )}
+                {r.annotation && r.annotation.type && (
+                  <>
+                    <Row label="Annotation" value={`${r.annotation.type} · ${(r.annotation.methods || []).join(', ')}`} />
+                    <Row label="Classes" value={(r.annotation.classes || []).join(', ')} />
+                    <Row
+                      label="Workforce"
+                      value={t(WORKFORCES.find((w) => w.key === r.annotation?.workforce)?.label ?? '')}
+                    />
+                    <Row
+                      label="Quality"
+                      value={`${r.annotation.quality} · ${r.annotation.reviewLevel} · ${r.annotation.consensus}`}
+                    />
+                  </>
+                )}
+                {r.model && r.model.devType && (
+                  <>
+                    <Row
+                      label="Model"
+                      value={
+                        r.model.devType === 'finetune'
+                          ? t('Fine-tune existing model')
+                          : r.model.devType === 'train'
+                          ? t('Train new model')
+                          : r.model.devType === 'unsure'
+                          ? t('Needs an approach recommendation')
+                          : r.model.devType
+                      }
+                    />
+                    <Row
+                      label="Preferred / platform"
+                      value={`${r.model.preferred || t('No preference')} · ${(r.model.platforms || []).join(', ')}`}
+                    />
+                    <Row
+                      label="Target metrics"
+                      value={
+                        [r.model.map && `mAP50 ${r.model.map}`, r.model.latency && t('latency {ms}ms', { ms: r.model.latency })]
+                          .filter(Boolean)
+                          .join(' · ') || '—'
+                      }
+                    />
+                  </>
+                )}
+                <Row label="Deliverables" value={(r.delivery?.items || []).map((d) => t(d)).join(', ')} />
+                <Row
+                  label="Format"
+                  value={`${r.delivery?.datasetFormat || '—'} (dataset) · ${r.delivery?.modelFormat || '—'} (model)`}
+                />
+                {r.company && (
+                  <>
+                    <Row label="Contact" value={`${r.company.contact} · ${r.company.role || '—'}`} />
+                    <Row label="Email / WA" value={`${r.company.email} · ${r.company.phone || '—'}`} />
+                  </>
+                )}
+              </ul>
+            ) : (
+              <ul className="m-0 list-none divide-y divide-[#F0F0F2] p-0">
+                <Row label="Type" value={t(seeded?.type ?? '')} />
+                <Row label="Contract value" value={seeded ? money(seeded.amount, locale) : ''} />
+                <Row
+                  label="Stage"
+                  value={t('Stage {stage} of 8 — {label}', {
+                    stage: seeded?.stage,
+                    label: t(seeded?.stageLabel ?? ''),
+                  })}
+                />
+                <Row label="Items" value={(seeded?.items || 0).toLocaleString(locale)} />
+              </ul>
+            )}
           </div>
 
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Next Action")}</h4>
-                  <p className="edash-card-sub">
-                    {r ? t(actions?.sla ?? "") : t("Sample order — read only")}
-                  </p>
-                </div>
-              </div>
-              {r ? (
-                <>
-                  {st?.key === "in_review" && (
-                    <ProposalForm project={r} id={id} />
-                  )}
-                  {st?.key !== "in_review" && zenvinusAction && (
-                    <button
-                      type="button"
-                      className="edash-btn w-100"
-                      onClick={() => {
-                        dispatch(changeRequestStatus(id, zenvinusAction.to));
-                      }}
-                    >
-                      <i className="fa-solid fa-bolt"></i> {t(zenvinusAction.label)}
-                    </button>
-                  )}
-                  {!actions?.zenvinus && (
-                    <p className="edash-field-hint">
-                      <i className="fa-solid fa-circle-info"></i>{" "}
-                      {st?.key === "proposal_ready"
+          <div className="rounded-2xl border border-[#EAEAEA] bg-white p-6 lg:col-span-4">
+            <div className="mb-4 border-b border-[#F0F0F2] pb-3">
+              <h2 className="m-0 text-base font-semibold text-[#18181B]">{t('Next Action')}</h2>
+              <p className="mt-0.5 mb-0 text-xs text-[#6B7280]">
+                {r ? t(actions?.sla ?? '') : t('Sample order — read only')}
+              </p>
+            </div>
+
+            {r ? (
+              <div className="space-y-4">
+                {st?.key === 'in_review' && <ProposalForm project={r} id={id} />}
+
+                {st?.key !== 'in_review' && zenvinusAction && (
+                  <Button
+                    variant="primary"
+                    block
+                    leftIcon={<Zap className="h-4 w-4" strokeWidth={1.75} />}
+                    onClick={() => dispatch(changeRequestStatus(id, zenvinusAction.to))}
+                  >
+                    {t(zenvinusAction.label)}
+                  </Button>
+                )}
+
+                {!actions?.zenvinus && (
+                  <div className="flex items-start gap-2 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-3 py-2.5 text-xs text-[#52525B]">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#00B2A9]" strokeWidth={1.75} />
+                    <span>
+                      {st?.key === 'proposal_ready'
                         ? t("Waiting for the company's decision (accept / request changes).")
-                        : st?.key === "awaiting_dp" || st?.key === "awaiting_full"
-                        ? t("Waiting for payment from the company.")
-                        : t("No action needed — the next milestone is waiting on the company.")}
-                    </p>
-                  )}
-                  <div className="edash-status-exceptions" style={{ marginTop: 16 }}>
+                        : st?.key === 'awaiting_dp' || st?.key === 'awaiting_full'
+                        ? t('Waiting for payment from the company.')
+                        : t('No action needed — the next milestone is waiting on the company.')}
+                    </span>
+                  </div>
+                )}
+
+                {history.length > 0 && (
+                  <div className="space-y-2 border-t border-[#F0F0F2] pt-4">
                     {history.slice(0, 5).map((h, i) => (
-                      <span key={i} style={{ display: "block", width: "100%", fontSize: 12, color: "var(--tp-text-body)" }}>
-                        <strong style={{ color: "var(--tp-heading-primary)" }}>{t(h.title)}</strong> · {h.at}
-                      </span>
+                      <div key={i} className="text-xs text-[#6B7280]">
+                        <strong className="font-semibold text-[#18181B]">{t(h.title)}</strong> · {h.at}
+                      </div>
                     ))}
                   </div>
-                </>
-              ) : (
-                <Link href={`/dashboard/projects?id=${id}`} className="edash-btn-ghost w-100">
-                  <i className="fa-solid fa-diagram-project"></i> {t("View pipeline in company view")}
-                </Link>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <Button
+                variant="secondary"
+                block
+                href={`/dashboard/projects?id=${id}`}
+                leftIcon={<FolderKanban className="h-4 w-4" strokeWidth={1.6} />}
+              >
+                {t('View pipeline in company view')}
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -503,23 +652,31 @@ const LabDetail = ({ id }: { id: string }) => {
 };
 
 const WORKFORCES: ReadonlyArray<{ key: string; label: string }> = [
-  { key: "community", label: "Zenvinus Community" },
-  { key: "verified", label: "Verified Contributors" },
-  { key: "expert", label: "Expert Workforce" },
-  { key: "hybrid", label: "Hybrid Community + Expert Review" },
+  { key: 'community', label: 'Zenvinus Community' },
+  { key: 'verified', label: 'Verified Contributors' },
+  { key: 'expert', label: 'Expert Workforce' },
+  { key: 'hybrid', label: 'Hybrid Community + Expert Review' },
 ];
 
 const Lab = () => {
   const router = useRouter();
   const mounted = useMounted();
-  const id = mounted && typeof router.query.id === "string" ? router.query.id : null;
+  const id = mounted && typeof router.query.id === 'string' ? router.query.id : null;
 
   return (
     <>
       <LabTopbar />
       <main>
-        {mounted ? (id ? <LabDetail id={id} /> : <LabQueue />) : (
-          <div className="tflow-loading"><span className="spinner-border"></span></div>
+        {mounted ? (
+          id ? (
+            <LabDetail id={id} />
+          ) : (
+            <LabQueue />
+          )
+        ) : (
+          <div className="mx-auto max-w-[1280px] p-6">
+            <BentoSkeleton />
+          </div>
         )}
       </main>
       <DashboardFooter />

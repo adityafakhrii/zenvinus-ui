@@ -1,26 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import useTaskRoute from '../../hooks/use-task-route';
-import FlowStepper from './flow-stepper';
-import { resolveWorkspace } from '../workspaces/registry';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  GraduationCap,
+  Info,
+  RotateCw,
+  Send,
+  XCircle,
+} from 'lucide-react';
+import {
+  Badge,
+  BentoSkeleton,
+  Button,
+  CustomRadioGroup,
+  CustomSemiCircleGauge,
+} from '@/components/ui';
 import { useT } from '@/i18n';
-import Button from '@/components/ui/button';
-import { scoreStyle } from '../../utils/score-style';
+import useTaskRoute from '../../hooks/use-task-route';
+import { resolveWorkspace } from '../workspaces/registry';
+import FlowStepper from './flow-stepper';
 
 interface QualificationResult {
   score: number;
   passed: boolean;
 }
 
+/**
+ * Interactive task qualification assessment (/task-qualification) using CustomRadioGroup & CustomSemiCircleGauge.
+ */
 const TaskQualificationArea = () => {
   const { router, ready, task } = useTaskRoute();
   const { t } = useT();
-  // chosen option index per question index
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [result, setResult] = useState<QualificationResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Tasks that don't need qualification skip straight to the workspace.
   useEffect(() => {
     if (ready && task && !task.requiresQualification) {
       router.replace(`/task-studio?task=${task.slug}`);
@@ -29,7 +45,13 @@ const TaskQualificationArea = () => {
 
   const qualification = task?.qualification;
   if (!ready || !task || !task.requiresQualification || !qualification) {
-    return <div className="tflow-loading"><span className="spinner-border"></span></div>;
+    return (
+      <section className="min-h-screen bg-canvas py-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <BentoSkeleton />
+        </div>
+      </section>
+    );
   }
 
   const workspace = resolveWorkspace(task);
@@ -38,100 +60,176 @@ const TaskQualificationArea = () => {
 
   const handleSubmit = () => {
     setSubmitting(true);
-    const correct = qualification.questions.filter((q, i) => answers[i] === q.answer).length;
+    const correct = qualification.questions.filter((q, i) => Number(answers[i]) === q.answer).length;
     const score = Math.round((correct / qualification.questions.length) * 100);
-    setTimeout(() => {
+    window.setTimeout(() => {
       setResult({ score, passed: score >= qualification.passScore });
       setSubmitting(false);
     }, 700);
   };
 
   return (
-    <section className="tflow-area pt-40 pb-120">
-      <div className="container">
+    <section className="min-h-screen bg-canvas py-8 sm:py-12">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <FlowStepper current="qualification" />
 
-        <div className="tflow-narrow">
+        <div className="mx-auto max-w-2xl">
           {result ? (
-            <div className="tflow-panel tflow-result">
-              <span className={`tflow-result-icon ${result.passed ? 'tflow-result-pass' : 'tflow-result-fail'}`}>
-                <i className={result.passed ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'}></i>
-              </span>
-              <h3 className="tflow-title">
-                {result.passed ? t('Qualification passed!') : t('Not passed yet')}
-              </h3>
-              <div className="tflow-score-ring" style={scoreStyle(result.score)}>
-                <strong>{result.score}</strong><span>/100</span>
-              </div>
-              <p className="tflow-desc">
-                {result.passed
-                  ? t('Minimum score of {score} reached. The {name} workspace is now open to you.', { score: qualification.passScore, name: <strong>{meta?.label ? t(meta.label) : ''}</strong> })
-                  : t('Minimum score is {score}. Review the guidelines on the detail page, then try again.', { score: qualification.passScore })}
-              </p>
-              <div className="tflow-actions tflow-actions-center">
-                <Link href={`/task-details?task=${task.slug}`} className="tflow-btn-ghost">
-                  <i className="fa-solid fa-book-open"></i> {t('Review guidelines')}
-                </Link>
+            <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 text-center shadow-[0_1px_2px_rgba(2,6,38,0.04)] sm:p-8">
+              <span
+                className={
+                  result.passed
+                    ? 'mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-tint-mint text-teal-ink'
+                    : 'mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-tone-red-bg text-tone-red-fg'
+                }
+              >
                 {result.passed ? (
-                  <Button className="tflow-btn" onClick={() => router.push(`/task-studio?task=${task.slug}`)}>
-                    {t('Open Studio')} <i className="fa-solid fa-arrow-right"></i>
+                  <CheckCircle2 className="h-6 w-6" strokeWidth={1.75} />
+                ) : (
+                  <XCircle className="h-6 w-6" strokeWidth={1.75} />
+                )}
+              </span>
+
+              <h1 className="mt-4 mb-2 text-2xl font-semibold text-ink">
+                {result.passed ? t('Qualification passed!') : t('Not passed yet')}
+              </h1>
+
+              <div className="my-4">
+                <CustomSemiCircleGauge value={result.score} label={t('Qualification score')} />
+              </div>
+
+              <p className="mx-auto max-w-md text-sm leading-relaxed text-ink-secondary">
+                {result.passed
+                  ? t('Minimum score of {score} reached. The {name} workspace is now open to you.', {
+                      score: qualification.passScore,
+                      name: (
+                        <strong className="font-semibold text-ink">
+                          {meta?.label ? t(meta.label) : ''}
+                        </strong>
+                      ),
+                    })
+                  : t(
+                      'Minimum score is {score}. Review the guidelines on the detail page, then try again.',
+                      { score: qualification.passScore },
+                    )}
+              </p>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  href={`/task-details?task=${task.slug}`}
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<BookOpen className="h-4 w-4" strokeWidth={1.5} />}
+                >
+                  {t('Review guidelines')}
+                </Button>
+
+                {result.passed ? (
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="md"
+                    onClick={() => router.push(`/task-studio?task=${task.slug}`)}
+                    rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.6} />}
+                  >
+                    {t('Open Studio')}
                   </Button>
                 ) : (
-                  <Button className="tflow-btn" onClick={() => { setResult(null); setAnswers({}); }}>
-                    {t('Try Again')} <i className="fa-solid fa-rotate-right"></i>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      setResult(null);
+                      setAnswers({});
+                    }}
+                    rightIcon={<RotateCw className="h-4 w-4" strokeWidth={1.6} />}
+                  >
+                    {t('Try Again')}
                   </Button>
                 )}
               </div>
             </div>
           ) : (
-            <div className="tflow-panel">
-              <div className="tflow-qual-head">
+            <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.04)] sm:p-8">
+              <div className="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-line-subtle pb-4">
                 <div>
-                  <h3 className="tflow-title">{t('Qualification')} — {task.title}</h3>
-                  <p className="tflow-desc">
+                  <h1 className="m-0 text-xl font-semibold text-ink sm:text-2xl">
+                    {t('Qualification')} — {task.title}
+                  </h1>
+                  <p className="mt-1 mb-0 text-xs text-ink-secondary">
                     {t('{count} questions · minimum score {score} · workspace {name}', {
                       count: qualification.questions.length,
                       score: qualification.passScore,
-                      name: <strong>{meta?.label ? t(meta.label) : ''}</strong>,
+                      name: (
+                        <strong className="font-semibold text-ink">
+                          {meta?.label ? t(meta.label) : ''}
+                        </strong>
+                      ),
                     })}
                   </p>
                 </div>
-                <span className="tflow-badge-soft tflow-badge-qual">
-                  <i className="fa-solid fa-graduation-cap"></i> {t('Required')}
-                </span>
+                <Badge tone="amber" dot>
+                  <GraduationCap className="h-3 w-3" strokeWidth={1.75} />
+                  <span>{t('Required')}</span>
+                </Badge>
               </div>
 
-              <ol className="tflow-quiz">
+              <ol className="m-0 flex list-none flex-col gap-6 p-0">
                 {qualification.questions.map((q, qi) => (
-                  <li key={qi} className="tflow-quiz-item">
-                    <h5>{q.q}</h5>
-                    <div className="tflow-quiz-opts">
-                      {q.options.map((opt, oi) => (
-                        <button
-                          key={oi}
-                          type="button"
-                          className={`tflow-quiz-opt${answers[qi] === oi ? ' tflow-quiz-opt-active' : ''}`}
-                          onClick={() => setAnswers({ ...answers, [qi]: oi })}
-                        >
-                          <span className="tflow-quiz-key">{String.fromCharCode(65 + oi)}</span>
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
+                  <li key={qi} className="flex flex-col gap-3">
+                    <h2 className="m-0 text-sm font-semibold text-ink">
+                      {qi + 1}. {q.q}
+                    </h2>
+                    <CustomRadioGroup
+                      name={`qual-q-${qi}`}
+                      value={answers[qi] ?? ''}
+                      onChange={(val) => setAnswers((prev) => ({ ...prev, [qi]: val }))}
+                      variant="card"
+                      columnsClassName="grid grid-cols-1 gap-2.5"
+                      options={q.options.map((opt, oi) => ({
+                        value: String(oi),
+                        label: (
+                          <span className="inline-flex items-center gap-2.5">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-canvas font-mono text-xs font-semibold text-ink">
+                              {String.fromCharCode(65 + oi)}
+                            </span>
+                            <span>{opt}</span>
+                          </span>
+                        ),
+                      }))}
+                    />
                   </li>
                 ))}
               </ol>
 
-              <div className="tflow-actions">
-                <Link href={`/task-join?task=${task.slug}`} className="tflow-btn-ghost">
-                  <i className="fa-solid fa-arrow-left"></i> {t('Back')}
-                </Link>
-                <Button className="tflow-btn" disabled={!allAnswered || submitting} onClick={handleSubmit}>
-                  {t('Submit Qualification')} <i className="fa-solid fa-paper-plane"></i>
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-5">
+                <Button
+                  href={`/task-join?task=${task.slug}`}
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<ArrowLeft className="h-4 w-4" strokeWidth={1.6} />}
+                >
+                  {t('Back')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="md"
+                  disabled={!allAnswered}
+                  loading={submitting}
+                  onClick={handleSubmit}
+                  rightIcon={<Send className="h-4 w-4" strokeWidth={1.6} />}
+                >
+                  {t('Submit Qualification')}
                 </Button>
               </div>
+
               {!allAnswered && (
-                <p className="tflow-note"><i className="fa-solid fa-circle-info"></i> {t('Answer every question to submit.')}</p>
+                <p className="mt-3 mb-0 inline-flex items-center gap-1.5 text-xs text-ink-muted">
+                  <Info className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  <span>{t('Answer every question to submit.')}</span>
+                </p>
               )}
             </div>
           )}

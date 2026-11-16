@@ -1,5 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import type { CSSProperties, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
+import {
+  Hand,
+  Image as ImageIcon,
+  Layers,
+  MousePointer,
+  Pentagon,
+  RotateCcw,
+  RotateCw,
+  Square,
+  Tag,
+  Trash2,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
 import { useT } from '@/i18n';
 import type { BoxRegion, DrawnPolygon, Point, WorkspaceProps } from '../../types/workspace';
 
@@ -23,12 +38,12 @@ import type { BoxRegion, DrawnPolygon, Point, WorkspaceProps } from '../../types
  * classes in `answer.segments` (item masks share that map). Region ids start
  * with "r", item mask ids with "s", drawn polygon ids with "p".
  */
-const MIN_SIZE = 2;      // percent of canvas — smallest allowed box
-const DRAW_MIN = 1.5;    // percent — a smaller drag counts as a click, not a draw
-const MOVE_NOISE = 0.6;  // percent — pointer travel below this is a click, not a drag
-const CLOSE_DIST = 2.5;  // percent — clicking this near the first vertex closes a polygon
+const MIN_SIZE = 2; // percent of canvas — smallest allowed box
+const DRAW_MIN = 1.5; // percent — a smaller drag counts as a click, not a draw
+const MOVE_NOISE = 0.6; // percent — pointer travel below this is a click, not a drag
+const CLOSE_DIST = 2.5; // percent — clicking this near the first vertex closes a polygon
 const HANDLES = ['nw', 'ne', 'sw', 'se'] as const;
-const CLASS_COLORS = ['#3b82f6', '#f97316', '#22c55e', '#a855f7', '#eab308', '#ec4899', '#14b8a6', '#ef4444'];
+const CLASS_COLORS = ['#3b82f6', '#f97316', '#22c55e', '#00b2a9', '#eab308', '#ec4899', '#14b8a6', '#ef4444'];
 const UNLABELLED_COLOR = '#94a3b8';
 
 type Tool = 'select' | 'box' | 'poly' | 'hand';
@@ -122,13 +137,27 @@ const geometryFromDrag = (d: MoveDrag | ResizeDrag, p: Pct): Rect => {
   return { x, y, w, h };
 };
 
+const HANDLE_POS: Readonly<Record<Handle, string>> = {
+  nw: '-left-1.5 -top-1.5 cursor-nwse-resize',
+  ne: '-right-1.5 -top-1.5 cursor-nesw-resize',
+  sw: '-bottom-1.5 -left-1.5 cursor-nesw-resize',
+  se: '-bottom-1.5 -right-1.5 cursor-nwse-resize',
+};
+
+const TOOLS = [
+  { id: 'select', Icon: MousePointer, key: 'V', title: 'Select / move (V)' },
+  { id: 'box', Icon: Square, key: 'B', title: 'Draw bounding box (B)' },
+  { id: 'poly', Icon: Pentagon, key: 'P', title: 'Draw polygon (P)' },
+  { id: 'hand', Icon: Hand, key: 'H', title: 'Pan canvas (H) — or scroll to zoom' },
+] as const;
+
 const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_annotation'>) => {
   const { t } = useT();
   const [tool, setTool] = useState<Tool>('select');
   const [activeClassRaw, setActiveClass] = useState<string | null>(null);
   const [scale, setScale] = useState<number | null>(null); // px per natural px; null until fitted
-  const [pan, setPan] = useState({ x: 0, y: 0 });   // stage offset inside the viewport
-  const [vp, setVp] = useState({ w: 0, h: 0 });     // viewport size
+  const [pan, setPan] = useState({ x: 0, y: 0 }); // stage offset inside the viewport
+  const [vp, setVp] = useState({ w: 0, h: 0 }); // viewport size
   const [imgNat, setImgNat] = useState({ w: 0, h: 0 });
   const [selected, setSelected] = useState<Selection | null>(null);
   const [edit, setEdit] = useState<Edit | null>(null); // live box-drag preview
@@ -152,8 +181,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
   const colorOf = (cls: string | undefined) =>
     cls ? CLASS_COLORS[Math.max(0, classes.indexOf(cls)) % CLASS_COLORS.length] : UNLABELLED_COLOR;
 
-  const classOf = (kind: ShapeKind, id: string) =>
-    kind === 'box' ? answer?.boxes?.[id] : answer?.segments?.[id];
+  const classOf = (kind: ShapeKind, id: string) => (kind === 'box' ? answer?.boxes?.[id] : answer?.segments?.[id]);
 
   const fit = imgNat.w && vp.w ? Math.min(vp.w / imgNat.w, vp.h / imgNat.h) : null;
 
@@ -192,7 +220,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     const im = stageRef.current?.querySelector('img');
     if (im && im.complete && im.naturalWidth) setImgNat({ w: im.naturalWidth, h: im.naturalHeight });
     else setImgNat({ w: 0, h: 0 });
-    setHistTick((t) => t + 1);
+    setHistTick((tk) => tk + 1);
   }, [item.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ---------- zoom / pan ---------- */
@@ -295,13 +323,17 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     setEdit((cur) => (cur ? { ...cur, current: pct(e) } : cur));
   };
 
-  const commitShapes = (next: BoxRegion[], extra: Partial<Snapshot> = {}) => onChange({ ...answer, ...extra, shapes: next });
+  const commitShapes = (next: BoxRegion[], extra: Partial<Snapshot> = {}) =>
+    onChange({ ...answer, ...extra, shapes: next });
 
   const onStagePointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
     const d = dragRef.current;
     dragRef.current = null;
     if (!d) return;
-    if (d.mode === 'pan') { setEdit(null); return; }
+    if (d.mode === 'pan') {
+      setEdit(null);
+      return;
+    }
     const p = pct(e);
     const travelled = Math.hypot(p.x - d.start.x, p.y - d.start.y);
     setEdit(null);
@@ -316,13 +348,16 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
 
     if (d.mode === 'draw') {
       if (travelled < DRAW_MIN) return;
-      const nextShapes = [...regions, {
-        id,
-        x: Math.min(p.x, d.start.x),
-        y: Math.min(p.y, d.start.y),
-        w: Math.max(Math.abs(p.x - d.start.x), MIN_SIZE),
-        h: Math.max(Math.abs(p.y - d.start.y), MIN_SIZE),
-      }];
+      const nextShapes = [
+        ...regions,
+        {
+          id,
+          x: Math.min(p.x, d.start.x),
+          y: Math.min(p.y, d.start.y),
+          w: Math.max(Math.abs(p.x - d.start.x), MIN_SIZE),
+          h: Math.max(Math.abs(p.y - d.start.y), MIN_SIZE),
+        },
+      ];
       const nextBoxes = { ...answer?.boxes, [id]: activeClass };
       commitShapes(nextShapes, { boxes: nextBoxes });
       pushHistory(snapFrom(nextShapes, nextBoxes, answer?.segments || {}, polygons));
@@ -338,9 +373,14 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
   };
 
   const onStageClick = (e: ReactMouseEvent<HTMLDivElement>) => {
-    if (draggedRef.current) { draggedRef.current = false; return; }
+    if (draggedRef.current) {
+      draggedRef.current = false;
+      return;
+    }
     if (tool !== 'select') return;
-    if (e.target === stageRef.current || (e.target instanceof HTMLElement && e.target.tagName === 'IMG')) setSelected(null);
+    if (e.target === stageRef.current || (e.target instanceof HTMLElement && e.target.tagName === 'IMG')) {
+      setSelected(null);
+    }
   };
 
   const onStageDoubleClick = () => {
@@ -349,29 +389,25 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
 
   /* ---------- history (undo/redo) ---------- */
 
-  // Deep-cloned snapshot of every contributor-editable field. The stack holds
-  // each committed state INCLUDING the current one; idx points at the live
-  // state, so undo applies stack[idx-1] and redo stack[idx+1].
   const snapFrom = (
     shapes: BoxRegion[],
     boxes: Record<string, string>,
     segments: Record<string, string>,
-    polygons: DrawnPolygon[],
+    polys: DrawnPolygon[],
   ): Snapshot => ({
     shapes: shapes.map((r) => ({ ...r })),
     boxes: { ...boxes },
     segments: { ...segments },
-    polygons: (polygons || []).map((p) => ({ ...p, points: p.points.map((q): Point => [q[0], q[1]]) })),
+    polygons: (polys || []).map((p) => ({ ...p, points: p.points.map((q): Point => [q[0], q[1]]) })),
   });
 
-  // Record the POST-change state (the caller passes what it just committed).
   const pushHistory = (snapshot: Snapshot) => {
     const h = historyRef.current;
     h.stack = h.stack.slice(0, h.idx + 1);
     h.stack.push(snapshot);
     if (h.stack.length > 40) h.stack.shift();
     h.idx = h.stack.length - 1;
-    setHistTick((t) => t + 1);
+    setHistTick((tk) => tk + 1);
   };
 
   const undo = () => {
@@ -380,7 +416,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     h.idx -= 1;
     const s = h.stack[h.idx];
     onChange({ ...answer, shapes: s.shapes, boxes: s.boxes, segments: s.segments, polygons: s.polygons });
-    setHistTick((t) => t + 1);
+    setHistTick((tk) => tk + 1);
   };
 
   const redo = () => {
@@ -389,7 +425,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     h.idx += 1;
     const s = h.stack[h.idx];
     onChange({ ...answer, shapes: s.shapes, boxes: s.boxes, segments: s.segments, polygons: s.polygons });
-    setHistTick((t) => t + 1);
+    setHistTick((tk) => tk + 1);
   };
 
   /* ---------- edits ---------- */
@@ -426,12 +462,15 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
       delete nextSegments[id];
       onChange({ ...answer, polygons: nextPolygons, segments: nextSegments });
       pushHistory(snapFrom(regions, answer?.boxes || {}, nextSegments, nextPolygons));
-    } // item masks come with the item and stay fixed
+    }
     if (selected?.id === id) setSelected(null);
   };
 
   const finishPolygon = () => {
-    if (polyPts.length < 3) { setPolyPts([]); return; }
+    if (polyPts.length < 3) {
+      setPolyPts([]);
+      return;
+    }
     const nums = polygons
       .map((p) => /^p(\d+)$/.exec(p.id))
       .filter((m): m is RegExpExecArray => m !== null)
@@ -449,21 +488,37 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
   // Enter closes it, Ctrl+Z / Ctrl+Shift+Z history.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const tag = e.target instanceof HTMLElement ? e.target.tagName : undefined;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const tag = target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (target?.closest('[role="combobox"], [role="listbox"]')) return;
       const meta = e.ctrlKey || e.metaKey;
       if (meta && (e.key === 'z' || e.key === 'Z')) {
         e.preventDefault();
-        if (e.shiftKey) redo(); else undo();
+        if (e.shiftKey) redo();
+        else undo();
         return;
       }
-      if (meta && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redo(); return; }
+      if (meta && (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
+        redo();
+        return;
+      }
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selected) { e.preventDefault(); deleteShape(selected.kind, selected.id); }
+        if (selected) {
+          e.preventDefault();
+          deleteShape(selected.kind, selected.id);
+        }
         return;
       }
-      if (e.key === 'Escape') { setPolyPts([]); return; }
-      if (e.key === 'Enter' && tool === 'poly') { finishPolygon(); return; }
+      if (e.key === 'Escape') {
+        setPolyPts([]);
+        return;
+      }
+      if (e.key === 'Enter' && tool === 'poly') {
+        finishPolygon();
+        return;
+      }
       if (meta || e.altKey) return;
       if (e.key === 'v' || e.key === 'V') setTool('select');
       else if (e.key === 'b' || e.key === 'B') setTool('box');
@@ -479,13 +534,11 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }); // re-attached per render — cheap, keeps closures fresh
+  });
 
   /* ---------- render ---------- */
 
   const dragData = dragRef.current;
-  // Known issue: the preview of the box being dragged is geometry only (no id), so while dragging it renders
-  // unlabelled and without handles; it gets its class back on release
   const geoFor = (r: BoxRegion): Rect & { id?: string } =>
     dragData && (dragData.mode === 'move' || dragData.mode === 'resize') && dragData.id === r.id && edit
       ? geometryFromDrag(dragData, edit.current)
@@ -501,57 +554,100 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     : { visibility: 'hidden' };
 
   const cursorClass =
-    tool === 'box' || tool === 'poly' ? ' tflow-anno-viewport-cross' :
-    tool === 'hand' ? ' tflow-anno-viewport-grab' : '';
+    tool === 'box' || tool === 'poly' ? 'cursor-crosshair' : tool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-default';
 
   return (
-    <div className="tflow-anno">
-      <div className="tflow-anno-rail">
-        {([
-          { id: 'select', icon: 'fa-arrow-pointer', key: 'V', title: 'Select / move (V)' },
-          { id: 'box', icon: 'fa-vector-square', key: 'B', title: 'Draw bounding box (B)' },
-          { id: 'poly', icon: 'fa-draw-polygon', key: 'P', title: 'Draw polygon (P)' },
-          { id: 'hand', icon: 'fa-hand', key: 'H', title: 'Pan canvas (H) — or scroll to zoom' },
-        ] as const).map((tb) => (
-          <button
-            key={tb.id}
-            type="button"
-            title={t(tb.title)}
-            className={`tflow-anno-tool${tool === tb.id ? ' tflow-anno-tool-on' : ''}`}
-            onClick={() => setTool(tb.id)}
-          >
-            <i className={`fa-solid ${tb.icon}`}></i><span>{tb.key}</span>
-          </button>
-        ))}
+    <div className="flex min-h-[540px] flex-1 flex-col gap-3 lg:flex-row">
+      {/* Left tool rail */}
+      <div className="flex flex-row gap-1.5 rounded-2xl border border-[#EAEAEA] bg-white p-2 lg:flex-col">
+        {TOOLS.map(({ id, Icon, key, title }) => {
+          const on = tool === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              title={t(title)}
+              aria-label={t(title)}
+              aria-pressed={on}
+              onClick={() => setTool(id)}
+              className={`flex h-11 w-11 flex-col items-center justify-center rounded-xl border text-[10px] font-semibold transition-colors ${
+                on
+                  ? 'border-[#132B45] bg-[#132B45] text-white'
+                  : 'border-transparent bg-transparent text-[#52525B] hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]'
+              }`}
+            >
+              <Icon className="h-4 w-4" strokeWidth={1.75} />
+              <span className="mt-0.5 font-mono leading-none opacity-80">{key}</span>
+            </button>
+          );
+        })}
       </div>
 
-      <div className="tflow-anno-main">
-        <div className="tflow-anno-canvasbar">
-          <span className="tflow-anno-file"><i className="fa-regular fa-image"></i> {item.id}</span>
-          <div className="tflow-anno-cbar-actions">
-            <button type="button" className="tflow-anno-cbtn" disabled={historyRef.current.idx <= 0} onClick={undo} title={t('Undo (Ctrl+Z)')}>
-              <i className="fa-solid fa-rotate-left"></i>
+      {/* Main precision canvas */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#EAEAEA] bg-white px-3.5 py-2">
+          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-[#52525B]">
+            <ImageIcon className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+            {item.id}
+          </span>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B] disabled:opacity-35"
+              disabled={historyRef.current.idx <= 0}
+              onClick={undo}
+              title={t('Undo (Ctrl+Z)')}
+              aria-label={t('Undo (Ctrl+Z)')}
+            >
+              <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.75} />
             </button>
-            <button type="button" className="tflow-anno-cbtn" disabled={historyRef.current.idx + 1 >= historyRef.current.stack.length} onClick={redo} title={t('Redo (Ctrl+Shift+Z)')}>
-              <i className="fa-solid fa-rotate-right"></i>
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B] disabled:opacity-35"
+              disabled={historyRef.current.idx + 1 >= historyRef.current.stack.length}
+              onClick={redo}
+              title={t('Redo (Ctrl+Shift+Z)')}
+              aria-label={t('Redo (Ctrl+Shift+Z)')}
+            >
+              <RotateCw className="h-3.5 w-3.5" strokeWidth={1.75} />
             </button>
-            <span className="tflow-anno-sep" />
-            <button type="button" className="tflow-anno-cbtn" onClick={() => zoomAt(vp.w / 2, vp.h / 2, 0.8)} title={t('Zoom out')}>
-              <i className="fa-solid fa-magnifying-glass-minus"></i>
+
+            <span className="mx-1 h-4 w-px bg-[#EAEAEA]" aria-hidden="true" />
+
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]"
+              onClick={() => zoomAt(vp.w / 2, vp.h / 2, 0.8)}
+              title={t('Zoom out')}
+              aria-label={t('Zoom out')}
+            >
+              <ZoomOut className="h-3.5 w-3.5" strokeWidth={1.75} />
             </button>
-            <button type="button" className="tflow-anno-cbtn" onClick={fitView} title={t('Fit to canvas')}>
+            <button
+              type="button"
+              className="inline-flex h-7 min-w-[46px] items-center justify-center rounded-lg border border-[#EAEAEA] bg-[#F9FAFB] px-2 font-mono text-[11px] font-semibold tabular-nums text-[#18181B] transition-colors hover:bg-white"
+              onClick={fitView}
+              title={t('Fit to canvas')}
+            >
               {fit ? Math.round(((scale ?? 0) / fit) * 100) : 100}%
             </button>
-            <button type="button" className="tflow-anno-cbtn" onClick={() => zoomAt(vp.w / 2, vp.h / 2, 1.25)} title={t('Zoom in')}>
-              <i className="fa-solid fa-magnifying-glass-plus"></i>
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]"
+              onClick={() => zoomAt(vp.w / 2, vp.h / 2, 1.25)}
+              title={t('Zoom in')}
+              aria-label={t('Zoom in')}
+            >
+              <ZoomIn className="h-3.5 w-3.5" strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
-        <div ref={viewportRef} className={`tflow-anno-viewport${cursorClass}`}>
+        <div ref={viewportRef} className={`relative min-h-[420px] flex-1 overflow-hidden bg-[#0F172A] ${cursorClass}`}>
           <div
             ref={stageRef}
-            className="tflow-anno-stage"
+            className="absolute select-none"
             style={stageStyle}
             onPointerDown={onStagePointerDown}
             onPointerMove={onStagePointerMove}
@@ -559,12 +655,17 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
             onClick={onStageClick}
             onDoubleClick={onStageDoubleClick}
           >
-            <img
+            <Image
               src={item.image}
               alt={item.id}
+              width={imgNat.w || 1200}
+              height={imgNat.h || 800}
+              unoptimized
               draggable={false}
+              className="pointer-events-none block h-full w-full select-none"
               onLoad={(e) => setImgNat({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
             />
+
             {regions.map((raw) => {
               const r = geoFor(raw);
               const cls = r.id ? answer.boxes?.[r.id] : undefined;
@@ -575,32 +676,50 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                   key={r.id}
                   role="button"
                   tabIndex={0}
-                  className={`tflow-anno-box${active ? ' tflow-anno-box-active' : ''}`}
+                  aria-label={cls ? t(cls) : r.id}
+                  className={`absolute border-2 ${active ? 'z-10 cursor-move ring-2 ring-white/80' : 'cursor-pointer'}`}
                   style={{
-                    left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%`,
-                    borderColor: color, background: hexToRgba(color, 0.1),
+                    left: `${r.x}%`,
+                    top: `${r.y}%`,
+                    width: `${r.w}%`,
+                    height: `${r.h}%`,
+                    borderColor: color,
+                    background: hexToRgba(color, 0.12),
                   }}
-                  onPointerDown={(e) => { if (tool === 'select') startMove(e, raw); }}
+                  onPointerDown={(e) => {
+                    if (tool === 'select') startMove(e, raw);
+                  }}
                   onClick={() => {
                     if (tool !== 'select') return;
-                    if (draggedRef.current) { draggedRef.current = false; return; }
+                    if (draggedRef.current) {
+                      draggedRef.current = false;
+                      return;
+                    }
                     setSelected((cur) => (cur && cur.kind === 'box' && cur.id === raw.id ? null : { kind: 'box', id: raw.id }));
                   }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelected({ kind: 'box', id: raw.id }); }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setSelected({ kind: 'box', id: raw.id });
+                  }}
                 >
-                  <span className="tflow-anno-boxtag" style={{ background: color, top: r.y < 4 ? '2px' : '-22px' }}>
+                  <span
+                    className="pointer-events-none absolute left-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-xs"
+                    style={{ background: color, top: r.y < 4 ? '2px' : '-22px' }}
+                  >
                     {cls ? t(cls) : r.id}
                   </span>
-                  {active && tool === 'select' && HANDLES.map((h) => (
-                    <span
-                      key={h}
-                      className={`tflow-anno-handle tflow-anno-handle-${h}`}
-                      onPointerDown={(e) => startResize(e, raw, h)}
-                    />
-                  ))}
+                  {active &&
+                    tool === 'select' &&
+                    HANDLES.map((h) => (
+                      <span
+                        key={h}
+                        className={`absolute h-2.5 w-2.5 rounded-xs border border-white bg-[#132B45] shadow-xs ${HANDLE_POS[h]}`}
+                        onPointerDown={(e) => startResize(e, raw, h)}
+                      />
+                    ))}
                 </div>
               );
             })}
+
             {maskList.map((m) => {
               const cls = answer?.segments?.[m.id];
               const color = colorOf(cls);
@@ -609,17 +728,29 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                 <button
                   key={m.id}
                   type="button"
-                  className={`tflow-anno-mask${active ? ' tflow-anno-mask-active' : ''}`}
+                  className={`absolute inset-0 h-full w-full border-0 p-0 transition-opacity ${
+                    active ? 'outline-2 outline-white' : ''
+                  }`}
                   style={{ clipPath: m.clip, background: hexToRgba(color, cls ? 0.3 : 0.16), outlineColor: color }}
-                  onClick={() => { if (tool === 'select') setSelected((cur) => (cur && cur.id === m.id ? null : { kind: m.fixed ? 'mask' : 'poly', id: m.id })); }}
+                  onClick={() => {
+                    if (tool === 'select') {
+                      setSelected((cur) => (cur && cur.id === m.id ? null : { kind: m.fixed ? 'mask' : 'poly', id: m.id }));
+                    }
+                  }}
                 >
-                  <span className="tflow-anno-masktag" style={{ background: color }}>{cls ? t(cls) : m.id}</span>
+                  <span
+                    className="pointer-events-none rounded px-1.5 py-0.5 text-[10px] font-semibold text-white"
+                    style={{ background: color }}
+                  >
+                    {cls ? t(cls) : m.id}
+                  </span>
                 </button>
               );
             })}
+
             {edit?.mode === 'draw' && (
               <div
-                className="tflow-anno-draft"
+                className="pointer-events-none absolute border-2 border-dashed border-[#00B2A9] bg-[#00B2A9]/15"
                 style={{
                   left: `${Math.min(edit.start.x, edit.current.x)}%`,
                   top: `${Math.min(edit.start.y, edit.current.y)}%`,
@@ -628,21 +759,27 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                 }}
               />
             )}
+
             {tool === 'poly' && polyPts.length > 0 && (
-              <svg className="tflow-anno-polydraft" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {/* Only placed vertices are drawn; there is no live segment to the cursor */}
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
                 <polygon
                   points={polyPts.map((p) => `${p[0]},${p[1]}`).join(' ')}
-                  fill="rgba(56, 189, 248, .12)"
-                  stroke="#38bdf8"
+                  fill="rgba(0, 178, 169, 0.14)"
+                  stroke="#00B2A9"
                   strokeWidth={1.5}
                   vectorEffect="non-scaling-stroke"
                 />
                 {polyPts.map((p, i) => (
                   <circle
                     key={i}
-                    cx={p[0]} cy={p[1]} r={i === 0 && polyPts.length >= 3 ? 1.1 : 0.7}
-                    fill={i === 0 && polyPts.length >= 3 ? '#22c55e' : '#38bdf8'}
+                    cx={p[0]}
+                    cy={p[1]}
+                    r={i === 0 && polyPts.length >= 3 ? 1.1 : 0.7}
+                    fill={i === 0 && polyPts.length >= 3 ? '#22c55e' : '#00B2A9'}
                   />
                 ))}
               </svg>
@@ -651,62 +788,106 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
         </div>
       </div>
 
-      <aside className="tflow-anno-side">
-        <div className="tflow-anno-sec">
-          <h5><i className="fa-solid fa-tags"></i> {t('Classes')}</h5>
-          {classes.map((cls, i) => {
-            const count = shapes.filter((s) => classOf(s.kind, s.id) === cls).length;
-            return (
-              <button
-                key={cls}
-                type="button"
-                className={`tflow-anno-classrow${activeClass === cls ? ' tflow-anno-row-on' : ''}`}
-                onClick={() => onClassClick(cls)}
-              >
-                <span className="tflow-anno-classdot" style={{ background: colorOf(cls) }} />
-                <span className="tflow-anno-classname">{t(cls)}</span>
-                <span className="tflow-anno-count">{count}</span>
-                <span className="tflow-anno-key">{i + 1}</span>
-              </button>
-            );
-          })}
+      {/* Right classes & annotations inspector */}
+      <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-[276px]">
+        <div className="rounded-2xl border border-[#EAEAEA] bg-white p-4">
+          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+            <Tag className="h-3.5 w-3.5 text-[#132B45]" strokeWidth={1.75} />
+            {t('Classes')}
+          </h5>
+          <div className="space-y-1.5">
+            {classes.map((cls, i) => {
+              const count = shapes.filter((s) => classOf(s.kind, s.id) === cls).length;
+              const on = activeClass === cls;
+              return (
+                <button
+                  key={cls}
+                  type="button"
+                  className={`flex w-full items-center gap-2 rounded-xl border px-2.5 py-2 text-left text-xs font-medium transition-colors ${
+                    on
+                      ? 'border-[#132B45] bg-[#132B45] text-white'
+                      : 'border-[#EAEAEA] bg-[#F9FAFB] text-[#18181B] hover:border-[#D4D4D8] hover:bg-white'
+                  }`}
+                  onClick={() => onClassClick(cls)}
+                >
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorOf(cls) }} />
+                  <span className="min-w-0 flex-1 truncate">{t(cls)}</span>
+                  <span
+                    className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+                      on ? 'bg-white/15 text-white' : 'bg-white text-[#6B7280]'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                  <kbd
+                    className={`rounded px-1 font-mono text-[10px] ${
+                      on ? 'bg-white/15 text-white' : 'border border-[#D4D4D8] bg-white text-[#52525B]'
+                    }`}
+                  >
+                    {i + 1}
+                  </kbd>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="tflow-anno-sec">
-          <h5><i className="fa-solid fa-layer-group"></i> {t('Annotations')} <span>({shapes.length})</span></h5>
-          {shapes.length === 0 && (
-            <p className="tflow-anno-empty">{t('No annotations yet — pick Box (B) or Polygon (P), then click or drag on the image.')}</p>
-          )}
-          {shapes.map(({ kind, id }) => {
-            const cls = classOf(kind, id);
-            const isSel = selected?.kind === kind && selected.id === id;
-            const label = kind === 'box' ? id : kind === 'poly' ? t('{id} · polygon', { id }) : t('{id} · mask', { id });
-            return (
-              <div
-                key={`${kind}-${id}`}
-                role="button"
-                tabIndex={0}
-                className={`tflow-anno-annrow${isSel ? ' tflow-anno-row-on' : ''}`}
-                onClick={() => setSelected({ kind, id })}
-                onKeyDown={(e) => { if (e.key === 'Enter') setSelected({ kind, id }); }}
-              >
-                <span className="tflow-anno-sw" style={{ borderColor: colorOf(cls) }} />
-                <span className="tflow-anno-annname">{label}</span>
-                <span className="tflow-anno-anncls">{cls ? t(cls) : t('unlabelled')}</span>
-                {kind !== 'mask' && (
-                  <span
-                    role="button"
-                    tabIndex={-1}
-                    className="tflow-anno-del"
-                    title={t('Delete {id}', { id })}
-                    onClick={(e) => { e.stopPropagation(); deleteShape(kind, id); }}
+        <div className="flex-1 rounded-2xl border border-[#EAEAEA] bg-white p-4">
+          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+            <Layers className="h-3.5 w-3.5 text-[#132B45]" strokeWidth={1.75} />
+            {t('Annotations')}
+            <span className="font-mono text-[#9CA3AF]">({shapes.length})</span>
+          </h5>
+
+          {shapes.length === 0 ? (
+            <p className="text-xs leading-relaxed text-[#6B7280]">
+              {t('No annotations yet — pick Box (B) or Polygon (P), then click or drag on the image.')}
+            </p>
+          ) : (
+            <div className="space-y-1.5">
+              {shapes.map(({ kind, id }) => {
+                const cls = classOf(kind, id);
+                const isSel = selected?.kind === kind && selected.id === id;
+                const label = kind === 'box' ? id : kind === 'poly' ? t('{id} · polygon', { id }) : t('{id} · mask', { id });
+                return (
+                  <div
+                    key={`${kind}-${id}`}
+                    className={`flex items-center gap-1.5 rounded-xl border px-2 py-1.5 text-xs transition-colors ${
+                      isSel
+                        ? 'border-[#00B2A9] bg-[#E6F7F6]'
+                        : 'border-[#EAEAEA] bg-[#F9FAFB] hover:border-[#D4D4D8] hover:bg-white'
+                    }`}
                   >
-                    <i className="fa-solid fa-trash-can"></i>
-                  </span>
-                )}
-              </div>
-            );
-          })}
+                    <button
+                      type="button"
+                      className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                      onClick={() => setSelected({ kind, id })}
+                    >
+                      <span
+                        className="h-3 w-3 shrink-0 rounded-xs border-2"
+                        style={{ borderColor: colorOf(cls) }}
+                      />
+                      <span className="font-mono font-semibold text-[#18181B]">{label}</span>
+                      <span className="min-w-0 flex-1 truncate text-[#6B7280]">
+                        {cls ? t(cls) : t('unlabelled')}
+                      </span>
+                    </button>
+                    {kind !== 'mask' && (
+                      <button
+                        type="button"
+                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[#9CA3AF] transition-colors hover:bg-[#FEF2F2] hover:text-[#DC2626]"
+                        title={t('Delete {id}', { id })}
+                        aria-label={t('Delete {id}', { id })}
+                        onClick={() => deleteShape(kind, id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </aside>
     </div>
