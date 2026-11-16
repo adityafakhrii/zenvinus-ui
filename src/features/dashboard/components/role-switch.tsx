@@ -40,8 +40,8 @@ export interface RoleSwitchProps {
 }
 
 /**
- * Floating QA role simulator anchored at the bottom-right corner so switching between Enterprise, Community,
- * Internal, and Expert stays 1–2 clicks away during testing without cluttering the main header or sidebar chrome.
+ * Floating role switcher anchored at the bottom-right corner so switching between Enterprise, Community,
+ * Internal, and Expert stays 1–2 clicks away without cluttering the main header or sidebar chrome.
  */
 const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
   const { t } = useT();
@@ -94,11 +94,11 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
       {open && !minimized && (
         <div
           role="menu"
-          aria-label={t('Role simulator (QA)')}
+          aria-label={t('Switch role')}
           className="absolute bottom-[calc(100%+10px)] right-0 w-60 rounded-2xl border border-[rgba(8,13,53,0.12)] bg-surface p-2 shadow-[0_16px_38px_rgba(2,6,38,0.16)] zv-animate-pop"
         >
           <div className="mb-1.5 border-b border-line-subtle px-3 py-2 text-xs font-semibold text-ink-muted">
-            {t('Role simulator (QA)')}
+            {t('Switch role')}
           </div>
           <div className="flex flex-col gap-1">
             {ROLES.map((r) => {
@@ -135,13 +135,13 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
           type="button"
           onClick={() => setMinState(false)}
           aria-label={t('Show role switcher')}
-          title={`${t('Role simulator (QA)')}: ${t(activeRole.label)}`}
-          className="inline-flex h-10 items-center gap-2 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy px-3 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color] duration-150 hover:border-teal hover:bg-navy-hover cursor-pointer"
+          title={`${t('Switch role')}: ${t(activeRole.label)}`}
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy pl-1.5 pr-2.5 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color] duration-150 hover:border-teal hover:bg-navy-hover cursor-pointer"
         >
-          <span className="rounded-full bg-teal px-2 py-0.5 font-mono text-[11px] font-semibold leading-none text-navy">
-            QA
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
+            <RoleIcon role={activeRole.key} />
           </span>
-          <RoleIcon role={activeRole.key} className="text-teal" />
+          <ChevronUp className="h-4 w-4 text-white/75" strokeWidth={1.75} />
         </button>
       ) : (
         <div className="inline-flex h-11 items-center rounded-full border border-[rgba(255,255,255,0.16)] bg-navy text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)]">
@@ -149,14 +149,13 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
             type="button"
             aria-haspopup="menu"
             aria-expanded={open}
-            aria-label={t('Role simulator (QA)')}
+            aria-label={t('Switch role')}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-full items-center gap-2.5 rounded-l-full pl-3 pr-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+            className="inline-flex h-full items-center gap-2.5 rounded-l-full pl-2 pr-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
           >
-            <span className="rounded-full bg-teal px-2 py-0.5 font-mono text-[11px] font-semibold leading-none text-navy">
-              QA
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
+              <RoleIcon role={activeRole.key} />
             </span>
-            <RoleIcon role={activeRole.key} className="text-teal" />
             <span>{t(activeRole.label)}</span>
             <ChevronUp
               className={cn(
