@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import { cn } from '@/components/ui';
+import { Reveal, cn } from '@/components/ui';
 import {
   AiLabEngineScene,
   CommunityEngineScene,
@@ -80,47 +80,48 @@ const EnginesArea = () => {
   return (
     <section className="bg-surface py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <h2 className="m-0 text-[28px] font-medium tracking-[-0.025em] text-ink sm:text-[34px]">
             {t('One Platform.')} <span className="text-teal-ink">{t('Three Engines.')}</span>
           </h2>
           <p className="mt-2.5 mb-0 text-sm text-ink-secondary sm:text-base">
             {t('Everything you need to build, improve, and scale AI in one platform.')}
           </p>
-        </div>
+        </Reveal>
 
         <div className="mt-10 flex flex-col gap-6">
           {ENGINES_DATA.map((item, idx) => (
-            <article
-              key={item.num}
-              className="grid grid-cols-1 items-center gap-8 rounded-2xl border border-hairline bg-canvas p-6 lg:grid-cols-12 lg:p-8"
-            >
-              <div className={cn('lg:col-span-6', idx % 2 === 1 && 'lg:order-2')}>
-                <span className="font-mono text-xs font-medium text-teal-ink tabular-nums">
-                  {item.num}
-                </span>
-                <h3 className="mt-2 mb-0 text-2xl font-medium tracking-tight text-ink">
-                  {t(item.title)}
-                </h3>
-                <p className="mt-1.5 mb-0 text-sm font-medium text-teal-ink">{t(item.tagline)}</p>
-                <p className="mt-3 mb-0 text-sm leading-relaxed text-ink-secondary">
-                  {t(item.description)}
-                </p>
+            <Reveal key={item.num} delayMs={idx * 50}>
+              <article
+                className="grid grid-cols-1 items-center gap-8 rounded-2xl border border-hairline bg-canvas p-6 transition-colors duration-200 hover:border-ink/20 lg:grid-cols-12 lg:p-8"
+              >
+                <div className={cn('lg:col-span-6', idx % 2 === 1 && 'lg:order-2')}>
+                  <span className="font-mono text-xs font-medium text-teal-ink tabular-nums">
+                    {item.num}
+                  </span>
+                  <h3 className="mt-2 mb-0 text-2xl font-medium tracking-tight text-ink">
+                    {t(item.title)}
+                  </h3>
+                  <p className="mt-1.5 mb-0 text-sm font-medium text-teal-ink">{t(item.tagline)}</p>
+                  <p className="mt-3 mb-0 text-sm leading-relaxed text-ink-secondary">
+                    {t(item.description)}
+                  </p>
 
-                <ul className="mt-6 grid grid-cols-1 gap-2.5 p-0 list-none sm:grid-cols-2">
-                  {item.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-[13px] font-medium text-ink">
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.5} />
-                      <span>{t(feature)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  <ul className="mt-6 grid grid-cols-1 gap-2.5 p-0 list-none sm:grid-cols-2">
+                    {item.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-[13px] font-medium text-ink">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.5} />
+                        <span>{t(feature)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className={cn('lg:col-span-6', idx % 2 === 1 && 'lg:order-1')}>
-                <EngineScene id={item.id} />
-              </div>
-            </article>
+                <div className={cn('lg:col-span-6', idx % 2 === 1 && 'lg:order-1')}>
+                  <EngineScene id={item.id} />
+                </div>
+              </article>
+            </Reveal>
           ))}
         </div>
       </div>

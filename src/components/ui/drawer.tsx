@@ -21,9 +21,9 @@ export interface DrawerProps {
 }
 
 const SIDE_POSITION = {
-  left: 'inset-y-0 left-0 h-full border-r',
-  right: 'inset-y-0 right-0 h-full border-l',
-  bottom: 'inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t',
+  left: 'inset-y-0 left-0 h-full border-r zv-animate-drawer-left',
+  right: 'inset-y-0 right-0 h-full border-l zv-animate-drawer-right',
+  bottom: 'inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t zv-animate-drawer-bottom',
 } as const satisfies Record<DrawerSide, string>;
 
 /**
@@ -81,7 +81,7 @@ export function Drawer({
         ref={panelRef}
         tabIndex={-1}
         className={cn(
-          'fixed z-10 flex flex-col border-[rgba(8,13,53,0.08)] bg-surface shadow-[var(--shadow-modal)] focus:outline-none zv-animate-fade',
+          'fixed z-10 flex flex-col border-[rgba(8,13,53,0.08)] bg-surface shadow-[var(--shadow-modal)] focus:outline-none',
           SIDE_POSITION[side],
           side !== 'bottom' && widthClassName,
           className,

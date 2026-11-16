@@ -110,7 +110,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
                   role="menuitem"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'flex items-center justify-between gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-colors',
+                    'flex items-center justify-between gap-2.5 rounded-[10px] px-3 py-2.5 text-[13px] font-medium no-underline transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                     active
                       ? 'bg-tint-mint text-teal-ink font-semibold'
                       : 'text-ink hover:bg-canvas',
@@ -136,7 +136,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
           onClick={() => setMinState(false)}
           aria-label={t('Show role switcher')}
           title={`${t('Switch role')}: ${t(activeRole.label)}`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy pl-1.5 pr-2.5 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color] duration-150 hover:border-teal hover:bg-navy-hover cursor-pointer"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[rgba(255,255,255,0.16)] bg-navy pl-1.5 pr-2.5 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(2,6,38,0.24)] transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-teal hover:bg-navy-hover active:scale-[0.97] cursor-pointer"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
             <RoleIcon role={activeRole.key} />
@@ -151,7 +151,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
             aria-expanded={open}
             aria-label={t('Switch role')}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-full items-center gap-2.5 rounded-l-full pl-2 pr-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+            className="inline-flex h-full items-center gap-2.5 rounded-l-full pl-2 pr-3.5 text-[13px] font-semibold text-white transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 active:scale-[0.98] cursor-pointer"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-teal text-navy">
               <RoleIcon role={activeRole.key} />
@@ -159,7 +159,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
             <span>{t(activeRole.label)}</span>
             <ChevronUp
               className={cn(
-                'h-4 w-4 text-white/70 transition-transform duration-150',
+                'h-4 w-4 text-white/70 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
                 open && 'rotate-180 text-teal',
               )}
               strokeWidth={1.75}
@@ -173,7 +173,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
             onClick={() => setMinState(true)}
             aria-label={t('Minimize role switcher')}
             title={t('Minimize role switcher')}
-            className="inline-flex h-full w-10 items-center justify-center rounded-r-full text-white/70 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
+            className="inline-flex h-full w-10 items-center justify-center rounded-r-full text-white/70 transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/10 hover:text-white active:scale-[0.95] cursor-pointer"
           >
             <Minus className="h-4 w-4" strokeWidth={1.75} />
           </button>

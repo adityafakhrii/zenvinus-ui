@@ -33,6 +33,9 @@ export type { PopoverProps, TooltipProps } from './popover';
 export { SegmentedControl } from './segmented-control';
 export type { SegmentedControlProps, SegmentedOption } from './segmented-control';
 
+export { Reveal } from './reveal';
+export type { RevealProps } from './reveal';
+
 export { FileDropzone } from './file-dropzone';
 export type { FileDropzoneProps } from './file-dropzone';
 

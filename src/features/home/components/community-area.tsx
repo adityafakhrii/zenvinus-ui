@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, CircleDollarSign, Eye, Lock, Share2, Tag } from 'lucide-react';
-import { Badge, Button, cn } from '@/components/ui';
+import { Badge, Button, Reveal, cn } from '@/components/ui';
 import { WorkforceScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 import type { CommunityFeature } from '../types/home';
@@ -64,7 +64,7 @@ const CommunityArea = () => {
           <Badge tone="mint">{t('community')}</Badge>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
+        <Reveal className="mt-4 grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <h2 className="m-0 text-[28px] font-medium leading-tight tracking-[-0.025em] text-ink sm:text-[36px]">
               {t('Work On Real AI Projects,{br}{highlight} For Quality', {
@@ -82,7 +82,13 @@ const CommunityArea = () => {
                 href="/tasks"
                 variant="primary"
                 size="md"
-                rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.5} />}
+                className="group"
+                rightIcon={
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5"
+                    strokeWidth={1.5}
+                  />
+                }
               >
                 {t('Find Tasks')}
               </Button>
@@ -95,41 +101,40 @@ const CommunityArea = () => {
           <div className="lg:col-span-6">
             <WorkforceScene variant="light" />
           </div>
-        </div>
+        </Reveal>
 
         {/* 4 Community Pillars */}
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((item) => {
+          {FEATURES.map((item, idx) => {
             const Icon = ICONS[item.icon];
             const toneKey = item.tone as keyof typeof ICON_TONE;
             return (
-              <article
-                key={item.title}
-                className="flex flex-col border-t border-hairline pt-5"
-              >
-                <div className="mb-3 flex items-center justify-between gap-2">
-                  <span
-                    className={cn(
-                      'inline-flex h-9 w-9 items-center justify-center rounded-lg',
-                      ICON_TONE[toneKey] ?? 'bg-canvas text-ink',
-                    )}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
-                  </span>
-                  <span className="font-mono text-xs text-ink-muted">{item.meta}</span>
-                </div>
-                <h3 className="m-0 text-base font-medium text-ink">{t(item.title)}</h3>
-                <p className="mt-2 mb-0 text-[13px] leading-relaxed text-ink-secondary">
-                  {t(item.text)}
-                </p>
-              </article>
+              <Reveal key={item.title} delayMs={idx * 45}>
+                <article className="flex flex-col border-t border-hairline pt-5 transition-colors duration-150 hover:border-teal-ink/40">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <span
+                      className={cn(
+                        'inline-flex h-9 w-9 items-center justify-center rounded-lg',
+                        ICON_TONE[toneKey] ?? 'bg-canvas text-ink',
+                      )}
+                    >
+                      <Icon className="h-4 w-4" strokeWidth={1.5} />
+                    </span>
+                    <span className="font-mono text-xs text-ink-muted">{item.meta}</span>
+                  </div>
+                  <h3 className="m-0 text-base font-medium text-ink">{t(item.title)}</h3>
+                  <p className="mt-2 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                    {t(item.text)}
+                  </p>
+                </article>
+              </Reveal>
             );
           })}
         </div>
 
         {/* Dual Reward Callout Cards */}
-        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-hairline bg-surface p-6 sm:flex-row sm:items-center sm:p-7">
+        <Reveal delayMs={60} className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-hairline bg-surface p-6 transition-colors duration-150 hover:border-teal-ink/35 sm:flex-row sm:items-center sm:p-7">
             <div className="flex items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-tint-mint text-teal-ink">
                 <CircleDollarSign className="h-5 w-5" strokeWidth={1.5} />
@@ -151,7 +156,7 @@ const CommunityArea = () => {
             </Button>
           </article>
 
-          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-hairline bg-surface p-6 text-ink sm:flex-row sm:items-center sm:p-7">
+          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-hairline bg-surface p-6 text-ink transition-colors duration-150 hover:border-teal-ink/35 sm:flex-row sm:items-center sm:p-7">
             <div className="flex items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-tone-blue-bg text-tone-blue-fg">
                 <Eye className="h-5 w-5" strokeWidth={1.5} />
@@ -170,7 +175,7 @@ const CommunityArea = () => {
               {t('Join as Expert')}
             </Button>
           </article>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

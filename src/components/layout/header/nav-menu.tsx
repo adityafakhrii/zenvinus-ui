@@ -60,7 +60,7 @@ const NavMenu = () => {
                   aria-current={menu_item.link === current ? 'page' : undefined}
                   aria-expanded={isDropdownOpen}
                   className={cn(
-                    'inline-flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[13px] font-medium no-underline transition-[color,background-color] duration-150',
+                    'inline-flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[13px] font-medium no-underline transition-[color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                     active || isDropdownOpen
                       ? 'active bg-canvas text-ink font-semibold'
                       : 'text-ink-secondary hover:bg-canvas hover:text-ink',
@@ -69,7 +69,7 @@ const NavMenu = () => {
                   <span>{t(menu_item.title)}</span>
                   <ChevronDown
                     className={cn(
-                      'h-3.5 w-3.5 text-ink-muted transition-transform duration-150',
+                      'h-3.5 w-3.5 text-ink-muted transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
                       isDropdownOpen && 'rotate-180 text-teal-ink',
                     )}
                     strokeWidth={1.6}
@@ -80,7 +80,7 @@ const NavMenu = () => {
 
               {isDropdownOpen && (
                 <div className="absolute left-0 top-full z-40 pt-1.5">
-                  <ul className="m-0 min-w-[184px] list-none rounded-xl border border-[rgba(8,13,53,0.08)] bg-surface p-1.5 shadow-[var(--shadow-popover)] zv-animate-fade">
+                  <ul className="m-0 min-w-[184px] list-none rounded-xl border border-[rgba(8,13,53,0.08)] bg-surface p-1.5 shadow-[var(--shadow-popover)] zv-animate-pop">
                     {menu_item.sub_menus.map((sub_menu) => {
                       const subActive = sub_menu.link === current;
                       return (
@@ -90,13 +90,15 @@ const NavMenu = () => {
                             aria-current={subActive ? 'page' : undefined}
                             onClick={() => setOpenMenuId(null)}
                             className={cn(
-                              'flex items-center rounded-lg px-3 py-2 text-[13px] font-medium no-underline transition-colors',
+                              'group flex items-center rounded-lg px-3 py-2 text-[13px] font-medium no-underline transition-[color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                               subActive
                                 ? 'active bg-tint-mint text-teal-ink font-semibold'
                                 : 'text-ink-secondary hover:bg-canvas hover:text-ink',
                             )}
                           >
-                            <span>{t(sub_menu.title)}</span>
+                            <span className="transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5">
+                              {t(sub_menu.title)}
+                            </span>
                           </Link>
                         </li>
                       );
@@ -114,7 +116,7 @@ const NavMenu = () => {
               href={menu_item.link}
               aria-current={menu_item.link === current ? 'page' : undefined}
               className={cn(
-                'inline-flex h-9 items-center rounded-[10px] px-3 text-[13px] font-medium no-underline transition-[color,background-color] duration-150',
+                'inline-flex h-9 items-center rounded-[10px] px-3 text-[13px] font-medium no-underline transition-[color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                 active
                   ? 'active bg-canvas text-ink font-semibold'
                   : 'text-ink-secondary hover:bg-canvas hover:text-ink',

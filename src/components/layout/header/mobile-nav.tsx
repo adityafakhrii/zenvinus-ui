@@ -38,7 +38,7 @@ const MobileNav = () => {
         onClick={openDrawer}
         aria-label={open ? t('Close menu') : t('Open menu')}
         aria-expanded={open}
-        className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink transition-colors hover:bg-canvas lg:hidden cursor-pointer"
+        className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink transition-[background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-canvas active:scale-[0.97] lg:hidden cursor-pointer"
       >
         <Menu className="h-[18px] w-[18px]" strokeWidth={1.6} />
       </button>
@@ -91,7 +91,7 @@ const MobileNav = () => {
                     aria-expanded={isExpanded}
                     onClick={() => setExpanded(isExpanded ? null : item.title)}
                     className={cn(
-                      'flex w-full items-center justify-between rounded-[10px] px-3 py-2.5 text-left text-sm font-medium transition-colors cursor-pointer',
+                      'flex w-full items-center justify-between rounded-[10px] px-3 py-2.5 text-left text-sm font-medium transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] cursor-pointer',
                       active
                         ? 'bg-tint-mint text-teal-ink font-semibold'
                         : 'text-ink-secondary hover:bg-canvas hover:text-ink',
@@ -99,12 +99,12 @@ const MobileNav = () => {
                   >
                     <span>{t(item.title)}</span>
                     <ChevronDown
-                      className={cn('h-4 w-4 transition-transform duration-150', isExpanded && 'rotate-180')}
+                      className={cn('h-4 w-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]', isExpanded && 'rotate-180 text-teal-ink')}
                       strokeWidth={1.6}
                     />
                   </button>
                   {isExpanded && (
-                    <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                    <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3 zv-animate-panel">
                       {item.sub_menus.map((sub) => {
                         const subActive = sub.link === current;
                         return (
@@ -114,7 +114,7 @@ const MobileNav = () => {
                             aria-current={subActive ? 'page' : undefined}
                             onClick={() => setOpen(false)}
                             className={cn(
-                              'rounded-lg px-2.5 py-2 text-[13px] font-medium no-underline transition-colors',
+                              'rounded-lg px-2.5 py-2 text-[13px] font-medium no-underline transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                               subActive
                                 ? 'bg-canvas text-teal-ink font-semibold'
                                 : 'text-ink-secondary hover:bg-canvas hover:text-ink',
@@ -137,7 +137,7 @@ const MobileNav = () => {
                 aria-current={item.link === current ? 'page' : undefined}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  'rounded-[10px] px-3 py-2.5 text-sm font-medium no-underline transition-colors',
+                  'rounded-[10px] px-3 py-2.5 text-sm font-medium no-underline transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                   active
                     ? 'bg-tint-mint text-teal-ink font-semibold'
                     : 'text-ink-secondary hover:bg-canvas hover:text-ink',

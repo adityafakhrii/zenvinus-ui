@@ -92,7 +92,7 @@ const AccountMenu = ({ name, email, title, links, compact = false }: AccountMenu
         onClick={() => setOpen((o) => !o)}
         className={cn(
           'inline-flex h-9 items-center gap-2 rounded-[10px] border bg-surface px-1.5 pr-2.5 text-left cursor-pointer',
-          'transition-[border-color,background-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
+          'transition-[border-color,background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
           open
             ? 'border-teal-ink bg-canvas'
             : 'border-[rgba(8,13,53,0.10)] hover:border-ink/25',
@@ -108,7 +108,7 @@ const AccountMenu = ({ name, email, title, links, compact = false }: AccountMenu
         )}
         <ChevronDown
           className={cn(
-            'h-3.5 w-3.5 text-ink-muted shrink-0 transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]',
+            'h-3.5 w-3.5 text-ink-muted shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
             open && 'rotate-180 text-teal-ink',
           )}
           strokeWidth={1.5}

@@ -68,6 +68,7 @@ const PREVIEW_DATA: Readonly<Record<EngineKey, EnginePreview>> = {
 const HeroArea = () => {
   const { t } = useT();
   const [activeEngine, setActiveEngine] = useState<EngineKey>('data');
+  const [focusedBullet, setFocusedBullet] = useState<number>(0);
 
   const engineOptions: SegmentedOption<EngineKey>[] = useMemo(
     () => [
@@ -86,22 +87,28 @@ const HeroArea = () => {
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
           {/* Left Copy Column */}
           <div className="lg:col-span-6">
-            <h1 className="m-0 text-[36px] font-medium leading-[1.06] tracking-[-0.03em] text-ink sm:text-[48px] xl:text-[56px]">
+            <h1 className="m-0 text-[36px] font-medium leading-[1.06] tracking-[-0.03em] text-ink sm:text-[48px] xl:text-[56px] zv-animate-enter">
               {t('Build Better AI')}
               <span className="mt-1 block text-teal-ink">{t('With Better Data')}</span>
             </h1>
 
-            <p className="mt-5 mb-0 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-[17px]">
+            <p className="mt-5 mb-0 max-w-xl text-base leading-relaxed text-ink-secondary sm:text-[17px] zv-animate-enter zv-delay-1">
               {t('Everything you need to build, improve, and scale AI in one platform.')}{' '}
               {t('Collect, annotate, validate with domain experts, and version training datasets with complete visibility.')}
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center gap-3 zv-animate-enter zv-delay-2">
               <Button
                 href="/contact"
                 variant="primary"
                 size="lg"
-                rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.5} />}
+                className="group"
+                rightIcon={
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5"
+                    strokeWidth={1.5}
+                  />
+                }
               >
                 {t('Start Your AI Project')}
               </Button>
@@ -110,7 +117,7 @@ const HeroArea = () => {
               </Button>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-line-subtle pt-6">
+            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-line-subtle pt-6 zv-animate-enter zv-delay-3">
               <div>
                 <div className="text-xl font-semibold text-ink tabular-nums sm:text-2xl">97.8%</div>
                 <div className="mt-0.5 text-xs text-ink-muted">{t('QA Pass Rate')}</div>
@@ -127,11 +134,11 @@ const HeroArea = () => {
           </div>
 
           {/* Right Interactive Product Scene */}
-          <div className="lg:col-span-6">
-            <div className="rounded-2xl border border-[rgba(8,13,53,0.10)] bg-surface p-5 shadow-[0_12px_36px_rgba(2,6,38,0.06)] sm:p-6">
+          <div className="lg:col-span-6 zv-animate-enter zv-delay-2">
+            <div className="rounded-2xl border border-[rgba(8,13,53,0.10)] bg-surface p-5 shadow-[0_12px_36px_rgba(2,6,38,0.06)] transition-shadow duration-200 hover:shadow-[0_16px_44px_rgba(2,6,38,0.08)] sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-subtle pb-4">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-teal">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-teal transition-colors duration-150">
                     {activeEngine === 'data' ? (
                       <Database className="h-4 w-4" strokeWidth={1.5} />
                     ) : activeEngine === 'community' ? (
@@ -145,14 +152,17 @@ const HeroArea = () => {
 
                 <SegmentedControl<EngineKey>
                   value={activeEngine}
-                  onChange={setActiveEngine}
+                  onChange={(next) => {
+                    setActiveEngine(next);
+                    setFocusedBullet(0);
+                  }}
                   options={engineOptions}
                   size="sm"
                   ariaLabel={t('One Platform.')}
                 />
               </div>
 
-              <div className="mt-5 flex flex-col gap-4">
+              <div key={activeEngine} className="mt-5 flex flex-col gap-4 zv-animate-panel">
                 <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl bg-navy p-5 text-white">
                   <div className="min-w-0 flex-1">
                     <Badge tone={preview.tone}>{preview.badge}</Badge>
@@ -178,18 +188,24 @@ const HeroArea = () => {
                   <CustomProgressBar value={preview.progressValue} tone="teal" height="sm" />
                 </div>
 
-                <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-3">
-                  {preview.bullets.map((bullet) => (
-                    <div
-                      key={bullet}
-                      className={cn(
-                        'flex items-center gap-2 text-xs font-medium text-ink',
-                      )}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.5} />
-                      <span className="truncate">{t(bullet)}</span>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-1 gap-1.5 pt-1 sm:grid-cols-3">
+                  {preview.bullets.map((bullet, idx) => {
+                    const isFocused = focusedBullet === idx;
+                    return (
+                      <button
+                        key={bullet}
+                        type="button"
+                        onClick={() => setFocusedBullet(idx)}
+                        className={cn(
+                          'flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs font-medium transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] cursor-pointer',
+                          isFocused ? 'bg-tint-mint text-teal-ink' : 'text-ink hover:bg-canvas',
+                        )}
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.5} />
+                        <span className="truncate">{t(bullet)}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-3 text-xs text-ink-muted">

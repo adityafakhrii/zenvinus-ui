@@ -231,7 +231,7 @@ const DashboardHeader = () => {
                           title={sidebarCollapsed ? t(item.label) : undefined}
                           className={cn(
                             'flex h-9 flex-1 items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] font-medium no-underline',
-                            'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
+                            'transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
                             sidebarCollapsed && 'justify-center px-0',
                             active
                               ? 'bg-canvas text-ink font-semibold'
@@ -261,8 +261,8 @@ const DashboardHeader = () => {
                           >
                             <ChevronDown
                               className={cn(
-                                'h-3.5 w-3.5 transition-transform duration-150',
-                                isOpen && 'rotate-180',
+                                'h-3.5 w-3.5 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                                isOpen && 'rotate-180 text-teal-ink',
                               )}
                               strokeWidth={1.5}
                             />
@@ -271,7 +271,7 @@ const DashboardHeader = () => {
                       </div>
 
                       {!sidebarCollapsed && hasChildren && isOpen && item.children && (
-                        <div className="ml-4 mt-1 mb-1 flex flex-col gap-0.5 border-l border-line pl-3">
+                        <div className="ml-4 mt-1 mb-1 flex flex-col gap-0.5 border-l border-line pl-3 zv-animate-panel">
                           {item.children.map((sub) => {
                             const subActive = router.asPath === sub.href || router.pathname === sub.href.split('?')[0];
                             return (
@@ -279,7 +279,7 @@ const DashboardHeader = () => {
                                 key={sub.href}
                                 href={sub.href}
                                 className={cn(
-                                  'flex h-8 items-center justify-between rounded-[7px] px-2 text-[13px] no-underline transition-colors',
+                                  'flex h-8 items-center justify-between rounded-[7px] px-2 text-[13px] no-underline transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98]',
                                   subActive
                                     ? 'text-ink font-medium bg-canvas/70'
                                     : 'text-ink-secondary hover:bg-canvas/60 hover:text-ink',
@@ -436,7 +436,7 @@ const DashboardHeader = () => {
                     aria-current={active ? 'page' : undefined}
                     className={cn(
                       'relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 2xl:px-3 text-[13px] font-medium no-underline whitespace-nowrap',
-                      'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
+                      'transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
                       active
                         ? 'bg-canvas text-ink font-semibold'
                         : 'text-ink-secondary hover:bg-canvas/60 hover:text-ink',
@@ -450,7 +450,7 @@ const DashboardHeader = () => {
                     )}
                     {active && (
                       <span
-                        className="absolute inset-x-2.5 2xl:inset-x-3 bottom-0 h-0.5 rounded-full bg-teal"
+                        className="absolute inset-x-2.5 2xl:inset-x-3 bottom-0 h-0.5 rounded-full bg-teal zv-animate-fade"
                         aria-hidden="true"
                       />
                     )}

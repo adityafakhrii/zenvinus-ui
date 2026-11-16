@@ -43,9 +43,9 @@ export function CustomProgressBar({
         )}
       >
         <div
-          style={{ width: `${pct}%` }}
+          style={{ transform: `scaleX(${pct / 100})` }}
           className={cn(
-            'h-full rounded-md transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+            'h-full w-full origin-left rounded-md transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
             FILL_CLASSES[tone],
           )}
         />

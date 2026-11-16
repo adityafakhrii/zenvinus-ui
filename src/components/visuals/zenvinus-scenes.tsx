@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CheckCircle2,
   Cpu,
@@ -24,10 +24,15 @@ import {
 } from '@/components/ui';
 import { useT } from '@/i18n';
 
+export interface PipelineSceneProps {
+  /** Optional 0–3 stage index highlighted smoothly from interactive workflow steps. */
+  activeStage?: number;
+}
+
 /**
  * Product-world scene: 4-layer data curation & quality pipeline card replacing generic 3D hologram graphics.
  */
-export function PipelineScene() {
+export function PipelineScene({ activeStage = -1 }: PipelineSceneProps) {
   const { t } = useT();
 
   const stages = [
@@ -74,28 +79,39 @@ export function PipelineScene() {
         </Badge>
       </div>
 
-      <div className="mt-4 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas px-3.5">
-        {stages.map(({ Icon, label, meta, progress }, i) => (
-          <div
-            key={label}
-            className="flex items-center justify-between gap-3 py-2.5"
-          >
-            <div className="flex min-w-0 items-center gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface text-teal-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
-                <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
-              </span>
-              <div className="min-w-0">
-                <span className="block truncate text-xs font-medium text-ink">
-                  {String(i + 1).padStart(2, '0')} · {label}
+      <div className="mt-4 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas px-2 py-1">
+        {stages.map(({ Icon, label, meta, progress }, i) => {
+          const isActive = i === activeStage;
+          return (
+            <div
+              key={label}
+              className={cn(
+                'flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 transition-[background-color,color] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                isActive && 'bg-surface shadow-[0_1px_2px_rgba(2,6,38,0.04)]',
+              )}
+            >
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span
+                  className={cn(
+                    'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-150 shadow-[0_1px_2px_rgba(2,6,38,0.04)]',
+                    isActive ? 'bg-navy text-teal' : 'bg-surface text-teal-ink',
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
                 </span>
-                <span className="block truncate text-[11px] text-ink-muted">{meta}</span>
+                <div className="min-w-0">
+                  <span className="block truncate text-xs font-medium text-ink">
+                    {String(i + 1).padStart(2, '0')} · {label}
+                  </span>
+                  <span className="block truncate text-[11px] text-ink-muted">{meta}</span>
+                </div>
               </div>
+              <span className="shrink-0 font-mono text-xs font-semibold text-teal-ink tabular-nums">
+                {progress}%
+              </span>
             </div>
-            <span className="shrink-0 font-mono text-xs font-semibold text-teal-ink tabular-nums">
-              {progress}%
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-line-subtle pt-3 text-xs text-ink-secondary">
@@ -111,6 +127,7 @@ export function PipelineScene() {
  */
 export function LifecycleHubScene() {
   const { t } = useT();
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
   const engines = [
     {
@@ -118,20 +135,31 @@ export function LifecycleHubScene() {
       title: t('Data Engine'),
       sub: 'Schema · Versioning',
       tone: 'bg-tint-mint text-teal-ink',
+      metricLabel: t('QA Pass Rate'),
+      metricVal: 97.8,
+      splits: ['train · 80%', 'validation · 10%', 'test · 10%'],
     },
     {
       Icon: Users,
       title: t('Community'),
       sub: '4,821 ' + t('contributors'),
       tone: 'bg-tone-blue-bg text-tone-blue-fg',
+      metricLabel: t('Annotation'),
+      metricVal: 94.2,
+      splits: ['vision · 48%', 'text · 34%', 'audio · 18%'],
     },
     {
       Icon: Cpu,
       title: t('AI Lab'),
       sub: 'Eval · Fine-tuning',
       tone: 'bg-canvas text-navy',
+      metricLabel: t('Model Evaluation'),
+      metricVal: 91.5,
+      splits: ['mAP50 · 0.78', 'precision · 0.81', 'recall · 0.74'],
     },
   ] as const;
+
+  const current = engines[selectedIdx] ?? engines[0];
 
   return (
     <div className="rounded-2xl border border-[rgba(8,13,53,0.10)] bg-surface p-5 shadow-[0_8px_28px_rgba(2,6,38,0.05)] sm:p-6">
@@ -143,33 +171,49 @@ export function LifecycleHubScene() {
         <span className="font-mono text-[11px] text-ink-muted">ID / EN</span>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        {engines.map(({ Icon, title, sub, tone }) => (
-          <div key={title} className="p-3.5">
-            <span className={cn('mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg', tone)}>
-              <Icon className="h-4 w-4" strokeWidth={1.5} />
-            </span>
-            <span className="block text-xs font-medium text-ink">{title}</span>
-            <span className="mt-0.5 block text-[11px] text-ink-muted">{sub}</span>
-          </div>
-        ))}
+      <div className="mt-4 grid grid-cols-1 divide-y divide-line-subtle overflow-hidden rounded-xl border border-line-subtle bg-canvas sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        {engines.map(({ Icon, title, sub, tone }, idx) => {
+          const active = idx === selectedIdx;
+          return (
+            <button
+              key={title}
+              type="button"
+              onClick={() => setSelectedIdx(idx)}
+              className={cn(
+                'p-3.5 text-left transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] cursor-pointer',
+                active ? 'bg-surface' : 'hover:bg-surface/60',
+              )}
+            >
+              <span className={cn('mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg transition-transform duration-150', tone)}>
+                <Icon className="h-4 w-4" strokeWidth={1.5} />
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-ink">
+                <span>{title}</span>
+                {active && <span className="h-1.5 w-1.5 rounded-full bg-teal-ink" aria-hidden="true" />}
+              </span>
+              <span className="mt-0.5 block text-[11px] text-ink-muted">{sub}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="mt-4 rounded-xl border border-line-subtle bg-canvas p-4">
-        <div className="mb-2 flex items-center justify-between text-xs">
-          <span className="font-medium text-ink-secondary">{t('QA Pass Rate')}</span>
-          <span className="font-mono font-semibold text-teal-ink tabular-nums">97.8%</span>
-        </div>
-        <CustomProgressBar value={97.8} tone="teal" height="sm" />
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {['train · 80%', 'validation · 10%', 'test · 10%'].map((split) => (
-            <span
-              key={split}
-              className="rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-[11px] text-ink-secondary"
-            >
-              {split}
-            </span>
-          ))}
+        <div key={current.title} className="zv-animate-panel">
+          <div className="mb-2 flex items-center justify-between text-xs">
+            <span className="font-medium text-ink-secondary">{current.metricLabel}</span>
+            <span className="font-mono font-semibold text-teal-ink tabular-nums">{current.metricVal}%</span>
+          </div>
+          <CustomProgressBar value={current.metricVal} tone="teal" height="sm" />
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {current.splits.map((split) => (
+              <span
+                key={split}
+                className="rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-[11px] text-ink-secondary"
+              >
+                {split}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -276,6 +320,7 @@ export function WorkforceScene({ variant = 'light' }: { variant?: 'light' | 'dar
  */
 export function DataEnginePreviewScene() {
   const { t } = useT();
+  const [activeTool, setActiveTool] = useState<'select' | 'bbox' | 'polygon' | 'pan'>('select');
 
   const metrics = [
     { Icon: ImageIcon, value: '50,000', label: t('Total Items') },
@@ -285,10 +330,10 @@ export function DataEnginePreviewScene() {
   ] as const;
 
   const tools = [
-    { Icon: MousePointer, label: 'Select', active: true },
-    { Icon: Square, label: 'Bounding Box', active: false },
-    { Icon: Pentagon, label: 'Polygon', active: false },
-    { Icon: Hand, label: 'Pan', active: false },
+    { id: 'select', Icon: MousePointer, label: 'Select' },
+    { id: 'bbox', Icon: Square, label: 'Bounding Box' },
+    { id: 'polygon', Icon: Pentagon, label: 'Polygon' },
+    { id: 'pan', Icon: Hand, label: 'Pan' },
   ] as const;
 
   const scores = [
@@ -317,7 +362,7 @@ export function DataEnginePreviewScene() {
         <div className="relative overflow-hidden rounded-xl bg-[#0B1220] p-3">
           <div className="mb-2 flex items-center justify-between text-[11px] text-white/60">
             <span className="font-mono">frame-01842.jpg</span>
-            <span className="font-mono text-teal">100%</span>
+            <span className="font-mono text-teal">{activeTool === 'pan' ? '125%' : '100%'}</span>
           </div>
 
           <svg viewBox="0 0 360 156" className="w-full rounded-lg bg-[#0E1729]" aria-hidden="true">
@@ -328,58 +373,92 @@ export function DataEnginePreviewScene() {
             <path d="M 218 122 L 266 130 L 294 128" stroke="#475569" strokeWidth="2" fill="none" strokeLinecap="round" />
 
             {/* Pothole Bounding Box (Zenvinus Teal) */}
-            <rect
-              x="80"
-              y="92"
-              width="106"
-              height="46"
-              rx="2"
-              fill="rgba(5, 218, 195, 0.14)"
-              stroke="#05DAC3"
-              strokeWidth="1.75"
-            />
-            <rect x="80" y="73" width="84" height="18" rx="3" fill="#05DAC3" />
-            <text x="86" y="85.5" fill="#020626" fontSize="9.5" fontWeight="600" fontFamily="monospace">
-              Pothole 0.96
-            </text>
-            <rect x="77" y="89" width="6" height="6" fill="#FFFFFF" stroke="#020626" strokeWidth="1" />
-            <rect x="183" y="135" width="6" height="6" fill="#FFFFFF" stroke="#020626" strokeWidth="1" />
+            <g
+              className="transition-opacity duration-200"
+              style={{ opacity: activeTool === 'polygon' ? 0.55 : 1 }}
+            >
+              <rect
+                x="80"
+                y="92"
+                width="106"
+                height="46"
+                rx="2"
+                fill={activeTool === 'bbox' ? 'rgba(5, 218, 195, 0.24)' : 'rgba(5, 218, 195, 0.14)'}
+                stroke="#05DAC3"
+                strokeWidth="1.75"
+              />
+              <rect x="80" y="73" width="84" height="18" rx="3" fill="#05DAC3" />
+              <text x="86" y="85.5" fill="#020626" fontSize="9.5" fontWeight="600" fontFamily="monospace">
+                Pothole 0.96
+              </text>
+              <rect x="77" y="89" width="6" height="6" fill="#FFFFFF" stroke="#020626" strokeWidth="1" />
+              <rect x="183" y="135" width="6" height="6" fill="#FFFFFF" stroke="#020626" strokeWidth="1" />
+            </g>
+
+            {/* Interactive Polygon Contour Preview */}
+            {activeTool === 'polygon' && (
+              <g className="zv-animate-fade">
+                <polygon
+                  points="92,115 118,103 162,107 174,121 144,130 98,126"
+                  fill="rgba(5, 218, 195, 0.22)"
+                  stroke="#05DAC3"
+                  strokeWidth="1.5"
+                />
+                {[
+                  [92, 115],
+                  [118, 103],
+                  [162, 107],
+                  [174, 121],
+                  [144, 130],
+                  [98, 126],
+                ].map(([px, py]) => (
+                  <circle key={`${px}-${py}`} cx={px} cy={py} r="2.75" fill="#FFFFFF" stroke="#05DAC3" strokeWidth="1.25" />
+                ))}
+              </g>
+            )}
 
             {/* Crack Bounding Box (Blue semantic info) */}
-            <rect
-              x="210"
-              y="108"
-              width="94"
-              height="34"
-              rx="2"
-              fill="rgba(22, 132, 237, 0.14)"
-              stroke="#1684ED"
-              strokeWidth="1.75"
-            />
-            <rect x="210" y="89" width="72" height="18" rx="3" fill="#1684ED" />
-            <text x="216" y="101.5" fill="#FFFFFF" fontSize="9.5" fontWeight="600" fontFamily="monospace">
-              Crack 0.91
-            </text>
+            <g className="transition-opacity duration-200" style={{ opacity: activeTool === 'bbox' ? 0.65 : 1 }}>
+              <rect
+                x="210"
+                y="108"
+                width="94"
+                height="34"
+                rx="2"
+                fill="rgba(22, 132, 237, 0.14)"
+                stroke="#1684ED"
+                strokeWidth="1.75"
+              />
+              <rect x="210" y="89" width="72" height="18" rx="3" fill="#1684ED" />
+              <text x="216" y="101.5" fill="#FFFFFF" fontSize="9.5" fontWeight="600" fontFamily="monospace">
+                Crack 0.91
+              </text>
+            </g>
           </svg>
         </div>
 
         <div className="flex flex-col justify-between rounded-xl border border-line-subtle bg-canvas p-2.5">
           <div className="space-y-1">
-            {tools.map(({ Icon, label, active }) => (
-              <div
-                key={label}
-                className={cn(
-                  'flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium',
-                  active ? 'bg-navy text-white' : 'text-ink-secondary',
-                )}
-              >
-                <Icon className={cn('h-3.5 w-3.5 shrink-0', active && 'text-teal')} strokeWidth={1.6} />
-                <span className="truncate">{label}</span>
-              </div>
-            ))}
+            {tools.map(({ id, Icon, label }) => {
+              const active = activeTool === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveTool(id)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium transition-[background-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.97] cursor-pointer',
+                    active ? 'bg-navy text-white' : 'text-ink-secondary hover:bg-surface hover:text-ink',
+                  )}
+                >
+                  <Icon className={cn('h-3.5 w-3.5 shrink-0', active && 'text-teal')} strokeWidth={1.5} />
+                  <span className="truncate">{label}</span>
+                </button>
+              );
+            })}
           </div>
           <div className="mt-2 border-t border-line-subtle pt-2 text-[11px] font-mono text-ink-muted">
-            2 objects · v2.1
+            {activeTool === 'polygon' ? '6 vertices · mask' : activeTool === 'bbox' ? 'Box · Pothole' : '2 objects · v2.1'}
           </div>
         </div>
       </div>
@@ -410,6 +489,7 @@ export function DataEnginePreviewScene() {
  */
 export function CommunityEngineScene() {
   const { t } = useT();
+  const [selectedTask, setSelectedTask] = useState(0);
 
   const stats = [
     { label: t('contributors'), value: '2,483' },
@@ -469,21 +549,29 @@ export function CommunityEngineScene() {
         <SegmentedBreakdownBar items={tiers} />
       </div>
 
-      <div className="mt-3 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas px-3.5">
-        {tasks.map((tk) => (
-          <div
-            key={tk.title}
-            className="flex items-center justify-between gap-3 py-2.5"
-          >
-            <div className="min-w-0">
-              <div className="truncate text-xs font-medium text-ink">{tk.title}</div>
-              <div className="truncate font-mono text-[11px] text-ink-muted">{tk.meta}</div>
-            </div>
-            <Badge tone={tk.tone} dot>
-              {tk.badge}
-            </Badge>
-          </div>
-        ))}
+      <div className="mt-3 divide-y divide-line-subtle overflow-hidden rounded-xl border border-line-subtle bg-canvas px-1.5 py-1">
+        {tasks.map((tk, idx) => {
+          const active = idx === selectedTask;
+          return (
+            <button
+              key={tk.title}
+              type="button"
+              onClick={() => setSelectedTask(idx)}
+              className={cn(
+                'flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.99] cursor-pointer',
+                active ? 'bg-surface' : 'hover:bg-surface/60',
+              )}
+            >
+              <div className="min-w-0">
+                <div className="truncate text-xs font-medium text-ink">{tk.title}</div>
+                <div className="truncate font-mono text-[11px] text-ink-muted">{tk.meta}</div>
+              </div>
+              <Badge tone={tk.tone} dot>
+                {tk.badge}
+              </Badge>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

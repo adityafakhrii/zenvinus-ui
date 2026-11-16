@@ -128,9 +128,9 @@ export function QuickActionGrid({ items }: QuickActionGridProps) {
         <Link
           key={`${item.label}-${item.href}`}
           href={item.href}
-          className="group flex flex-col items-center gap-1.5 rounded-xl p-1 text-center text-ink-secondary no-underline transition-colors hover:text-ink"
+          className="group flex flex-col items-center gap-1.5 rounded-xl p-1 text-center text-ink-secondary no-underline transition-[color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-ink active:scale-[0.97]"
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas text-ink transition-[background-color,border-color,color] duration-150 group-hover:border-teal-ink/40 group-hover:bg-tint-mint group-hover:text-teal-ink">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas text-ink transition-[background-color,border-color,color,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-teal-ink/40 group-hover:bg-tint-mint group-hover:text-teal-ink">
             {item.icon}
           </span>
           <span className="max-w-full truncate text-[11px] font-medium leading-tight">

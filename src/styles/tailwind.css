@@ -117,6 +117,61 @@
   }
 }
 
+@keyframes zv-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zv-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zv-drawer-right {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zv-drawer-left {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zv-drawer-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes zv-shimmer {
   from {
     background-position: 200% 0;
@@ -144,11 +199,52 @@
   animation: zv-slide-up 240ms var(--ease-smooth) both;
 }
 
+.zv-animate-enter {
+  animation: zv-enter-up 340ms var(--ease-smooth) var(--zv-delay, 0ms) both;
+}
+
+.zv-delay-1 {
+  --zv-delay: 45ms;
+}
+
+.zv-delay-2 {
+  --zv-delay: 90ms;
+}
+
+.zv-delay-3 {
+  --zv-delay: 135ms;
+}
+
+.zv-delay-4 {
+  --zv-delay: 180ms;
+}
+
+.zv-animate-panel {
+  animation: zv-panel-in 200ms var(--ease-smooth) both;
+}
+
+.zv-animate-drawer-right {
+  animation: zv-drawer-right 240ms var(--ease-smooth) both;
+}
+
+.zv-animate-drawer-left {
+  animation: zv-drawer-left 240ms var(--ease-smooth) both;
+}
+
+.zv-animate-drawer-bottom {
+  animation: zv-drawer-bottom 240ms var(--ease-smooth) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .zv-shimmer,
   .zv-animate-pop,
   .zv-animate-fade,
-  .zv-animate-slide-up {
+  .zv-animate-slide-up,
+  .zv-animate-enter,
+  .zv-animate-panel,
+  .zv-animate-drawer-right,
+  .zv-animate-drawer-left,
+  .zv-animate-drawer-bottom {
     animation: none;
   }
 }

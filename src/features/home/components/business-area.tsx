@@ -1,5 +1,6 @@
 import React from 'react';
 import { Code2, Cpu } from 'lucide-react';
+import { Reveal } from '@/components/ui';
 import { LifecycleHubScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 
@@ -13,11 +14,11 @@ const BusinessArea = () => {
     <section className="border-y border-[rgba(8,13,53,0.06)] bg-canvas py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-6">
+          <Reveal className="lg:col-span-6">
             <LifecycleHubScene />
-          </div>
+          </Reveal>
 
-          <div className="lg:col-span-6">
+          <Reveal delayMs={60} className="lg:col-span-6">
             <span className="text-xs font-medium text-teal-ink">
               {t('Why Zenvinus')}
             </span>
@@ -56,7 +57,7 @@ const BusinessArea = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
