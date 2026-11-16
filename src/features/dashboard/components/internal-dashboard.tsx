@@ -1,12 +1,44 @@
-import Link from "next/link";
-import React from "react";
-import KpiGrid from "./kpi-grid";
-import { getCompanyOrders, REQUEST_ACTIONS, selectPostedProjects } from "@/features/projects";
-import { useAppSelector } from "@/store/hooks";
-import { useT } from "@/i18n";
-import type { KpiItem } from "../types/dashboard";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import {
+  ArrowUpRight,
+  Database,
+  FileText,
+  FlaskConical,
+  FolderKanban,
+  ListChecks,
+  Receipt,
+  ShieldCheck,
+  Wallet,
+} from 'lucide-react';
+import {
+  Badge,
+  Button,
+  CustomBarChart,
+  CustomProgressBar,
+  CustomSelect,
+  CustomSemiCircleGauge,
+  EmptyState,
+  SearchInput,
+  SegmentedBreakdownBar,
+  SegmentedControl,
+} from '@/components/ui';
+import type { BarChartDatum, BreakdownItem, SegmentedOption, SelectOption } from '@/components/ui';
+import { REQUEST_ACTIONS, getCompanyOrders, selectPostedProjects } from '@/features/projects';
+import { useT } from '@/i18n';
+import { useAppSelector } from '@/store/hooks';
+import {
+  BentoCard,
+  DashboardCanvas,
+  DashboardPageHeader,
+  KeyValueList,
+  QuickActionGrid,
+  StackedMetric,
+} from './bento-primitives';
+import { toBadgeTone } from './dashboard-icons';
 
-/** One row of the proposal queue: a posted request or a sample order */
+type OpsRange = '4w' | '6w';
+
 interface QueueRow {
   id: string;
   name: string;
@@ -14,14 +46,11 @@ interface QueueRow {
   company: string;
   budget: string;
   status: string;
-  /** CSS suffix of the status chip (edash-status-<tone>) */
   statusTone: string;
   statusKey: string | null;
-  /** Next step for the Zenvinus team, when the request waits on it */
   action: { to: string; label: string } | null | undefined;
 }
 
-/** What this view reads from a posted request (projects/data/project-store) */
 interface PostedRequest {
   id: string;
   name: string;
@@ -33,173 +62,459 @@ interface PostedRequest {
   statusKey: string;
 }
 
-// REQUEST_ACTIONS is keyed by request status; look the key up without assuming it is one of them
-const zenvinusActionFor = (statusKey: string): QueueRow["action"] =>
+const WEEKLY_OPS_DATA: ReadonlyArray<BarChartDatum> = [
+  { label: 'W34', title: 'W34', segments: { settled: 2100, escrow: 1600 } },
+  { label: 'W35', title: 'W35', segments: { settled: 2450, escrow: 1950 } },
+  { label: 'W36', title: 'W36', segments: { settled: 2300, escrow: 2200 } },
+  { label: 'W37', title: 'W37', segments: { settled: 2800, escrow: 2450 } },
+  { label: 'W38', title: 'W38', segments: { settled: 3150, escrow: 2700 } },
+  { label: 'W39', title: 'W39', segments: { settled: 3420, escrow: 3100 } },
+];
+
+const zenvinusActionFor = (statusKey: string): QueueRow['action'] =>
   Object.entries(REQUEST_ACTIONS).find(([key]) => key === statusKey)?.[1]?.zenvinus;
 
-/** Internal Dashboard (Operations Workspace): the Zenvinus team's side. */
+/**
+ * Internal Operations Dashboard (/dashboard?as=internal) structured in the ACRU Bento layout.
+ */
 const InternalArea = () => {
   const { t, locale } = useT();
   const posted: PostedRequest[] = useAppSelector(selectPostedProjects);
-  const orders = getCompanyOrders();
-  const queue: QueueRow[] = [
-    ...posted.map((r) => ({
-      id: r.id,
-      name: r.name,
-      type: r.typeLabel,
-      company: r.company?.name || "—",
-      budget: r.budgetRange || "TBD",
-      status: r.status,
-      statusTone: r.statusTone,
-      statusKey: r.statusKey,
-      action: zenvinusActionFor(r.statusKey),
-    })),
-    ...orders.map((o) => ({
-      id: o.id,
-      name: o.title,
-      type: o.type,
-      company: "Sample order",
-      budget: `$${o.amount.toLocaleString(locale)}`,
-      status: o.status,
-      statusTone: o.statusTone,
-      statusKey: null,
-      action: null,
-    })),
-  ];
+  const [range, setRange] = useState<OpsRange>('6w');
+  const [search, setSearch] = useState('');
+  const [stageFilter, setStageFilter] = useState('all');
 
-  const kpis: KpiItem[] = [
-    { id: "queue", label: "Proposal Queue", value: queue.filter((q) => q.statusKey === "pending" || q.statusKey === "in_review").length, icon: "fa-solid fa-inbox", tone: "amber", note: "awaiting internal review" },
-    { id: "active", label: "Active Projects", value: queue.filter((q) => q.statusKey === "in_progress" || q.status === "In Progress").length, icon: "fa-solid fa-diagram-project", tone: "blue", note: "being worked on" },
-    { id: "wf", label: "Active Workforce", value: 52, icon: "fa-solid fa-users", tone: "mint", note: "community + expert" },
-    { id: "rev", label: "Revenue MTD", value: "$18.4K", icon: "fa-solid fa-sack-dollar", tone: "purple", note: "escrow + settled" },
-  ];
+  const orders = useMemo(() => getCompanyOrders(), []);
+
+  const queue: QueueRow[] = useMemo(
+    () => [
+      ...posted.map((r) => ({
+        id: r.id,
+        name: r.name,
+        type: r.typeLabel,
+        company: r.company?.name || '—',
+        budget: r.budgetRange || 'TBD',
+        status: r.status,
+        statusTone: r.statusTone,
+        statusKey: r.statusKey,
+        action: zenvinusActionFor(r.statusKey),
+      })),
+      ...orders.map((o) => ({
+        id: o.id,
+        name: o.title,
+        type: o.type,
+        company: 'Sample order',
+        budget: `$${o.amount.toLocaleString(locale)}`,
+        status: o.status,
+        statusTone: o.statusTone,
+        statusKey: null,
+        action: null,
+      })),
+    ],
+    [locale, orders, posted],
+  );
+
+  const queueCount = useMemo(
+    () => queue.filter((q) => q.statusKey === 'pending' || q.statusKey === 'in_review').length,
+    [queue],
+  );
+  const activeCount = useMemo(
+    () => queue.filter((q) => q.statusKey === 'in_progress' || q.status === 'In Progress').length,
+    [queue],
+  );
+
+  const chartData = useMemo(
+    () => (range === '4w' ? WEEKLY_OPS_DATA.slice(-4) : WEEKLY_OPS_DATA),
+    [range],
+  );
+
+  const rangeOptions: SegmentedOption<OpsRange>[] = useMemo(
+    () => [
+      { value: '4w', label: t('4w') },
+      { value: '6w', label: t('6w') },
+    ],
+    [t],
+  );
+
+  const stageOptions: SelectOption[] = useMemo(
+    () => [
+      { value: 'all', label: t('All statuses') },
+      { value: 'review', label: t('Needs review') },
+      { value: 'active', label: t('Active & Delivered') },
+    ],
+    [t],
+  );
+
+  const filteredQueue = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return queue.filter((item) => {
+      const needsReview = Boolean(item.action) || item.statusKey === 'pending' || item.statusKey === 'in_review';
+      const matchesStage =
+        stageFilter === 'all' ||
+        (stageFilter === 'review' && needsReview) ||
+        (stageFilter === 'active' && !needsReview);
+      const matchesQuery =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.id.toLowerCase().includes(q) ||
+        item.company.toLowerCase().includes(q);
+      return matchesStage && matchesQuery;
+    });
+  }, [queue, search, stageFilter]);
+
+  const workforceBreakdown: BreakdownItem[] = useMemo(
+    () => [
+      { id: 'community', label: t('Community annotators'), percent: 73, color: '#05DAC3' },
+      { id: 'verified', label: t('Verified contributors'), percent: 17, color: '#0D9488' },
+      { id: 'expert', label: t('Expert reviewers'), percent: 10, color: '#020626' },
+    ],
+    [t],
+  );
 
   return (
-    <section className="edash-area pt-40 pb-120">
-      <div className="container">
-        <div className="edash-head">
-          <div>
-            <h3 className="edash-title">{t("Internal Dashboard")}</h3>
-            <p className="edash-sub">
-              {t("Operations workspace — proposal queue, project & task management, workforce, quality control and finance.")}
+    <DashboardCanvas>
+      <DashboardPageHeader
+        title={t('Internal Dashboard')}
+        subtitle={t(
+          'Operations workspace — proposal queue, project & task management, workforce, quality control and finance.',
+        )}
+        actions={
+          <>
+            <Button
+              href="/dashboard/billing"
+              variant="secondary"
+              size="sm"
+              leftIcon={<Receipt className="h-4 w-4" strokeWidth={1.5} />}
+            >
+              {t('Invoices')}
+            </Button>
+            <Button
+              href="/lab"
+              variant="primary"
+              size="sm"
+              leftIcon={<FlaskConical className="h-4 w-4" strokeWidth={1.6} />}
+            >
+              {t('AI Research Lab')}
+            </Button>
+          </>
+        }
+      />
+
+      {/* Row 1: Operations Revenue & Escrow Throughput + Escrow Card */}
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+        <BentoCard
+          className="xl:col-span-8"
+          title={t('Revenue MTD')}
+          subtitle={t('escrow + settled')}
+          action={
+            <SegmentedControl<OpsRange>
+              value={range}
+              onChange={setRange}
+              options={rangeOptions}
+              size="sm"
+              ariaLabel={t('Select timeframe')}
+            />
+          }
+        >
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_210px]">
+            <div className="min-w-0">
+              <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+                <div className="flex flex-wrap items-baseline gap-2.5">
+                  <span className="text-[30px] font-semibold tracking-tight text-ink tabular-nums leading-none">
+                    $18.4K
+                  </span>
+                  <span className="text-xs font-medium text-ink-muted">{t('escrow + settled')}</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-ink-secondary">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-teal" aria-hidden="true" />
+                    <span>{t('Settled')}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-navy" aria-hidden="true" />
+                    <span>{t('Active escrow')}</span>
+                  </span>
+                </div>
+              </div>
+
+              <CustomBarChart
+                data={chartData}
+                series={[
+                  { key: 'settled', label: t('Settled'), color: '#05DAC3' },
+                  { key: 'escrow', label: t('Active escrow'), color: '#020626' },
+                ]}
+                height={230}
+                formatValue={(v) => `$${v.toLocaleString(locale)}`}
+              />
+            </div>
+
+            <div className="flex flex-col justify-between gap-5 border-t border-line-subtle pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6">
+              <StackedMetric
+                label={t('Proposal Queue')}
+                value={queueCount}
+                helper={t('awaiting internal review')}
+              />
+              <StackedMetric
+                label={t('Active Projects')}
+                value={activeCount}
+                helper={t('being worked on')}
+              />
+              <StackedMetric
+                label={t('Active Workforce')}
+                value={52}
+                delta={7.4}
+                good
+                helper={t('community + expert')}
+              />
+            </div>
+          </div>
+        </BentoCard>
+
+        <BentoCard
+          className="xl:col-span-4 justify-between"
+          title={t('Finance')}
+          subtitle={t('Escrow & payout')}
+          action={<Badge tone="mint" dot>{t('Internal')}</Badge>}
+        >
+          <div className="rounded-2xl border border-[rgba(255,255,255,0.08)] bg-navy p-5 text-white">
+            <p className="m-0 text-[11px] font-medium text-white/60">{t('Active escrow')}</p>
+            <p className="mt-1 mb-0 text-[26px] font-semibold tracking-tight tabular-nums leading-none">
+              ${(22800).toLocaleString(locale)}
             </p>
-          </div>
-          <div className="edash-head-actions">
-            <Link href="/lab" className="edash-btn">
-              <i className="fa-solid fa-flask-vial"></i> {t("AI Research Lab")}
-            </Link>
-          </div>
-        </div>
 
-        <KpiGrid items={kpis} />
-
-        <div className="edash-projects">
-          <div className="edash-card">
-            <div className="edash-card-head">
+            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-3.5 text-xs">
               <div>
-                <h4 className="edash-card-title">{t("Proposal Queue & Project Management")}</h4>
-                <p className="edash-card-sub">
-                  {t("Review enterprise proposals, manage projects and workforce assignments")}
+                <p className="m-0 text-[11px] text-white/60">{t('Awaiting down payment')}</p>
+                <p className="mt-0.5 mb-0 font-semibold text-white">{t('{count} requests', { count: 2 })}</p>
+              </div>
+              <div className="text-right">
+                <p className="m-0 text-[11px] text-white/60">{t('Community payouts this month')}</p>
+                <p className="mt-0.5 mb-0 font-mono font-semibold text-teal tabular-nums">
+                  ${(6940).toLocaleString(locale)}
                 </p>
               </div>
-              <Link href="/lab" className="edash-link">
-                {t("Manage in Lab")} <i className="fa-regular fa-angle-right"></i>
-              </Link>
-            </div>
-            <div className="edash-table-wrap">
-              <table className="edash-table">
-                <thead>
-                  <tr>
-                    <th>{t("Request / Project")}</th>
-                    <th>{t("Company")}</th>
-                    <th>{t("Budget")}</th>
-                    <th>{t("Status")}</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {queue.map((q) => (
-                    <tr key={q.id}>
-                      <td>
-                        <h5 className="edash-project-name">{q.name}</h5>
-                        <span className="edash-project-id">{q.id} · {t(q.type)}</span>
-                      </td>
-                      <td className="edash-td-sm">{t(q.company)}</td>
-                      <td className="edash-td-num">{t(q.budget)}</td>
-                      <td>
-                        <span className={`edash-status edash-status-${q.statusTone}`}>{t(q.status)}</span>
-                      </td>
-                      <td className="edash-td-action">
-                        <Link href={`/lab?id=${q.id}`} className="edash-link">
-                          {q.action ? t("Review") : t("Open")} <i className="fa-regular fa-angle-right"></i>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
-        </div>
 
-        <div className="row g-4">
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Workforce")}</h4>
-                  <p className="edash-card-sub">{t("Community vs Expert assignment")}</p>
-                </div>
-              </div>
-              <ul className="edash-quality-list">
-                <li><span>{t("Community annotators")}</span><strong>38</strong></li>
-                <li><span>{t("Verified contributors")}</span><strong>9</strong></li>
-                <li><span>{t("Expert reviewers")}</span><strong>5</strong></li>
-              </ul>
-              <Link href="/dashboard/tasks" className="edash-btn-ghost w-100">
-                <i className="fa-solid fa-list-check"></i> {t("Task Management")}
-              </Link>
-            </div>
+          <div className="mt-4">
+            <QuickActionGrid
+              items={[
+                {
+                  label: t('AI Lab'),
+                  href: '/lab',
+                  icon: <FlaskConical className="h-4 w-4" strokeWidth={1.6} />,
+                },
+                {
+                  label: t('Studio'),
+                  href: '/dashboard/studio',
+                  icon: <Database className="h-4 w-4" strokeWidth={1.6} />,
+                },
+                {
+                  label: t('Projects'),
+                  href: '/dashboard/projects',
+                  icon: <FolderKanban className="h-4 w-4" strokeWidth={1.6} />,
+                },
+                {
+                  label: t('Tasks'),
+                  href: '/dashboard/tasks',
+                  icon: <ListChecks className="h-4 w-4" strokeWidth={1.6} />,
+                },
+                {
+                  label: t('Invoices'),
+                  href: '/dashboard/billing',
+                  icon: <FileText className="h-4 w-4" strokeWidth={1.6} />,
+                },
+              ]}
+            />
           </div>
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Quality Control")}</h4>
-                  <p className="edash-card-sub">{t("Audit & dispute handling")}</p>
-                </div>
-              </div>
-              <ul className="edash-quality-list">
-                <li><span>{t("Avg. pass rate")}</span><strong>{(97.4).toLocaleString(locale)}%</strong></li>
-                <li><span>{t("Open disputes")}</span><strong>2</strong></li>
-                <li><span>{t("Gold-standard sets")}</span><strong>11</strong></li>
-              </ul>
-              <Link href="/dashboard?as=expert" className="edash-btn-ghost w-100">
-                <i className="fa-solid fa-user-shield"></i> {t("Expert Review Queue")}
-              </Link>
-            </div>
+
+          <div className="mt-4 flex items-center justify-between gap-2 border-t border-line-subtle pt-4 text-xs">
+            <span className="text-ink-secondary">{t('Escalated disputes')}: <strong className="text-ink">2</strong></span>
+            <Link
+              href="/dashboard?as=expert"
+              className="inline-flex items-center gap-1 font-medium text-teal-ink no-underline hover:underline"
+            >
+              <span>{t('Expert Review Queue')}</span>
+              <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />
+            </Link>
           </div>
-          <div className="col-xl-4">
-            <div className="edash-card h-100">
-              <div className="edash-card-head">
-                <div>
-                  <h4 className="edash-card-title">{t("Finance")}</h4>
-                  <p className="edash-card-sub">{t("Escrow & payout")}</p>
-                </div>
-              </div>
-              <ul className="edash-quality-list">
-                <li><span>{t("Active escrow")}</span><strong>${(22800).toLocaleString(locale)}</strong></li>
-                <li><span>{t("Awaiting down payment")}</span><strong>{t("{count} requests", { count: 2 })}</strong></li>
-                <li><span>{t("Community payouts this month")}</span><strong>${(6940).toLocaleString(locale)}</strong></li>
-              </ul>
-              <Link href="/dashboard/billing" className="edash-btn-ghost w-100">
-                <i className="fa-solid fa-file-invoice-dollar"></i> {t("Invoices")}
-              </Link>
-            </div>
-          </div>
-        </div>
+        </BentoCard>
       </div>
-    </section>
+
+      {/* Row 2: Workforce Breakdown | Quality Control SLA Gauge | Escrow & Payout Summary */}
+      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <BentoCard
+          className="lg:col-span-4 justify-between"
+          title={t('Workforce')}
+          subtitle={t('Community vs Expert assignment')}
+          action={<Badge tone="neutral" mono>52</Badge>}
+        >
+          <SegmentedBreakdownBar items={workforceBreakdown} />
+          <div className="mt-4 pt-3 border-t border-line-subtle">
+            <Button
+              href="/dashboard/tasks"
+              variant="secondary"
+              size="sm"
+              block
+              leftIcon={<ListChecks className="h-4 w-4" strokeWidth={1.5} />}
+            >
+              {t('Task Management')}
+            </Button>
+          </div>
+        </BentoCard>
+
+        <BentoCard
+          className="lg:col-span-4 justify-between"
+          title={t('Quality Control')}
+          subtitle={t('Audit & dispute handling')}
+        >
+          <div className="my-2">
+            <CustomSemiCircleGauge value={97.4} label={t('Avg. pass rate')} />
+          </div>
+          <KeyValueList
+            rows={[
+              { label: t('Open disputes'), value: 2 },
+              { label: t('Gold-standard sets'), value: 11 },
+            ]}
+          />
+          <div className="mt-4 pt-3 border-t border-line-subtle">
+            <Button
+              href="/dashboard?as=expert"
+              variant="secondary"
+              size="sm"
+              block
+              leftIcon={<ShieldCheck className="h-4 w-4" strokeWidth={1.5} />}
+            >
+              {t('Expert Review Queue')}
+            </Button>
+          </div>
+        </BentoCard>
+
+        <BentoCard
+          className="lg:col-span-4 justify-between"
+          title={t('Settlement cadence')}
+          subtitle={t('Monthly escrow clearance vs payout')}
+        >
+          <div className="flex flex-col gap-4">
+            <CustomProgressBar
+              value={76}
+              tone="teal"
+              leftLabel={t('Settled MTD')}
+              rightLabel={`$${(18400).toLocaleString(locale)}`}
+            />
+            <KeyValueList
+              rows={[
+                { label: t('Active escrow'), value: `$${(22800).toLocaleString(locale)}` },
+                { label: t('Awaiting down payment'), value: t('{count} requests', { count: 2 }) },
+                { label: t('Community payouts this month'), value: `$${(6940).toLocaleString(locale)}` },
+              ]}
+            />
+          </div>
+          <div className="mt-4 pt-3 border-t border-line-subtle">
+            <Button
+              href="/dashboard/billing"
+              variant="secondary"
+              size="sm"
+              block
+              leftIcon={<Wallet className="h-4 w-4" strokeWidth={1.5} />}
+            >
+              {t('Invoices')}
+            </Button>
+          </div>
+        </BentoCard>
+      </div>
+
+      {/* Row 3: Full-width Proposal Queue & Project Management Table */}
+      <BentoCard
+        className="mt-5"
+        title={t('Proposal Queue & Project Management')}
+        subtitle={t('Review enterprise proposals, manage projects and workforce assignments')}
+        action={
+          <div className="flex flex-wrap items-center gap-2.5">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('Search projects...')}
+              size="sm"
+              containerClassName="w-48 sm:w-56"
+            />
+            <CustomSelect
+              value={stageFilter}
+              onChange={setStageFilter}
+              options={stageOptions}
+              size="sm"
+              ariaLabel={t('Filter by stage')}
+              containerClassName="w-44"
+            />
+          </div>
+        }
+      >
+        {filteredQueue.length === 0 ? (
+          <EmptyState
+            title={t('No matching requests.')}
+            description={t('Try adjusting your search query or stage filter.')}
+            action={
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setSearch('');
+                  setStageFilter('all');
+                }}
+              >
+                {t('Reset')}
+              </Button>
+            }
+          />
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-line-subtle">
+            <table className="w-full min-w-[700px] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                  <th className="px-4 py-3 font-medium">{t('Request / Project')}</th>
+                  <th className="px-4 py-3 font-medium">{t('Company')}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t('Budget')}</th>
+                  <th className="px-4 py-3 font-medium">{t('Status')}</th>
+                  <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line-subtle bg-surface">
+                {filteredQueue.map((row) => (
+                  <tr key={row.id} className="transition-colors hover:bg-canvas/60">
+                    <td className="px-4 py-3.5">
+                      <div className="font-medium text-ink">{row.name}</div>
+                      <div className="mt-0.5 font-mono text-xs text-ink-muted">
+                        {row.id} · {t(row.type)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 text-ink-secondary">{t(row.company)}</td>
+                    <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
+                      {t(row.budget)}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <Badge tone={toBadgeTone(row.statusTone)} dot>
+                        {t(row.status)}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3.5 text-right">
+                      <Button
+                        href={`/lab?id=${row.id}`}
+                        variant={row.action ? 'primary' : 'secondary'}
+                        size="sm"
+                        rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                      >
+                        {row.action ? t('Review') : t('Open')}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </BentoCard>
+    </DashboardCanvas>
   );
 };
 

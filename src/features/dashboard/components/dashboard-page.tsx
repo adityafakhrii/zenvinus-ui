@@ -29,7 +29,7 @@ const Dashboard = () => {
   return (
     <>
       <DashboardHeader />
-      <main>
+      <main className="min-h-screen bg-canvas">
         <View />
       </main>
       <DashboardFooter />
