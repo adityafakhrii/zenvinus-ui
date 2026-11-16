@@ -1,189 +1,119 @@
+import React from 'react';
 import Image from 'next/image';
-import { Navigation } from "swiper/modules";
-import React, { useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import AngleArrow from "@/components/icons/angle-arrow";
-import { useT } from "@/i18n";
-
-import shape_1 from "@assets/img/about/shape-1.png";
-import about from "@assets/img/about/about-1.png";
+import about_img from '@assets/img/about/about-1.png';
 import {
-    RawDataIcon,
-    DiscoveryIcon,
-    CurationIcon,
-    AnnotationIcon,
-    QualityControlIcon,
-    DatasetIcon,
-    TrainingIcon,
-    ProductionIcon,
+  AnnotationIcon,
+  CurationIcon,
+  DatasetIcon,
+  DiscoveryIcon,
+  ProductionIcon,
+  QualityControlIcon,
+  RawDataIcon,
+  TrainingIcon,
 } from '@/components/icons/pipeline-icons';
+import { useT } from '@/i18n';
 import type { PipelineStep } from '../types/home';
 
-const about_data: PipelineStep[] = [
-    {
-        icon: RawDataIcon,
-        title: "Raw Data",
-        description: "Start from any source — your own data or public datasets, structured or unstructured.",
-    },
-    {
-        icon: DiscoveryIcon,
-        title: "Discovery",
-        description: "Find and connect the right data from your own sources and available public datasets.",
-    },
-    {
-        icon: CurationIcon,
-        title: "Curation",
-        description: "Clean, prepare, and organize raw data until it is AI-ready.",
-    },
-    {
-        icon: AnnotationIcon,
-        title: "Annotation",
-        description: "Label your data with precision, powered by experts and AI assistance.",
-    },
-    {
-        icon: QualityControlIcon,
-        title: "Quality Control",
-        description: "Validate every output with multi-layer quality checks.",
-    },
-    {
-        icon: DatasetIcon,
-        title: "Dataset",
-        description: "Build, version, and manage datasets that are ready for training.",
-    },
-    {
-        icon: TrainingIcon,
-        title: "Training",
-        description: "Train and fine-tune models with fully tracked experiments.",
-    },
-    {
-        icon: ProductionIcon,
-        title: "Production",
-        description: "Evaluate, register, and ship models to production with confidence.",
-    },
-]
+const PIPELINE_STEPS: ReadonlyArray<PipelineStep> = [
+  {
+    icon: RawDataIcon,
+    title: 'Raw Data',
+    description: 'Start from any source — your own data or public datasets, structured or unstructured.',
+  },
+  {
+    icon: DiscoveryIcon,
+    title: 'Discovery',
+    description: 'Find and connect the right data from your own sources and available public datasets.',
+  },
+  {
+    icon: CurationIcon,
+    title: 'Curation',
+    description: 'Clean, prepare, and organize raw data until it is AI-ready.',
+  },
+  {
+    icon: AnnotationIcon,
+    title: 'Annotation',
+    description: 'Label your data with precision, powered by experts and AI assistance.',
+  },
+  {
+    icon: QualityControlIcon,
+    title: 'Quality Control',
+    description: 'Validate every output with multi-layer quality checks.',
+  },
+  {
+    icon: DatasetIcon,
+    title: 'Dataset',
+    description: 'Build, version, and manage datasets that are ready for training.',
+  },
+  {
+    icon: TrainingIcon,
+    title: 'Training',
+    description: 'Train and fine-tune models with fully tracked experiments.',
+  },
+  {
+    icon: ProductionIcon,
+    title: 'Production',
+    description: 'Evaluate, register, and ship models to production with confidence.',
+  },
+];
 
-const setting = {
-    slidesPerView: 3,
-    spaceBetween: 82,  
-    navigation: {
-        nextEl: ".about-button-next-1",
-        prevEl: ".about-button-prev-1",
-    },
-    breakpoints: {
-        '1860': {
-            
-        },
-        '1800': {
-            spaceBetween: 40,
-        },
-        '1701': {
-            
-        },
-        '1600': {
-            
-        },
-        '1560': {
-            
-        },
-        '1400': {
-            spaceBetween:60,
-        },
-        '1200': {
-            spaceBetween:30,
-            slidesPerView: 2,
-        },
-        '992': {
-            spaceBetween:60,
-            slidesPerView: 2,
-        },
-        '767': {
-            slidesPerView:2
-        },
-        '576': {
-            slidesPerView:2
-        },
-        '0': {
-            slidesPerView:1
-        },
-    },
-}
-
-
+/**
+ * 8-Stage End-to-End AI Pipeline section showing every lifecycle step transparently in a clean Bento grid.
+ */
 const AboutArea = () => {
-    const { t } = useT();
-    const [isLoop, setIsLoop]  = useState(false)
-    useEffect(()  => {
-        setIsLoop(true)
-    }, [])
+  const { t } = useT();
 
-    return (
-        <>
-            <section className="tp-about-area pb-45 p-relative">
-            <div className="tp-about-shape d-none d-xl-block">
-               <Image className="shape-1" src={shape_1} alt="theme-pure" />
+  return (
+    <section className="bg-surface py-16 sm:py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-6 text-center">
+              <Image
+                src={about_img}
+                alt={t('It Industries We’re Offering')}
+                className="mx-auto h-auto max-w-[300px] w-full object-contain"
+              />
             </div>
-            <div className="container">
-               <div className="row">
-                  <div className="col-xl-4 col-lg-12">
-                     <div className="tp-about-wrapper-thumb text-center text-xl-start fadeLeft">
-                        <Image src={about} alt="theme-pure" />
-                     </div>
+          </div>
+
+          <div className="lg:col-span-8">
+            <span className="text-xs font-semibold uppercase tracking-wider text-teal-ink">
+              {t('best {highlight}', { highlight: t('it service') })}
+            </span>
+            <h2 className="mt-2 mb-6 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
+              {t('It Industries We’re Offering')}
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {PIPELINE_STEPS.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.title}
+                    className="flex flex-col rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-4 transition-colors hover:border-teal-ink/30"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
+                        <Icon />
+                      </span>
+                      <span className="font-mono text-xs font-medium text-ink-muted tabular-nums">
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <h3 className="m-0 text-sm font-semibold text-ink">{t(item.title)}</h3>
+                    <p className="mt-1.5 mb-0 text-xs leading-relaxed text-ink-secondary">
+                      {t(item.description)}
+                    </p>
                   </div>
-                  <div className="col-xl-8 col-lg-10">
-                     <div className="tp-about-wrapper pl-50">
-
-                        <div className="row">
-
-                           <div className="col-lg-8">
-                              <div className="tp-about-title-wrapper p-relative">
-                                 <span className="tp-section-title__pre">
-                                    {t('best {highlight}', { highlight: <span className="title-pre-color">{t('it service')}</span> })}
-                                    <AngleArrow /> 
-                                 </span>
-                                 <h3 className="tp-section-title">{t('It Industries We’re Offering')}
-                                 </h3>
-                              </div>
-                           </div>
-
-                           <div className="col-lg-4">
-                              <div className="tp-about-nav d-none d-md-block p-relative">
-                                 <button type="button" className="about-button-prev-1">
-                                    <i className="fa-regular fa-arrow-left"></i>
-                                 </button>
-                                 <button type="button" className="about-button-next-1">
-                                    <i className="fa-regular fa-arrow-right"></i>
-                                 </button>
-                              </div>
-                           </div>
-                        </div>
-
-                        <div className="tp-about-item-wrapper"> 
-                            <Swiper {...setting}  
-                                    modules={[Navigation]} 
-                                    loop={isLoop} 
-                                    className="about-active swiper-container"
-                                    >
-                                {about_data.map((item, i)  =>  
-                                    <SwiperSlide key={i} className="tp-about-item mb-30">
-                                        <div className="tp-about-item-thumb">
-                                            <item.icon />
-                                        </div>
-                                        <div className="tp-about-item-content">
-                                            <h4 className="about-title">{t(item.title)}</h4>
-                                            <p>{t(item.description)}</p>
-                                        </div>
-                                    </SwiperSlide>  
-                                )} 
-                                </Swiper>
-
-                        </div>
-                     </div>
-                  </div>
-               </div>
+                );
+              })}
             </div>
-         </section>
-        </> 
-    );
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default AboutArea;

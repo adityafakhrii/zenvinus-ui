@@ -1,163 +1,211 @@
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useT } from "@/i18n";
-import type { AboutLayer, AboutNumber, AboutPillar, TimelineYear } from "../types/about";
+import React from 'react';
+import Image from 'next/image';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import pipeline_img from '@assets/img/about/about-1.png';
+import community_img from '@assets/img/business/data-engine-community.png';
+import platform_img from '@assets/img/community/01-general-ai-hero.png';
+import { Badge, Button } from '@/components/ui';
+import { useT } from '@/i18n';
+import type { AboutLayer, AboutNumber, AboutPillar, TimelineYear } from '../types/about';
 
-import pipeline_img from "@assets/img/about/about-1.png";
-import community_img from "@assets/img/business/data-engine-community.png";
-import platform_img from "@assets/img/community/01-general-ai-hero.png";
-
-/**
- * About page. Follows the section order of mangoboost.io/company/about, with its own layout:
- * 1. intro (text left, image right) with the four layers as a numbered 01-04 flow,
- * 2. problem statement (text left, image right) with the company pillars in a 2x2 grid below,
- * 3. numbers in a dark panel next to an image, 4. timeline (horizontal, hidden while empty),
- * 5. a light call-to-action card (text left, buttons right).
- * MangoBoost's offices map and partner/investor logos are left out until there are real ones to show.
- * Copy is English (the i18n key); Indonesian lives in src/i18n/id/about.ts.
- */
-
-// The chain from raw data to a delivered dataset; each layer is one part we run ourselves
-const LAYERS: AboutLayer[] = [
+const LAYERS: ReadonlyArray<AboutLayer> = [
   {
-    tag: "Collection",
-    title: "Collection and curation",
-    text: "We gather text, images, audio and video, then filter, de-duplicate and balance the sources before anything is labeled.",
+    tag: 'Collection',
+    title: 'Collection and curation',
+    text: 'We gather text, images, audio and video, then filter, de-duplicate and balance the sources before anything is labeled.',
   },
   {
-    tag: "Annotation",
-    title: "Annotation",
-    text: "Contributors label each item on the platform, following written guidelines for the task. They are paid for each approved task.",
+    tag: 'Annotation',
+    title: 'Annotation',
+    text: 'Contributors label each item on the platform, following written guidelines for the task. They are paid for each approved task.',
   },
   {
-    tag: "Quality control",
-    title: "Expert review",
-    text: "Experts check the results. Work that misses the bar goes back for revision, and each batch gets a quality report.",
+    tag: 'Quality control',
+    title: 'Expert review',
+    text: 'Experts check the results. Work that misses the bar goes back for revision, and each batch gets a quality report.',
   },
   {
-    tag: "Delivery",
-    title: "Delivery",
-    text: "Ready-made datasets in the catalog, or a custom project delivered in batches. Data ships as versioned splits with documentation and a license.",
+    tag: 'Delivery',
+    title: 'Delivery',
+    text: 'Ready-made datasets in the catalog, or a custom project delivered in batches. Data ships as versioned splits with documentation and a license.',
   },
 ];
 
-// Company pillars, as on mangoboost.io (Origin, Mission, Vision, Values).
-// Source: Profil_Zenvora_Inteligensia_Nusantara.docx (founded 2024, vision, mission, ethics and data security).
-const PILLARS: AboutPillar[] = [
+const PILLARS: ReadonlyArray<AboutPillar> = [
   {
-    label: "Origin",
-    title: "Started in 2024",
-    text: "Zenvinus is built by PT Zenvora Inteligensia Nusantara, an Indonesian AI company founded in 2024 to close the gap between global AI and what Indonesia needs.",
+    label: 'Origin',
+    title: 'Started in 2024',
+    text: 'Zenvinus is built by PT Zenvora Inteligensia Nusantara, an Indonesian AI company founded in 2024 to close the gap between global AI and what Indonesia needs.',
   },
   {
-    label: "Mission",
-    title: "Indonesian data that is ready to use",
-    text: "Collect, label and check data in Indonesian languages, then deliver it with documentation and a license so teams can train and test models on it.",
+    label: 'Mission',
+    title: 'Indonesian data that is ready to use',
+    text: 'Collect, label and check data in Indonesian languages, then deliver it with documentation and a license so teams can train and test models on it.',
   },
   {
-    label: "Vision",
-    title: "AI that serves Indonesia",
+    label: 'Vision',
+    title: 'AI that serves Indonesia',
     text: "To be a main partner in Indonesia's digital transformation, with AI that benefits people and industry, starting with the data it learns from.",
   },
   {
-    label: "Values",
-    title: "Clear about data, fair to people",
-    text: "We keep data secure and follow AI ethics, show what is in a dataset before you use it, and pay contributors for every approved task.",
+    label: 'Values',
+    title: 'Clear about data, fair to people',
+    text: 'We keep data secure and follow AI ethics, show what is in a dataset before you use it, and pay contributors for every approved task.',
   },
 ];
 
-// WHY: placeholder figures carried over from the old counter; replace them with current numbers before launch
-const NUMBERS: AboutNumber[] = [
-  { value: "19,432", label: "annotated samples" },
-  { value: "4,821", label: "contributors" },
-  { value: "94%", label: "of reviewed work passes quality control" },
-  { value: "16", label: "Indonesian datasets in the catalog" },
+const NUMBERS: ReadonlyArray<AboutNumber> = [
+  { value: '19,432', label: 'annotated samples' },
+  { value: '4,821', label: 'contributors' },
+  { value: '94%', label: 'of reviewed work passes quality control' },
+  { value: '16', label: 'Indonesian datasets in the catalog' },
 ];
 
-// Company history, newest first. The section stays hidden while this is empty.
-// Add real milestones only, e.g. { year: "2025", title: "Platform launch", items: ["Dataset catalog opened"] }
-// (the English text is the i18n key; add the Indonesian to src/i18n/id/about.ts).
-const TIMELINE: TimelineYear[] = [];
+const TIMELINE: ReadonlyArray<TimelineYear> = [];
 
+/**
+ * About Zenvinus page refactored into Tailwind CSS with 4px vertical rhythm & crisp surface hierarchy.
+ */
 const AboutPage = () => {
   const { t, locale } = useT();
-  const num = (v: string): string => (/^[\d,]+$/.test(v) ? Number(v.replace(/,/g, "")).toLocaleString(locale) : v);
+  const num = (v: string): string => (/^[\d,]+$/.test(v) ? Number(v.replace(/,/g, '')).toLocaleString(locale) : v);
 
   return (
-    <div className="zv-about">
-      {/* 1. Intro + the four layers as a flow */}
-      <section className="zv-about-intro-sec">
-        <div className="container">
-          <div className="row align-items-center gy-5 gx-lg-5">
-            <div className="col-lg-7">
-              <h1>
-                {t("AI training data for")} <span className="zv-about-accent">{t("Indonesia")}</span>.
+    <div className="bg-surface">
+      {/* 1. Intro + 4-Layer Flow */}
+      <section className="border-b border-[rgba(8,13,53,0.06)] bg-canvas py-14 sm:py-20">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-7">
+              <Badge tone="mint" dot>
+                {t('About Zenvinus')}
+              </Badge>
+              <h1 className="mt-4 mb-0 text-[32px] font-semibold leading-[1.15] tracking-[-0.025em] text-ink sm:text-[42px]">
+                {t('AI training data for')}{' '}
+                <span className="text-teal-ink">{t('Indonesia')}</span>.
                 <br />
-                {t("From collection to delivery.")}
+                {t('From collection to delivery.')}
               </h1>
-              <p className="zv-about-lead">
-                {t("Zenvinus runs every step itself: collecting and curating the data, having it labeled by a community of contributors, having experts review it, and delivering it with documentation and a license.")}
+              <p className="mt-5 mb-0 max-w-2xl text-base leading-relaxed text-ink-secondary">
+                {t(
+                  'Zenvinus runs every step itself: collecting and curating the data, having it labeled by a community of contributors, having experts review it, and delivering it with documentation and a license.',
+                )}
               </p>
             </div>
-            <div className="col-lg-5">
-              <Image src={pipeline_img} alt={t("The Zenvinus data pipeline, from raw data to production")} className="zv-about-figure" priority sizes="(max-width: 991px) 80vw, 35vw" />
+
+            <div className="lg:col-span-5">
+              <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 text-center shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+                <Image
+                  src={pipeline_img}
+                  alt={t('The Zenvinus data pipeline, from raw data to production')}
+                  priority
+                  className="mx-auto h-auto max-w-[320px] w-full object-contain"
+                />
+              </div>
             </div>
           </div>
 
-          <ol className="zv-about-flow">
-            {LAYERS.map((l, i) => (
-              <li key={l.title}>
-                <span className="zv-about-step">{String(i + 1).padStart(2, "0")}</span>
-                <span className="zv-about-kicker">{t(l.tag)}</span>
-                <h3>{t(l.title)}</h3>
-                <p>{t(l.text)}</p>
+          <ol className="mt-12 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 xl:grid-cols-4">
+            {LAYERS.map((layer, index) => (
+              <li
+                key={layer.title}
+                className="flex flex-col rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]"
+              >
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
+                    {t(layer.tag)}
+                  </span>
+                  <span className="font-mono text-xs font-semibold text-ink-muted tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                <h2 className="m-0 text-base font-semibold text-ink">{t(layer.title)}</h2>
+                <p className="mt-2 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                  {t(layer.text)}
+                </p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      {/* 2. Problem statement, then the company pillars */}
-      <section className="zv-about-why">
-        <div className="container">
-          <div className="row align-items-center gy-5 gx-lg-5">
-            <div className="col-lg-6">
-              <h2>{t("Most AI is not trained on Indonesian data.")}</h2>
-              <p>{t("Most AI models are trained largely on data from outside Indonesia, so they often handle Indonesian languages, local terms and everyday context less well.")}</p>
-              <p>{t("More data from elsewhere does not fix that. The data has to be collected, labeled and checked by people who know the language and the context. That is the work we do.")}</p>
+      {/* 2. Problem Statement & Company Pillars */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+            <div className="lg:col-span-6">
+              <h2 className="m-0 text-[28px] font-semibold leading-tight tracking-[-0.025em] text-ink sm:text-[32px]">
+                {t('Most AI is not trained on Indonesian data.')}
+              </h2>
+              <p className="mt-4 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">
+                {t(
+                  'Most AI models are trained largely on data from outside Indonesia, so they often handle Indonesian languages, local terms and everyday context less well.',
+                )}
+              </p>
+              <p className="mt-3 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">
+                {t(
+                  'More data from elsewhere does not fix that. The data has to be collected, labeled and checked by people who know the language and the context. That is the work we do.',
+                )}
+              </p>
             </div>
-            <div className="col-lg-6">
-              <Image src={community_img} alt={t("Data flowing from sources through the Zenvinus platform to contributors")} className="zv-about-photo" sizes="(max-width: 991px) 100vw, 45vw" />
+
+            <div className="lg:col-span-6">
+              <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-5">
+                <Image
+                  src={community_img}
+                  alt={t('Data flowing from sources through the Zenvinus platform to contributors')}
+                  className="h-auto w-full object-contain"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="zv-about-pillars">
-            {PILLARS.map((p) => (
-              <div key={p.label}>
-                <span className="zv-about-kicker">{t(p.label)}</span>
-                <h3>{t(p.title)}</h3>
-                <p>{t(p.text)}</p>
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {PILLARS.map((pillar) => (
+              <div
+                key={pillar.label}
+                className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-6"
+              >
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
+                  <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {t(pillar.label)}
+                </span>
+                <h3 className="mt-2 mb-0 text-lg font-semibold text-ink">{t(pillar.title)}</h3>
+                <p className="mt-2 mb-0 text-sm leading-relaxed text-ink-secondary">{t(pillar.text)}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 3. Numbers */}
-      <section className="zv-about-numbers">
-        <div className="container">
-          <div className="zv-about-num-panel">
-            <div className="zv-about-num-media">
-              <Image src={platform_img} alt={t("The Zenvinus platform for datasets, models and contributors")} sizes="(max-width: 991px) 100vw, 40vw" />
+      {/* 3. Numbers Dark Navy Panel */}
+      <section className="py-6 sm:py-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-8 rounded-2xl bg-navy p-6 text-white lg:grid-cols-12 lg:p-10">
+            <div className="lg:col-span-5">
+              <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4">
+                <Image
+                  src={platform_img}
+                  alt={t('The Zenvinus platform for datasets, models and contributors')}
+                  className="h-auto w-full object-contain"
+                />
+              </div>
             </div>
-            <div className="zv-about-num-body">
-              <h2>{t("In numbers.")}</h2>
-              <dl className="zv-about-num-grid">
-                {NUMBERS.map((n) => (
-                  <div key={n.label}>
-                    <dt>{num(n.value)}</dt>
-                    <dd>{t(n.label)}</dd>
+
+            <div className="lg:col-span-7">
+              <h2 className="m-0 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">
+                {t('In numbers.')}
+              </h2>
+              <dl className="mt-6 mb-0 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {NUMBERS.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] p-5"
+                  >
+                    <dt className="font-mono text-[28px] font-semibold text-teal tabular-nums leading-none">
+                      {num(item.value)}
+                    </dt>
+                    <dd className="m-0 mt-2 text-sm text-white/75">{t(item.label)}</dd>
                   </div>
                 ))}
               </dl>
@@ -166,17 +214,24 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* 4. Timeline */}
+      {/* 4. Optional Timeline */}
       {TIMELINE.length > 0 && (
-        <section className="zv-about-timeline">
-          <div className="container">
-            <h2>{t("Our journey")}</h2>
-            <ol className="zv-about-years">
+        <section className="py-14">
+          <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+            <h2 className="m-0 text-2xl font-semibold text-ink">{t('Our journey')}</h2>
+            <ol className="mt-6 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3">
               {TIMELINE.map((y) => (
-                <li key={y.year}>
-                  <span className="zv-about-year">{y.year}</span>
-                  {y.title && <span className="zv-about-kicker">{t(y.title)}</span>}
-                  <ul>{y.items.map((it) => <li key={it}>{t(it)}</li>)}</ul>
+                <li
+                  key={y.year}
+                  className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-5"
+                >
+                  <span className="font-mono text-lg font-semibold text-teal-ink tabular-nums">{y.year}</span>
+                  {y.title && <div className="mt-1 text-sm font-semibold text-ink">{t(y.title)}</div>}
+                  <ul className="mt-3 mb-0 flex list-disc flex-col gap-1.5 pl-4 text-xs text-ink-secondary">
+                    {y.items.map((it) => (
+                      <li key={it}>{t(it)}</li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ol>
@@ -184,17 +239,32 @@ const AboutPage = () => {
         </section>
       )}
 
-      {/* 5. Call to action */}
-      <section className="zv-about-cta">
-        <div className="container">
-          <div className="zv-about-cta-card">
-            <div>
-              <h2>{t("Work with us.")}</h2>
-              <p>{t("Need data for a project, want to join as a contributor, or want to use our datasets? Write to us and we will get back to you as soon as we can.")}</p>
+      {/* 5. CTA Banner */}
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col justify-between gap-6 rounded-2xl border border-teal-ink/20 bg-tint-mint p-6 sm:p-8 lg:flex-row lg:items-center">
+            <div className="max-w-2xl">
+              <h2 className="m-0 text-2xl font-semibold tracking-tight text-ink sm:text-[28px]">
+                {t('Work with us.')}
+              </h2>
+              <p className="mt-2 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">
+                {t(
+                  'Need data for a project, want to join as a contributor, or want to use our datasets? Write to us and we will get back to you as soon as we can.',
+                )}
+              </p>
             </div>
-            <div className="zv-about-cta-actions">
-              <Link href="/contact" className="zv-about-btn">{t("Contact us")}</Link>
-              <Link href="/tasks" className="zv-about-btn is-outline">{t("See open tasks")}</Link>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <Button
+                href="/contact"
+                variant="primary"
+                size="md"
+                rightIcon={<ArrowRight className="h-4 w-4" strokeWidth={1.6} />}
+              >
+                {t('Contact us')}
+              </Button>
+              <Button href="/tasks" variant="secondary" size="md">
+                {t('See open tasks')}
+              </Button>
             </div>
           </div>
         </div>

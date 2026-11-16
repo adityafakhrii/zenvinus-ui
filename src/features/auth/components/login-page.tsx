@@ -1,13 +1,11 @@
 import React from 'react';
 import LoginArea from './login-area';
 
-/** Login page: only the form area, without the site header and footer. */
-const Login = () => {
-    return (
-        <main>
-            <LoginArea />
-        </main>
-    );
-};
+/** Login page rendering the standalone centered auth view without marketing header/footer clutter. */
+const Login = () => (
+  <main className="min-h-screen bg-canvas">
+    <LoginArea />
+  </main>
+);
 
 export default Login;

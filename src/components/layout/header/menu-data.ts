@@ -50,6 +50,7 @@ const SECTION_OF: Readonly<Record<string, string>> = {
   '/model-details': '/models',
   '/blog-details': '/blog',
   '/news-details': '/news',
+  '/service-details': '/service',
 };
 
 /** Menu link a page belongs to (router.pathname -> menu link); shared by the desktop and mobile menus. */

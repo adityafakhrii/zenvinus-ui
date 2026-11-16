@@ -1,20 +1,19 @@
-import Breadcrumb from "@/components/common/breadcrumb";
-import HeaderOne from "@/components/layout/header/header";
-import React from "react";
-import ServiceDetailsArea from "./service-details-area";
-import FooterThree from "@/components/layout/footer/footer";
+import React from 'react';
+import FooterThree from '@/components/layout/footer/footer';
+import HeaderOne from '@/components/layout/header/header';
+import ServiceDetailsArea from './service-details-area';
 
-const ServiceDetails = () => {
-  return (
-    <>
-      <HeaderOne />
-      <main>
-        <Breadcrumb top_title="Machine Learning" page_title="Service Details" />
-        <ServiceDetailsArea />
-      </main>
-      <FooterThree />
-    </>
-  );
-};
+/**
+ * Service details page (/service-details) rendered cleanly inside HeaderOne + FooterThree (no Breadcrumb).
+ */
+const ServiceDetails = () => (
+  <>
+    <HeaderOne />
+    <main className="bg-canvas">
+      <ServiceDetailsArea />
+    </main>
+    <FooterThree />
+  </>
+);
 
 export default ServiceDetails;

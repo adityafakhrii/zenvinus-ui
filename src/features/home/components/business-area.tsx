@@ -1,93 +1,73 @@
 import React from 'react';
 import Image from 'next/image';
-
-import  business_shape_1 from "@assets/img/business/shape-1.png";
-import  business_shape_2 from "@assets/img/business/shape-2.png";
-import  business_shape_3 from "@assets/img/business/shape-3.png";
-import  business_shape_4 from "@assets/img/business/shape-4.png" ;
-import  data_engine_community from "@assets/img/business/data-engine-community.png" ;
-
-import AngleArrow from '@/components/icons/angle-arrow';
-import LineArrowTwo from '@/components/icons/line-arrow-2';
-import CodeIcon from '@/components/icons/code-icon';
-import TechIcon from '@/components/icons/tech-icon';
+import { Code2, Cpu } from 'lucide-react';
+import data_engine_community from '@assets/img/business/data-engine-community.png';
 import { useT } from '@/i18n';
 
+/**
+ * Dual-value split highlighting Zenvinus Data Engine paired with Community & AI Lab.
+ */
 const BusinessArea = () => {
-    const { t } = useT();
-    return (
-        <>
-            <section className="tp-business-area p-relative pt-110 pb-115">
-            <div className="tp-business-shape">
-               <Image className="shape-1 d-none d-lg-block" src={business_shape_1} alt="theme-pure" />
-               <Image className="shape-2" src={business_shape_2} alt="theme-pure" />
-               <Image className="shape-3" src={business_shape_3} alt="theme-pure" />
-               <Image className="shape-4" src={business_shape_4} alt="theme-pure" />
+  const { t } = useT();
+
+  return (
+    <section className="border-y border-[rgba(8,13,53,0.06)] bg-canvas py-16 sm:py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-6">
+            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
+              <Image
+                src={data_engine_community}
+                alt={t('Zenvinus — Data Engine & AI Community Hub')}
+                className="h-auto w-full object-contain"
+              />
             </div>
-            <div className="container">
-               <div className="row align-items-center">
-                  <div className="col-lg-6">
-                     <div className="tp-business-thumb-wrapper p-relative">
-                        <div className="tp-business-thumb-media text-center">
-                           <Image src={data_engine_community} alt={t('Zenvinus — Data Engine & AI Community Hub')} />
-                        </div>
-                        <div className="circle-animation business-4">
-                           <span className="tp-circle-1"></span>
-                        </div>
-                        <div className="circle-animation business-3">
-                           <span className="tp-circle-2"></span>
-                        </div>
-                        <div className="circle-animation business-2">
-                           <span className="tp-circle-3"></span>
-                        </div>
-                     </div>
-                  </div>
-                  <div className="col-lg-6">
-                     <div className="tp-business-title-wrapper">
-                        <span className="tp-section-title__pre">
-                           {t('why {highlight}', { highlight: <span className="title-pre-color">Zenvinus</span> })}
-                           <AngleArrow />
-                        </span>
-                        <h3 className="tp-section-title">{t('One Platform For Your Entire AI Lifecycle')}
-                           <span className="title-left-shape">
-                              <LineArrowTwo />
-                           </span>
-                        </h3>
-                        <p>{t('Stop juggling separate vendors for datasets, labeling, and model {br} development. Zenvinus unifies the whole AI workflow in one platform.', { br: <br /> })}</p>
-                     </div>
-                     <div className="row">
+          </div>
 
-                        <div className="col-lg-6 col-md-6">
-                           <div className="tp-business-box mb-30">
-                              <div className="tp-business-box-title d-flex align-items-center">
-                                 <span>
-                                    <CodeIcon />
-                                 </span>
-                                 <h4 className="tp-business-title">{t('Data Engine')}</h4>
-                              </div>
-                              <p>{t('From discovery, curation, {br} to AI-ready annotation', { br: <br /> })}</p>
-                           </div>
-                        </div>
+          <div className="lg:col-span-6">
+            <span className="text-xs font-semibold uppercase tracking-wider text-teal-ink">
+              {t('why {highlight}', { highlight: 'Zenvinus' })}
+            </span>
+            <h2 className="mt-2 mb-0 text-[28px] font-semibold leading-tight tracking-[-0.025em] text-ink sm:text-[34px]">
+              {t('One Platform For Your Entire AI Lifecycle')}
+            </h2>
+            <p className="mt-4 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">
+              {t(
+                'Stop juggling separate vendors for datasets, labeling, and model {br} development. Zenvinus unifies the whole AI workflow in one platform.',
+                { br: ' ' },
+              )}
+            </p>
 
-                        <div className="col-lg-6 col-md-6">
-                           <div className="tp-business-box mb-30">
-                              <div className="tp-business-box-title d-flex align-items-center">
-                                 <span>
-                                    <TechIcon />
-                                 </span>
-                                 <h4 className="tp-business-title">{t('Community & AI Lab')}</h4>
-                              </div>
-                              <p>{t('Distributed human workforce {br} plus research and training', { br: <br /> })}</p>
-                           </div>
-                        </div>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-5">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-tint-mint text-teal-ink">
+                    <Code2 className="h-5 w-5" strokeWidth={1.6} />
+                  </span>
+                  <h3 className="m-0 text-base font-semibold text-ink">{t('Data Engine')}</h3>
+                </div>
+                <p className="mt-3 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                  {t('From discovery, curation, {br} to AI-ready annotation', { br: ' ' })}
+                </p>
+              </div>
 
-                     </div>
-                  </div>
-               </div>
+              <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-5">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-tone-blue-bg text-tone-blue-fg">
+                    <Cpu className="h-5 w-5" strokeWidth={1.6} />
+                  </span>
+                  <h3 className="m-0 text-base font-semibold text-ink">{t('Community & AI Lab')}</h3>
+                </div>
+                <p className="mt-3 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                  {t('Distributed human workforce {br} plus research and training', { br: ' ' })}
+                </p>
+              </div>
             </div>
-         </section>
-        </>
-    );
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default BusinessArea;

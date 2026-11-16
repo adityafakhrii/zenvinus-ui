@@ -1,52 +1,53 @@
-import React from "react"; 
-import Link from "next/link";
-import Image from "next/image";
-import FooterThree from "@/components/layout/footer/footer"; 
-import SEO from "@/components/common/seo";
-import HeaderOne from "@/components/layout/header/header";
-import { useT } from "@/i18n";
-import error_shape from "@assets/img/error/error-shape.png";
-import error_img from "@assets/img/error/404.png";
+import React from 'react';
+import { ArrowLeft, LayoutDashboard } from 'lucide-react';
+import SEO from '@/components/common/seo';
+import FooterThree from '@/components/layout/footer/footer';
+import HeaderOne from '@/components/layout/header/header';
+import { Badge, Button } from '@/components/ui';
+import { useT } from '@/i18n';
 
-
+/**
+ * Calm Tailwind 404 Not Found screen aligned to the Zenvinus design system.
+ */
 const NotFoundPage = () => {
   const { t } = useT();
+
   return (
     <>
-    <SEO pageTitle={"Oops.! Page Not Found!"} /> 
-    <HeaderOne />
-      <div id="smooth-wrapper">
-        <div id="smooth-content">
-          <main>
-            <div className="tp-error-area tp-error-ptb p-relative">
-              <div className="tp-error-left-shape">
-                <Image src={error_shape} alt="theme-pure" />
-              </div>
-              <div className="container">
-                <div className="row">
-                  <div className="col-xl-12">
-                    <div className="tp-error-content-box text-center">
-                      <Image src={error_img} alt="theme-pure" />
-                    </div>
-                    <div className="tp-error-text-box text-center">
-                      <h4 className="error-title-sm">{t("Oops.! Page Not Found!")}</h4>
-                      <p>{t("The page you are looking for does not exist.")}</p>
-                      <Link
-                        className="tp-btn-inner alt-color-black"
-                        href="/"
-                      >
-                        <span className="tp-btn"> {t("Back To Home")}</span>
-                        <b></b>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </main>
-          <FooterThree />
+      <SEO pageTitle="Page Not Found" />
+      <HeaderOne />
+      <main className="flex min-h-[calc(100vh-16rem)] items-center justify-center bg-canvas px-4 py-16 sm:px-6">
+        <div className="w-full max-w-lg rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-8 text-center shadow-[0_1px_2px_rgba(2,6,38,0.04)] sm:p-10">
+          <Badge tone="neutral" mono>
+            404
+          </Badge>
+          <h1 className="mt-4 mb-2 text-2xl font-semibold tracking-tight text-ink sm:text-[28px]">
+            {t('Page not found')}
+          </h1>
+          <p className="m-0 text-sm leading-relaxed text-ink-secondary">
+            {t('The page you are looking for does not exist or may have been moved.')}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Button
+              href="/"
+              variant="primary"
+              size="md"
+              leftIcon={<ArrowLeft className="h-4 w-4" strokeWidth={1.6} />}
+            >
+              {t('Back To Home')}
+            </Button>
+            <Button
+              href="/dashboard"
+              variant="secondary"
+              size="md"
+              leftIcon={<LayoutDashboard className="h-4 w-4" strokeWidth={1.5} />}
+            >
+              {t('Dashboard')}
+            </Button>
+          </div>
         </div>
-      </div>
+      </main>
+      <FooterThree />
     </>
   );
 };

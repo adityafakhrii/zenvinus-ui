@@ -1,26 +1,68 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Badge, EmptyState, SearchInput, cn } from '@/components/ui';
+import { SkeletonFilterBar, SkeletonPostGrid } from '@/components/ui/skeleton';
 import { useT } from '@/i18n';
+import { getPageItems, pageQuery, totalPages } from '@/utils/pagination';
 import { POSTS_PER_PAGE, fetchPostPage, postListParams } from '../services/posts-api';
 import type { PostKind, PostPage } from '../types/post';
-import { getPageItems, pageQuery, totalPages } from '@/utils/pagination';
-
 import PostCard from './post-card';
-import blog_shape from '@assets/img/blog/shaep-2.png';
-import { SkeletonFilterBar, SkeletonPostGrid } from '@/components/ui/skeleton';
 
 export interface PostboxAreaProps {
-  /** Route prefix of the page using this area ("/blog" or "/news") */
+  /** Route prefix of the page using this area ("/blog" or "/news"). */
   base?: string;
   kind?: PostKind;
-  /** First page from SSR; null when the API was down */
+  /** First page from SSR; null when the API was down. */
   initialData?: PostPage | null;
 }
 
+interface PostSearchProps {
+  base: string;
+  initial: string;
+}
+
+function PostSearch({ base, initial }: PostSearchProps) {
+  const { t } = useT();
+  const router = useRouter();
+  const [q, setQ] = useState(initial);
+
+  useEffect(() => {
+    setQ(initial);
+  }, [initial]);
+
+  const handleChange = (next: string) => {
+    setQ(next);
+    if (next === '' && initial) {
+      router.push({ pathname: base });
+    }
+  };
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const term = q.trim();
+    router.push(term ? { pathname: base, query: { q: term } } : { pathname: base });
+  };
+
+  return (
+    <form onSubmit={submit} role="search" className="w-full sm:w-64">
+      <SearchInput
+        value={q}
+        onChange={handleChange}
+        placeholder={t('Search')}
+        size="sm"
+        maxLength={200}
+      />
+    </form>
+  );
+}
+
+/**
+ * Editorial list layout for /blog with pill category filters, custom search, 3-col 16:10 grid & pagination.
+ */
 const PostboxArea = ({ base = '/blog', kind = 'blog', initialData }: PostboxAreaProps) => {
   const { t } = useT();
   const isNews = kind === 'news';
@@ -28,10 +70,8 @@ const PostboxArea = ({ base = '/blog', kind = 'blog', initialData }: PostboxArea
   const { page, params } = postListParams(router.query);
 
   const { data, isLoading, isError, isFetching } = useQuery({
-    // WHY: The key carries the filters and page, so each page is its own cache entry and changing pages refetches
     queryKey: ['posts', kind, params],
     queryFn: () => fetchPostPage(kind, params),
-    // SSR sends null when the API was down; undefined lets the client fetch instead of showing an empty list
     initialData: initialData ?? undefined,
     placeholderData: keepPreviousData,
     refetchOnMount: false,
@@ -49,137 +89,220 @@ const PostboxArea = ({ base = '/blog', kind = 'blog', initialData }: PostboxArea
   const activeQuery = typeof router.query.q === 'string' ? router.query.q : '';
 
   return (
-    <>
-      {/* WHY: Same card grid as the "IT Solutions" blog block on the About page; the sidebar became a filter bar */}
-      <section className="tp-blog-3-area zv-post-grid p-relative fix pt-80 pb-90">
-        <div className="tp-blog-3-shape">
-          <Image className="shape-1" src={blog_shape} alt="" aria-hidden="true" />
-          <Image className="shape-2" src={blog_shape} alt="" aria-hidden="true" />
-        </div>
-        <div className="container">
-          {/* Page heading, so visitors can tell at a glance this is the blog (as on mangoboost.io/resources/blog) */}
-          <header className="zv-post-head">
-            <h1>{isNews ? t('News') : t('Blog')}</h1>
-            <p>
-              {isNews
-                ? t('Announcements and updates from Zenvinus.')
-                : t('Guides and notes from the Zenvinus team on preparing AI data: annotation, dataset quality and working with Indonesian languages.')}
-            </p>
-          </header>
+    <section className="min-h-screen bg-canvas py-12 sm:py-16">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        {/* Editorial Heading */}
+        <header className="max-w-2xl">
+          <Badge tone="mint" dot>
+            {isNews ? t('News') : t('Blog')}
+          </Badge>
+          <h1 className="mt-3 mb-0 text-[30px] font-semibold tracking-[-0.025em] text-ink sm:text-[38px]">
+            {isNews ? t('News') : t('Blog')}
+          </h1>
+          <p className="mt-2 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">
+            {isNews
+              ? t('Announcements and updates from Zenvinus.')
+              : t(
+                  'Guides and notes from the Zenvinus team on preparing AI data: annotation, dataset quality and working with Indonesian languages.',
+                )}
+          </p>
+        </header>
 
-          {/* Filters need the categories from the API; until they arrive show their skeleton */}
-          {!data && <SkeletonFilterBar />}
-          {data && (
-          <div className="zv-post-toolbar">
-            <nav className="zv-post-cats" aria-label={t('Category')}>
-              <Link href={base} className={!activeCategory && !activeTag && !activeQuery ? 'is-active' : undefined}>{t('All')}</Link>
-              {(sidebar?.categories || []).map((c) => (
-                <Link key={c.slug} href={{ pathname: base, query: { category: c.slug } }} className={activeCategory === c.slug ? 'is-active' : undefined}>
-                  {c.name} <span>{c.count}</span>
-                </Link>
-              ))}
+        {/* Toolbar */}
+        {!data && (
+          <div className="mt-8">
+            <SkeletonFilterBar />
+          </div>
+        )}
+        {data && (
+          <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+            <nav
+              aria-label={t('Category')}
+              className="flex flex-wrap items-center gap-1.5"
+            >
+              <Link
+                href={base}
+                className={cn(
+                  'inline-flex h-8 items-center rounded-lg px-3 text-xs font-medium no-underline transition-colors',
+                  !activeCategory && !activeTag && !activeQuery
+                    ? 'bg-navy text-white'
+                    : 'bg-canvas text-ink-secondary hover:text-ink',
+                )}
+              >
+                {t('All')}
+              </Link>
+              {(sidebar?.categories || []).map((c) => {
+                const isActive = activeCategory === c.slug;
+                return (
+                  <Link
+                    key={c.slug}
+                    href={{ pathname: base, query: { category: c.slug } }}
+                    className={cn(
+                      'inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium no-underline transition-colors',
+                      isActive
+                        ? 'bg-navy text-white'
+                        : 'bg-canvas text-ink-secondary hover:text-ink',
+                    )}
+                  >
+                    <span>{c.name}</span>
+                    <span
+                      className={cn(
+                        'font-mono text-[11px] tabular-nums',
+                        isActive ? 'text-teal' : 'text-ink-muted',
+                      )}
+                    >
+                      {c.count}
+                    </span>
+                  </Link>
+                );
+              })}
             </nav>
-            <div className="zv-post-tools">
-              <span className="zv-post-count">{t('{count} articles', { count: total })}</span>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-mono text-xs font-medium text-ink-muted tabular-nums">
+                {t('{count} articles', { count: total })}
+              </span>
               <PostSearch base={base} initial={activeQuery} />
             </div>
           </div>
-          )}
+        )}
 
-          {(activeQuery || activeTag) && (
-            <p className="zv-post-filter">
-              {activeQuery ? t('Results for "{query}"', { query: activeQuery }) : t('Tag: {tag}', { tag: activeTag })}
-              {' · '}<Link href={base}>{t('Clear filter')}</Link>
-            </p>
-          )}
+        {(activeQuery || activeTag) && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-ink-secondary">
+            <span>
+              {activeQuery
+                ? t('Results for "{query}"', { query: activeQuery })
+                : t('Tag: {tag}', { tag: activeTag })}
+            </span>
+            <Link
+              href={base}
+              className="inline-flex items-center gap-1 rounded-md border border-line-subtle bg-surface px-2 py-1 font-medium text-ink no-underline hover:bg-canvas"
+            >
+              <X className="h-3 w-3" strokeWidth={1.75} />
+              <span>{t('Clear filter')}</span>
+            </Link>
+          </div>
+        )}
 
-          {/* Loading, or the service is down and retrying in the background: keep the skeleton */}
-          {(isLoading || isError) && <SkeletonPostGrid count={6} label={t('Loading')} />}
-          {!isLoading && !isError && posts.length === 0 && !outOfRange && (
-            <p className="pf2-empty">{isNews ? t('No news published yet.') : t('No posts published yet.')}</p>
-          )}
-          {outOfRange && (
-            <p className="pf2-empty">
-              {t('This page does not exist.')} <Link href={pageHref(pages)}>{t('Go to the last page')}</Link>.
-            </p>
-          )}
+        {/* Loading & Empty / Out of Range */}
+        {(isLoading || isError) && (
+          <div className="mt-8">
+            <SkeletonPostGrid count={6} label={t('Loading')} />
+          </div>
+        )}
 
-          <div className="row" style={{ opacity: isFetching && !isLoading ? 0.6 : 1 }}>
-            {!isLoading && !isError && posts.map((item, i) => (
-              <div key={item.id || i} className="col-xl-4 col-md-6">
-                <PostCard item={item} base={base} />
-              </div>
+        {!isLoading && !isError && posts.length === 0 && !outOfRange && (
+          <div className="mt-8">
+            <EmptyState
+              title={isNews ? t('No news published yet.') : t('No posts published yet.')}
+              description={t('Check back soon for new engineering guides and dataset notes.')}
+            />
+          </div>
+        )}
+
+        {outOfRange && (
+          <div className="mt-8">
+            <EmptyState
+              title={t('This page does not exist.')}
+              action={
+                <Link
+                  href={pageHref(pages)}
+                  className="inline-flex h-9 items-center rounded-[8px] bg-navy px-4 text-xs font-medium text-white no-underline"
+                >
+                  {t('Go to the last page')}
+                </Link>
+              }
+            />
+          </div>
+        )}
+
+        {/* 3-Column Post Grid */}
+        {!isLoading && !isError && posts.length > 0 && (
+          <div
+            className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 transition-opacity duration-150"
+            style={{ opacity: isFetching && !isLoading ? 0.6 : 1 }}
+          >
+            {posts.map((item, i) => (
+              <PostCard key={item.id || i} item={item} base={base} />
             ))}
           </div>
+        )}
 
-          {!isLoading && !isError && pages > 1 && (
-            <nav className="basic-pagination text-center mt-20" aria-label={isNews ? t('News pages') : t('Blog pages')}>
-              <ul>
-                <li>
-                  {page > 1 ? (
-                    <Link href={pageHref(Math.min(page - 1, pages))} aria-label={t('Previous page')}>
-                      <i className="fa-regular fa-angles-left"></i>
-                    </Link>
-                  ) : (
-                    <span className="pagination-disabled" aria-disabled="true">
-                      <i className="fa-regular fa-angles-left"></i>
+        {/* Custom Pagination */}
+        {!isLoading && !isError && pages > 1 && (
+          <nav
+            className="mt-10 flex items-center justify-center"
+            aria-label={isNews ? t('News pages') : t('Blog pages')}
+          >
+            <ul className="m-0 flex list-none items-center gap-1.5 p-0">
+              <li>
+                {page > 1 ? (
+                  <Link
+                    href={pageHref(Math.min(page - 1, pages))}
+                    aria-label={t('Previous page')}
+                    className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink no-underline hover:bg-canvas"
+                  >
+                    <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
+                  </Link>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-line-subtle bg-canvas text-ink-subtle"
+                  >
+                    <ChevronLeft className="h-4 w-4" strokeWidth={1.6} />
+                  </span>
+                )}
+              </li>
+
+              {getPageItems(Math.min(page, pages), pages).map((item, i) => (
+                <li key={item === '…' ? `gap-${i}` : item}>
+                  {item === '…' ? (
+                    <span className="px-2 text-xs text-ink-muted" aria-hidden="true">
+                      …
                     </span>
+                  ) : item === page ? (
+                    <span
+                      aria-current="page"
+                      className="flex h-9 min-w-9 items-center justify-center rounded-[10px] bg-navy px-3 font-mono text-xs font-semibold text-white tabular-nums"
+                    >
+                      {item}
+                    </span>
+                  ) : (
+                    <Link
+                      href={pageHref(item)}
+                      aria-label={t('Page {page}', { page: item })}
+                      className="flex h-9 min-w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface px-3 font-mono text-xs font-medium text-ink-secondary no-underline tabular-nums hover:bg-canvas hover:text-ink"
+                    >
+                      {item}
+                    </Link>
                   )}
                 </li>
-                {getPageItems(Math.min(page, pages), pages).map((item, i) => (
-                  <li key={item === '…' ? `gap-${i}` : item}>
-                    {item === '…' ? (
-                      <span className="pagination-gap" aria-hidden="true">…</span>
-                    ) : item === page ? (
-                      <span className="current" aria-current="page">{item}</span>
-                    ) : (
-                      <Link href={pageHref(item)} aria-label={t('Page {page}', { page: item })}>{item}</Link>
-                    )}
-                  </li>
-                ))}
-                <li>
-                  {page < pages ? (
-                    <Link href={pageHref(page + 1)} aria-label={t('Next page')}>
-                      <i className="fa-regular fa-angles-right"></i>
-                    </Link>
-                  ) : (
-                    <span className="pagination-disabled" aria-disabled="true">
-                      <i className="fa-regular fa-angles-right"></i>
-                    </span>
-                  )}
-                </li>
-              </ul>
-            </nav>
-          )}
-        </div>
-      </section>
-    </>
+              ))}
+
+              <li>
+                {page < pages ? (
+                  <Link
+                    href={pageHref(page + 1)}
+                    aria-label={t('Next page')}
+                    className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink no-underline hover:bg-canvas"
+                  >
+                    <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
+                  </Link>
+                ) : (
+                  <span
+                    aria-disabled="true"
+                    className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-line-subtle bg-canvas text-ink-subtle"
+                  >
+                    <ChevronRight className="h-4 w-4" strokeWidth={1.6} />
+                  </span>
+                )}
+              </li>
+            </ul>
+          </nav>
+        )}
+      </div>
+    </section>
   );
 };
-
-
-/** Search box for the filter bar; keeps the typed text and resets to page 1 */
-interface PostSearchProps {
-  base: string;
-  initial: string;
-}
-
-function PostSearch({ base, initial }: PostSearchProps) {
-  const { t } = useT();
-  const router = useRouter();
-  const [q, setQ] = React.useState(initial);
-  React.useEffect(() => setQ(initial), [initial]);
-  const submit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const term = q.trim();
-    router.push(term ? { pathname: base, query: { q: term } } : { pathname: base });
-  };
-  return (
-    <form className="zv-post-search" onSubmit={submit} role="search">
-      <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Search')} aria-label={t('Search')} maxLength={200} />
-      <button type="submit" aria-label={t('Search')}><i className="far fa-search"></i></button>
-    </form>
-  );
-}
 
 export default PostboxArea;

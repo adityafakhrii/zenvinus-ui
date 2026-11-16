@@ -1,19 +1,14 @@
-import Link from "next/link";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import menu_data, { isMenuItemActive, sectionOf, type MenuItem } from "./menu-data";
-import { useT } from "@/i18n";
-import Button from "@/components/ui/button";
-import { useAuth } from "@/features/auth";
-import Logo from "@assets/img/logo/logo.png";
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ChevronDown, Mail, Menu } from 'lucide-react';
+import { Button, Drawer, cn } from '@/components/ui';
+import { useAuth } from '@/features/auth';
+import { LanguageSwitch, useT } from '@/i18n';
+import menu_data, { isMenuItemActive, sectionOf } from './menu-data';
 
 /**
- * Site menu below 1200px: a menu button in the header opens a panel from the right with every menu link,
- * expandable submenus, the current page marked like the desktop menu, and "Get Started Today" (or "Dashboard"
- * when signed in).
- * Closes on link click, route change, Escape, or a tap on the backdrop; the page behind does not scroll while open.
- * While closed the panel is visibility: hidden, so its links are out of the tab order.
+ * Responsive public site drawer below 1024px (`lg`), built on custom Drawer & Lucide icons.
  */
 const MobileNav = () => {
   const { t } = useT();
@@ -21,92 +16,139 @@ const MobileNav = () => {
   const router = useRouter();
   const current = sectionOf(router.pathname);
   const [open, setOpen] = useState(false);
-  // The dropdown that holds the current page starts expanded
-  const [expanded, setExpanded] = useState<string | null>(null);
-
-  const isActive = (item: MenuItem) => isMenuItemActive(item, current);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    setExpanded(menu_data.find((m) => m.has_dropdown && isActive(m))?.title ?? null);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [expanded, setExpanded] = useState<string | null>(
+    () => menu_data.find((m) => m.has_dropdown && isMenuItemActive(m, current))?.title ?? null,
+  );
 
   useEffect(() => {
     const close = () => setOpen(false);
-    router.events.on("routeChangeStart", close);
-    return () => router.events.off("routeChangeStart", close);
+    router.events.on('routeChangeStart', close);
+    return () => router.events.off('routeChangeStart', close);
   }, [router.events]);
+
+  const openDrawer = () => {
+    setExpanded(menu_data.find((m) => m.has_dropdown && isMenuItemActive(m, current))?.title ?? null);
+    setOpen(true);
+  };
 
   return (
     <>
-      <button type="button" className="zv-mnav-toggle d-xl-none" aria-label={t("Open menu")} aria-expanded={open} aria-controls="zv-mnav" onClick={() => setOpen(true)}>
-        <span></span><span></span><span></span>
+      <button
+        type="button"
+        onClick={openDrawer}
+        aria-label={open ? t('Close menu') : t('Open menu')}
+        aria-expanded={open}
+        className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink transition-colors hover:bg-canvas lg:hidden cursor-pointer"
+      >
+        <Menu className="h-[18px] w-[18px]" strokeWidth={1.6} />
       </button>
 
-      <div className={`zv-mnav-backdrop${open ? " is-open" : ""}`} onClick={() => setOpen(false)} aria-hidden="true"></div>
-      <nav id="zv-mnav" className={`zv-mnav${open ? " is-open" : ""}`} aria-label={t("Menu")}>
-        <div className="zv-mnav-head">
-          <Link href="/" className="zv-mnav-logo" onClick={() => setOpen(false)}>
-            <Image src={Logo} alt="Zenvinus" />
-          </Link>
-          <button type="button" className="zv-mnav-close" aria-label={t("Close menu")} onClick={() => setOpen(false)}>
-            <svg width="16" height="16" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M11 1L1 11M1 1l10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-
-        <ul className="zv-mnav-list">
-          {menu_data.map((item) => (
-            <li key={item.title} className={isActive(item) ? "is-active" : undefined}>
-              {item.sub_menus ? (
-                <>
-                  <button type="button" className="zv-mnav-link" aria-expanded={expanded === item.title}
-                    onClick={() => setExpanded(expanded === item.title ? null : item.title)}>
-                    {t(item.title)}
-                    <i className="fa-regular fa-angle-down" aria-hidden="true"></i>
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        side="right"
+        title="Zenvinus"
+        subtitle={t('AI Data & Intelligence Platform')}
+        footer={
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-medium text-ink-muted">{t('Language')}</span>
+              <LanguageSwitch />
+            </div>
+            {user ? (
+              <div className="flex flex-col gap-2">
+                <p className="m-0 truncate text-xs font-medium text-ink-secondary">
+                  {user.name || user.email}
+                </p>
+                <Button href="/dashboard" variant="primary" size="md" block onClick={() => setOpen(false)}>
+                  {t('Dashboard')}
+                </Button>
+              </div>
+            ) : (
+              <Button href="/login" variant="primary" size="md" block onClick={() => setOpen(false)}>
+                {t('Get Started Today')}
+              </Button>
+            )}
+            <a
+              href="mailto:info@zenvinus.co.id"
+              className="inline-flex items-center justify-center gap-1.5 text-xs text-ink-muted no-underline hover:text-ink"
+            >
+              <Mail className="h-3.5 w-3.5" strokeWidth={1.5} />
+              <span>info@zenvinus.co.id</span>
+            </a>
+          </div>
+        }
+      >
+        <nav aria-label={t('Main menu')} className="flex flex-col gap-1">
+          {menu_data.map((item) => {
+            const active = isMenuItemActive(item, current);
+            if (item.sub_menus) {
+              const isExpanded = expanded === item.title;
+              return (
+                <div key={item.id} className="flex flex-col">
+                  <button
+                    type="button"
+                    aria-expanded={isExpanded}
+                    onClick={() => setExpanded(isExpanded ? null : item.title)}
+                    className={cn(
+                      'flex w-full items-center justify-between rounded-[10px] px-3 py-2.5 text-left text-sm font-medium transition-colors cursor-pointer',
+                      active
+                        ? 'bg-tint-mint text-teal-ink font-semibold'
+                        : 'text-ink-secondary hover:bg-canvas hover:text-ink',
+                    )}
+                  >
+                    <span>{t(item.title)}</span>
+                    <ChevronDown
+                      className={cn('h-4 w-4 transition-transform duration-150', isExpanded && 'rotate-180')}
+                      strokeWidth={1.6}
+                    />
                   </button>
-                  {expanded === item.title && (
-                    <ul className="zv-mnav-sub">
-                      {item.sub_menus.map((sub) => (
-                        <li key={sub.link} className={sub.link === current ? "is-active" : undefined}>
-                          <Link href={sub.link} aria-current={sub.link === current ? "page" : undefined} onClick={() => setOpen(false)}>{t(sub.title)}</Link>
-                        </li>
-                      ))}
-                    </ul>
+                  {isExpanded && (
+                    <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                      {item.sub_menus.map((sub) => {
+                        const subActive = sub.link === current;
+                        return (
+                          <Link
+                            key={sub.link}
+                            href={sub.link}
+                            aria-current={subActive ? 'page' : undefined}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                              'rounded-lg px-2.5 py-2 text-[13px] font-medium no-underline transition-colors',
+                              subActive
+                                ? 'bg-canvas text-teal-ink font-semibold'
+                                : 'text-ink-secondary hover:bg-canvas hover:text-ink',
+                            )}
+                          >
+                            {t(sub.title)}
+                          </Link>
+                        );
+                      })}
+                    </div>
                   )}
-                </>
-              ) : (
-                <Link href={item.link} className="zv-mnav-link" aria-current={item.link === current ? "page" : undefined} onClick={() => setOpen(false)}>
-                  {t(item.title)}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
+                </div>
+              );
+            }
 
-        <div className="zv-mnav-foot">
-          {user ? (
-            <>
-              <p className="zv-mnav-user">{user.name || user.email}</p>
-              <Button href="/dashboard" block onClick={() => setOpen(false)}>{t("Dashboard")}</Button>
-            </>
-          ) : (
-            <Button href="/login" block onClick={() => setOpen(false)}>{t("Get Started Today")}</Button>
-          )}
-          <a href="mailto:info@zenvinus.co.id" className="zv-mnav-mail">info@zenvinus.co.id</a>
-        </div>
-      </nav>
+            return (
+              <Link
+                key={item.id}
+                href={item.link}
+                aria-current={item.link === current ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  'rounded-[10px] px-3 py-2.5 text-sm font-medium no-underline transition-colors',
+                  active
+                    ? 'bg-tint-mint text-teal-ink font-semibold'
+                    : 'text-ink-secondary hover:bg-canvas hover:text-ink',
+                )}
+              >
+                {t(item.title)}
+              </Link>
+            );
+          })}
+        </nav>
+      </Drawer>
     </>
   );
 };

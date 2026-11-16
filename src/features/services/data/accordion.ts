@@ -1,41 +1,34 @@
-import type { FaqItem } from '../types/service';
+export interface ServiceFaqItem {
+  id: number;
+  question: string;
+  answer: string;
+}
 
-const accordion: FaqItem[] = [
+const SERVICE_FAQ: ReadonlyArray<ServiceFaqItem> = [
   {
     id: 1,
-    question: "How to learn digital marketing?",
-    answer: "A startup or start-up is started by individual founders or entrepreneurs to search for a repeatable and scalable business model. A startup or start-up is started by individual founders..." ,
-    accordion_id: "One", 
-    collapsed: "",
-    aria_expanded: "true",
-    active: "tp-faq-active",
+    question: 'How quickly does a custom data or annotation project start?',
+    answer:
+      'Our team reviews project briefs within 1–2 business days and issues a scoped proposal with sample rubrics, throughput estimates, and milestone pricing before any escrow payment begins.',
   },
   {
     id: 2,
-    question: "Can I use the demos made by Ewebot?",
-    answer: "Ne summo dictas pertinacia nam. Illum cetero vocent ei vim, case regione signiferumque vim te. Ex mea quem munere lobortis. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum." ,
-    accordion_id: "Two", 
-    collapsed: "collapsed",
-    aria_expanded: "false",
-    active: "",
+    question: 'How does Zenvinus verify label quality across large batches?',
+    answer:
+      'Every batch passes a two-tier workflow: qualified community or specialist contributors label items against written edge-case guidelines, and independent domain experts audit sampled outputs against gold-standard sets.',
   },
   {
     id: 3,
-    question: "Why didn’t you showcase my submission?",
-    answer: "A startup or start-up is started by individual founders or entrepreneurs to search for a repeatable and scalable business model. A startup or start-up is started by individual founders.." ,
-    accordion_id: "Three", 
-    collapsed: "collapsed",
-    aria_expanded: "false",
-    active: "",
+    question: 'Can you cover Indonesian regional accents and mixed-language text?',
+    answer:
+      'Yes. Our distributed contributor network across Indonesia covers formal Bahasa Indonesia, colloquial social text, code-switching, and regional accents across Java, Sumatra, Kalimantan, and eastern Indonesia.',
   },
   {
     id: 4,
-    question: "What everybody ought to know about digital marketing?",
-    answer: "A startup or start-up is started by individual founders or entrepreneurs to search for a repeatable and scalable business model. A startup or start-up is started by individual founders.." ,
-    accordion_id: "Four", 
-    collapsed: "collapsed",
-    aria_expanded: "false",
-    active: "",
+    question: 'How are deliverables formatted and licensed?',
+    answer:
+      'Completed datasets are delivered as versioned splits (JSONL, Parquet, COCO, or WAV/transcripts) with schema documentation, QA reports, and clear commercial ownership or catalog licensing.',
   },
 ];
-export default accordion;
+
+export default SERVICE_FAQ;

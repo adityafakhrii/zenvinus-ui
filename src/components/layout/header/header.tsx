@@ -1,92 +1,111 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import NavMenu from './nav-menu';
-import MobileNav from './mobile-nav';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { LayoutDashboard, Search, Settings } from 'lucide-react';
+import Logo from '@assets/img/logo/logo.png';
+import { Button, cn } from '@/components/ui';
+import { AccountMenu, type AccountMenuLink, useAuth } from '@/features/auth';
+import { LanguageSwitch, useT } from '@/i18n';
+import MobileNav from './mobile-nav';
+import NavMenu from './nav-menu';
 import SearchPopup from './search-popup';
-import Logo from "@assets/img/logo/logo.png";
-import { LanguageSwitch, useT } from "@/i18n";
-import Button from "@/components/ui/button";
-import { AccountMenu, useAuth } from "@/features/auth";
 
-// Account menu of a signed-in visitor: back to the dashboard, settings, logout
-const ACCOUNT_LINKS = [
-   { href: "/dashboard", icon: "fa-solid fa-gauge", label: "Dashboard" },
-   { href: "/dashboard/settings", icon: "fa-solid fa-gear", label: "Account Settings" },
-] as const;
+const ACCOUNT_LINKS: readonly AccountMenuLink[] = [
+  {
+    href: '/dashboard',
+    lucideIcon: <LayoutDashboard className="h-4 w-4 text-ink-muted" strokeWidth={1.5} />,
+    label: 'Dashboard',
+  },
+  {
+    href: '/dashboard/settings',
+    lucideIcon: <Settings className="h-4 w-4 text-ink-muted" strokeWidth={1.5} />,
+    label: 'Account Settings',
+  },
+];
 
+/**
+ * Sticky 64px Public Top Navbar matching the quiet ACRU / Zenvinus visual language.
+ */
 const HeaderOne = () => {
-   const [searchOpen, setSearchOpen] = useState(false)
-   const { t } = useT();
-   const { user, isLoading } = useAuth();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { t } = useT();
+  const { user, isLoading } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
 
-   // WHY: The header is position: sticky (index.scss); this only adds a shadow once the page has scrolled
-   const [scrolled, setScrolled] = useState(false);
-   useEffect(() => {
-     const onScroll = () => setScrolled(window.scrollY > 10);
-     onScroll();
-     window.addEventListener('scroll', onScroll, { passive: true });
-     return () => window.removeEventListener('scroll', onScroll);
-   }, []);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
+  return (
+    <>
+      <header
+        className={cn(
+          'sticky top-0 z-40 h-16 border-b border-[rgba(8,13,53,0.08)] bg-surface/95 backdrop-blur-md transition-shadow duration-150',
+          scrolled && 'shadow-[0_4px_16px_rgba(2,6,38,0.06)]',
+        )}
+      >
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="inline-flex shrink-0 items-center no-underline" aria-label="Zenvinus">
+              <Image src={Logo} alt="Zenvinus" priority className="h-7 w-auto object-contain" />
+            </Link>
 
+            <nav className="hidden lg:flex items-center" aria-label={t('Main menu')}>
+              <NavMenu />
+            </nav>
+          </div>
 
-    return (
-        <>
-            <header className={`tp-header-area tp-header-height zv-site-header${scrolled ? " is-scrolled" : ""}`}>
-               <div id="header-sticky"
-               className="tp-header-bottom p-relative">
-                  <div className="tp-header-bottom-space p-relative">
-                     <div className="container">
-                        <div className="row align-items-center">
-                           <div className="col col-xl-3">
-                           <div className="tp-header-main-left d-flex align-items-center p-relative">
-                              <div className="tp-header-logo">
-                                    <Link href="/">
-                                       <Image src={Logo} alt="theme-pure" />
-                                    </Link>
-                                 </div>
-                              </div>
-                              </div>
-                           <div className="col-xl d-none d-xl-block">
-                              <div className="tp-main-menu-area counter d-flex align-items-center">
-                                 <div className="tp-main-menu menu-icon">
-                                  <nav id="tp-mobile-menu">
-                                       <NavMenu /> 
-                                    </nav>
-                                 </div>
-                              </div>
-                           </div>
-                           {/* WHY: Sized to its content (search, ID/EN switch, button) so the button never wraps; the menu takes the rest.
-                               Below 1200px it sits next to the logo and holds the menu button (MobileNav) instead of the desktop menu. */}
-                           <div className="col-auto">
-                           <div className="tp-header-main-right d-flex align-items-center justify-content-xl-end">
-                              <div className="tp-header-search search-open-btn d-none d-xxl-block">
-                                 <button type="button" aria-label={t("Search")} onClick={() => setSearchOpen(true)}><i className="fa-regular fa-magnifying-glass"></i></button>
-                              </div>
-                                 <LanguageSwitch className="zv-lang-switch-header" />
-                                 {user ? (
-                                    <div className="zv-header-account d-none d-xl-block">
-                                       <AccountMenu name={user.name || user.email} email={user.email} links={ACCOUNT_LINKS} />
-                                    </div>
-                                 ) : (
-                                    // WHY: Hidden (not removed) while the session loads, so a signed-in visitor never sees
-                                    // the guest button flash and the layout does not shift
-                                    <div className="tp-header-btn d-none d-xl-block pl-40" style={isLoading ? { visibility: "hidden" } : undefined}>
-                                       <Button href="/login">{t("Get Started Today")}</Button>
-                                    </div>
-                                 )}
-                                 <MobileNav />
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </header>
-            <SearchPopup searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
-        </>
-    );
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              aria-label={t('Search')}
+              className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[rgba(8,13,53,0.10)] bg-canvas text-ink-secondary transition-colors hover:border-ink/25 hover:text-ink cursor-pointer"
+            >
+              <Search className="h-4 w-4" strokeWidth={1.6} />
+            </button>
+
+            <div className="hidden sm:block">
+              <LanguageSwitch />
+            </div>
+
+            {user ? (
+              <div className="hidden lg:block">
+                <AccountMenu
+                  compact
+                  name={user.name || user.email}
+                  email={user.email}
+                  links={ACCOUNT_LINKS}
+                />
+              </div>
+            ) : (
+              <div
+                className="hidden lg:flex items-center gap-2"
+                style={isLoading ? { visibility: 'hidden' } : undefined}
+              >
+                <Link
+                  href="/login"
+                  className="inline-flex h-9 items-center rounded-[10px] px-3 text-[13px] font-medium text-ink-secondary no-underline transition-colors hover:bg-canvas hover:text-ink"
+                >
+                  {t('Sign in')}
+                </Link>
+                <Button href="/login" variant="primary" size="sm">
+                  {t('Get Started Today')}
+                </Button>
+              </div>
+            )}
+
+            <MobileNav />
+          </div>
+        </div>
+      </header>
+
+      <SearchPopup searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
+    </>
+  );
 };
 
 export default HeaderOne;

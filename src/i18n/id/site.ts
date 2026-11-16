@@ -210,6 +210,112 @@ const id: Dictionary = {
   '3 min Read': '3 menit baca',
   '10 min Read': '10 menit baca',
   '23 min Read': '23 menit baca',
+
+  // Revamped Home, Auth & Zenvinus Services (Phase 4)
+  'Indonesian AI Data & Intelligence Platform': 'Platform Data & Kecerdasan AI Indonesia',
+  'Build Better AI': 'Bangun AI Lebih Baik',
+  'With Better Data': 'Dengan Data Berkualitas',
+  'Collect, annotate, validate with domain experts, and version training datasets with complete visibility.':
+    'Kumpulkan, anotasi, validasi bersama pakar domain, dan versikan dataset pelatihan dengan visibilitas penuh.',
+  'Indonesian datasets': 'dataset Indonesia',
+  'Expert-verified quality checks per batch': 'Pemeriksaan kualitas terverifikasi pakar di setiap batch',
+  'Sign in or create your account with a one-time code — no password needed':
+    'Masuk atau buat akun dengan kode sekali pakai — tanpa kata sandi',
+  'Sending…': 'Mengirim…',
+  'Verifying…': 'Memverifikasi…',
+  'Check back soon for new engineering guides and dataset notes.':
+    'Nantikan panduan teknis dan catatan dataset terbaru kami.',
+  'Managed AI data, annotation, and evaluation services':
+    'Layanan terkelola data AI, anotasi, dan evaluasi model',
+  'From bespoke data collection across Indonesia to multi-stage expert quality assurance and model fine-tuning.':
+    'Dari pengumpulan data kustom di seluruh Indonesia hingga jaminan kualitas pakar bertingkat dan fine-tuning model.',
+  'Request Proposal': 'Minta Proposal',
+  'Data Collection & Sourcing': 'Pengumpulan & Pencarian Data',
+  'Capture compliant text, audio, image, and street-level video datasets tailored to Indonesian languages and real environments.':
+    'Kumpulkan dataset teks, audio, gambar, dan video jalan raya yang sesuai regulasi untuk bahasa serta kondisi nyata di Indonesia.',
+  '1–2 wks kickoff': 'Mulai 1–2 minggu',
+  'Regional dialect & accent coverage across Nusantara': 'Cakupan dialek & aksen daerah di seluruh Nusantara',
+  'Consent-verified audio, visual & document capture': 'Perekaman audio, visual & dokumen terverifikasi persetujuan',
+  'Automated PII scrubbing and source metadata logging': 'Pembersihan PII otomatis dan pencatatan metadata sumber',
+  'Multi-Modal Data Annotation': 'Anotasi Data Multi-Modal',
+  'High-precision bounding boxes, segmentation polygons, OCR field extraction, speech transcripts, and entity tagging at scale.':
+    'Kotak pembatas presisi tinggi, poligon segmentasi, ekstraksi field OCR, transkrip ucapan, dan pelabelan entitas berskala besar.',
+  '97.8% avg QA': 'Rata-rata QA 97,8%',
+  '2D/polygon object labels & OCR key-value pairs': 'Label objek 2D/poligon & pasangan kunci-nilai OCR',
+  'Diarized Indonesian speech transcription with timestamps': 'Transkripsi ucapan Indonesia dengan penanda waktu',
+  'Written edge-case rubrics maintained per batch': 'Rubrik kasus khusus tertulis yang dijaga per batch',
+  'LLM Evaluation & RLHF': 'Evaluasi LLM & RLHF',
+  'Pairwise preference ranking, safety red-teaming, hallucination grading, and rubric-driven fine-tuning corpora.':
+    'Pemeringkatan preferensi berpasangan, pengujian keamanan, penilaian halusinasi, dan korpus fine-tuning berbasis rubrik.',
+  'Dual-blind review': 'Tinjauan ganda tertutup',
+  'SFT prompt-response pairs in Bahasa & local context': 'Pasangan prompt-respons SFT dalam bahasa & konteks lokal',
+  'Side-by-side preference judgments with written rationale': 'Penilaian preferensi berdampingan dengan alasan tertulis',
+  'Safety, cultural sensitivity & policy compliance checks': 'Pemeriksaan keamanan, sensitivitas budaya & kepatuhan kebijakan',
+  'Expert Quality Assurance': 'Jaminan Kualitas Pakar',
+  'Independent specialist auditing layered over community annotations with gold-standard calibration and dispute tracking.':
+    'Audit spesialis independen di atas anotasi komunitas dengan kalibrasi gold-standard dan pelacakan sengketa.',
+  '6h avg review': 'Rata-rata tinjau 6 jam',
+  'Inter-annotator agreement calibration benchmarks': 'Tolok ukur kalibrasi kesepakatan antar-anotator',
+  'Automated revision routing for sub-threshold batches': 'Perutean revisi otomatis untuk batch di bawah ambang',
+  'Sign-off audit report included with every delivery': 'Laporan audit persetujuan disertakan pada setiap pengiriman',
+  'Dataset Preparation & Versioning': 'Persiapan & Pemversian Dataset',
+  'Transform raw files into clean, de-duplicated, leak-free train/validation/test splits packaged with documentation and licensing.':
+    'Ubah berkas mentah menjadi split train/validation/test bersih bebas duplikat lengkap dengan dokumentasi dan lisensi.',
+  'Perceptual & hash-based duplicate filtering': 'Penyaringan duplikat berbasis persepsi & hash',
+  'Stratified split balancing across rare edge classes': 'Penyeimbangan split terstratifikasi pada kelas langka',
+  'Versioned schema cards & commercial license manifest': 'Kartu skema berversi & manifes lisensi komersial',
+  'Model Training & Hosted Inference': 'Pelatihan Model & Inferensi Terkelola',
+  'Fine-tune vision, speech, and language models with reproducible experiment runs, quantitative benchmarks, and private endpoints.':
+    'Fine-tune model visi, ucapan, dan bahasa dengan eksperimen terukur, tolok ukur kuantitatif, dan endpoint privat.',
+  'Custom SLA': 'SLA Kustom',
+  'Baseline comparison against domain test suites': 'Perbandingan dasar terhadap rangkaian uji domain',
+  'Quantized edge or private cloud endpoint packaging': 'Pengemasan endpoint edge terkuantisasi atau cloud privat',
+  'Continuous failure-slice monitoring & active learning loop': 'Pemantauan kesalahan berkelanjutan & loop active learning',
+  'How enterprise projects run': 'Cara kerja proyek enterprise',
+  'Every engagement follows four transparent stages with milestone escrow protection.':
+    'Setiap proyek mengikuti empat tahap transparan dengan perlindungan escrow bertahap.',
+  'Scope & rubric design': 'Perancangan cakupan & rubrik',
+  'Define label taxonomy, edge-case rules, and acceptance thresholds with Zenvinus engineers.':
+    'Tetapkan taksonomi label, aturan kasus khusus, dan ambang penerimaan bersama tim teknis Zenvinus.',
+  'Pilot calibration': 'Kalibrasi uji coba',
+  'Run a calibrated sample batch to lock agreement accuracy before full-volume annotation.':
+    'Jalankan batch sampel terkalibrasi untuk mengunci akurasi kesepakatan sebelum anotasi penuh.',
+  'Progressive batch QA': 'QA batch bertahap',
+  'Track weekly progress while independent domain experts audit every batch in Review Queue.':
+    'Pantau progres mingguan saat pakar domain independen mengaudit setiap batch di Antrean Tinjauan.',
+  'Versioned delivery': 'Pengiriman berversi',
+  'Receive clean splits, schema docs, and audit sign-off ready for model training.':
+    'Terima split bersih, dokumentasi skema, dan pengesahan audit siap untuk pelatihan model.',
+  'Need a custom annotation pipeline or private dataset?':
+    'Butuh pipeline anotasi kustom atau dataset privat?',
+  'Speak directly with our solutions engineering team in Jakarta.':
+    'Berdiskusi langsung dengan tim teknik solusi kami di Jakarta.',
+  'All capabilities': 'Semua kapabilitas',
+  'Service capabilities': 'Kapabilitas layanan',
+  'Request a project quote': 'Minta penawaran proyek',
+  'Tell us your data modality, volume, and target timeline.':
+    'Sampaikan modalitas data, volume, dan target jadwal Anda.',
+  'Start Project Request': 'Buat Permintaan Proyek',
+  'Key deliverables & quality guarantees': 'Hasil utama & jaminan kualitas',
+  'Frequently asked questions': 'Pertanyaan yang sering diajukan',
+  'Inquiry noted — our solutions team will reply via email within 1–2 business days.':
+    'Permintaan dicatat — tim solusi kami akan membalas via email dalam 1–2 hari kerja.',
+  'How quickly does a custom data or annotation project start?':
+    'Seberapa cepat proyek data atau anotasi kustom dapat dimulai?',
+  'Our team reviews project briefs within 1–2 business days and issues a scoped proposal with sample rubrics, throughput estimates, and milestone pricing before any escrow payment begins.':
+    'Tim kami meninjau brief proyek dalam 1–2 hari kerja dan menerbitkan proposal lengkap berisi contoh rubrik, estimasi kapasitas, serta harga per tahap sebelum pembayaran escrow dimulai.',
+  'How does Zenvinus verify label quality across large batches?':
+    'Bagaimana Zenvinus memverifikasi kualitas label pada batch berskala besar?',
+  'Every batch passes a two-tier workflow: qualified community or specialist contributors label items against written edge-case guidelines, and independent domain experts audit sampled outputs against gold-standard sets.':
+    'Setiap batch melewati alur dua tingkat: kontributor komunitas atau spesialis yang lulus kualifikasi melabeli item sesuai panduan tertulis, lalu pakar domain independen mengaudit sampel terhadap set gold-standard.',
+  'Can you cover Indonesian regional accents and mixed-language text?':
+    'Apakah Zenvinus mencakup aksen daerah Indonesia dan teks campur bahasa?',
+  'Yes. Our distributed contributor network across Indonesia covers formal Bahasa Indonesia, colloquial social text, code-switching, and regional accents across Java, Sumatra, Kalimantan, and eastern Indonesia.':
+    'Ya. Jaringan kontributor terdistribusi kami di seluruh Indonesia mencakup Bahasa Indonesia baku, teks percakapan sehari-hari, alih kode, serta aksen daerah di Jawa, Sumatra, Kalimantan, dan Indonesia timur.',
+  'How are deliverables formatted and licensed?':
+    'Bagaimana format hasil akhir dan lisensi pengiriman?',
+  'Completed datasets are delivered as versioned splits (JSONL, Parquet, COCO, or WAV/transcripts) with schema documentation, QA reports, and clear commercial ownership or catalog licensing.':
+    'Dataset akhir dikirim sebagai split berversi (JSONL, Parquet, COCO, atau WAV/transkrip) lengkap dengan dokumentasi skema, laporan QA, serta hak kepemilikan komersial atau lisensi katalog yang jelas.',
 };
 
 export default id;

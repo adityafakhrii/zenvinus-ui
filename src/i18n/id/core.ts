@@ -119,6 +119,29 @@ const id: Dictionary = {
   '4h ago': '4 jam lalu',
   'QA flagged 214 items for re-review': 'QA menandai 214 item untuk tinjauan ulang',
   'Receipt OCR Field Check batch 04': 'Pemeriksaan Field OCR Struk batch 04',
+
+  // Public site chrome, auth, 404 & catalog controls (Phase 4)
+  'Sign in': 'Masuk',
+  'Back To Home': 'Kembali ke Beranda',
+  'AI Data & Intelligence Platform': 'Platform Data & Kecerdasan AI',
+  'Jump directly to Zenvinus tasks, datasets, models, services, and editorial resources.':
+    'Lompat langsung ke tugas, dataset, model, layanan, dan sumber editorial Zenvinus.',
+  Platform: 'Platform',
+  Subscribe: 'Langganan',
+  'Subscribed to Zenvinus updates.': 'Berhasil berlangganan pembaruan Zenvinus.',
+  'Monthly releases on Indonesian datasets, QA benchmarks, and open tasks.':
+    'Rilis bulanan seputar dataset Indonesia, tolok ukur QA, dan tugas terbuka.',
+  'Page not found': 'Halaman tidak ditemukan',
+  'The page you are looking for does not exist or may have been moved.':
+    'Halaman yang Anda cari tidak tersedia atau telah dipindahkan.',
+  Apply: 'Terapkan',
+  'Sort by': 'Urutkan berdasarkan',
+  Copy: 'Salin',
+  Copied: 'Disalin',
+  'Preparing…': 'Menyiapkan…',
+  'Loading licenses…': 'Memuat lisensi…',
+  'Preview of split {split} — showing the first {count} rows.':
+    'Pratinjau split {split} — menampilkan {count} baris pertama.',
 };
 
 export default id;

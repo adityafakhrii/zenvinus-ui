@@ -1,104 +1,95 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import AngleArrow from '@/components/icons/angle-arrow'; 
-import LineArrowTwo from '@/components/icons/line-arrow-2';
+import Link from 'next/link';
+import { ArrowUpRight, Plus } from 'lucide-react';
+import offering_img_1 from '@assets/img/offering/img-1.svg';
+import offering_img_2 from '@assets/img/offering/img-2.svg';
+import offering_img_3 from '@assets/img/offering/img-3.svg';
+import offering_img_4 from '@assets/img/offering/img-4.svg';
+import { Badge } from '@/components/ui';
 import { useT } from '@/i18n';
-
-import offer_shape_1 from "@assets/img/offering/shape.png";
-import offer_shape_2 from "@assets/img/offering/shape-2.png";
-
-import offering_img_1 from "@assets/img/offering/img-1.svg";
-import offering_img_2 from "@assets/img/offering/img-2.svg";
-import offering_img_3 from "@assets/img/offering/img-3.svg";
-import offering_img_4 from "@assets/img/offering/img-4.svg";
-
 import type { Offering } from '../types/home';
 
-const offering_data: Offering[] = [
-    {
-        id: 1,
-        img: offering_img_1,
-        title: 'Computer {br} Vision',
-    },
-    {
-        id: 2,
-        img: offering_img_2,
-        title: 'NLP & Speech {br} Intelligence',
-    },
-    {
-        id: 3,
-        img: offering_img_3,
-        title: 'LLM & {br} Generative AI',
-    },
-    {
-        id: 4,
-        img: offering_img_4,
-        title: 'Predictive ML {br} & Forecasting',
-    },
-]
+const OFFERING_DATA: ReadonlyArray<Offering> = [
+  { id: 1, img: offering_img_1, title: 'Computer {br} Vision' },
+  { id: 2, img: offering_img_2, title: 'NLP & Speech {br} Intelligence' },
+  { id: 3, img: offering_img_3, title: 'LLM & {br} Generative AI' },
+  { id: 4, img: offering_img_4, title: 'Predictive ML {br} & Forecasting' },
+];
 
+/**
+ * AI Project Modalities showcase section on dark Zenvinus Navy without decorative shape overlays.
+ */
 const OfferArea = () => {
-    const { t } = useT();
-    return (
-        <>
-           <section className="tp-offer-area p-relative pt-120 pb-90" style={{backgroundImage: `url(/assets/img/offering/bg.png)`}}>
-            <div className="tp-offer-overlay"></div>
-            <div className="tp-offer-shape">
-               <Image className="shape-1 d-none d-xl-block" src={offer_shape_1} alt="theme-pure" />
-               <Image className="shape-2" src={offer_shape_2} alt="theme-pure" />
-            </div>
-            <div className="container">
+  const { t } = useT();
 
-               <div className="row align-items-center">
-                  <div className="col-lg-6">
-                     <div className="tp-feature-title-wrapper">
-                        <span className="tp-section-title__pre">
-                           {t('what {highlight}', { highlight: <span className="title-pre-color">{t('we deliver')}</span> })}
-                           <AngleArrow />
-                        </span>
-                        <h3 className="tp-section-title">{t('AI Project Types We Deliver')}
-                           <span className="title-left-shape">
-                              <LineArrowTwo />
-                           </span>
-                        </h3>
-                     </div>
-                  </div>
-                  <div className="col-lg-6">
-                     <div id='tp-feature-wrapper2' className="tp-feature-wrapper offer p-relative">
-                        <p>{t('From raw data to production-ready AI — delivered by our three engines: {br} Data Engine, Community, and AI Lab.', { br: <br /> })} </p>
-                     </div>
-                  </div>
-               </div>
-               <div className="row">
-                {offering_data.map((item, i) => 
-                    <div key={i} className="col-lg-3 col-md-6 col-sm-6">
-                        <div className="tp-offer-wrapper text-center mb-30">
-                        <h3 className="offer-title">{t(item.title, { br: <br /> })}</h3>
-                        <div className="tp-offer-wrapper-thumb">
-                            <Image src={item.img} alt="theme-pure" />
-                        </div>
-                        <div className="tp-offer-wrapper-btn">
-                            <Link href="/service-details">{t('Read Out More')} <i className="fa-solid fa-arrow-up-right"></i></Link>
-                        </div>
-                        </div>
-                    </div>
-                )} 
+  return (
+    <section className="bg-navy py-16 text-white sm:py-20">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-6">
+            <span className="text-xs font-semibold uppercase tracking-wider text-teal">
+              {t('what {highlight}', { highlight: t('we deliver') })}
+            </span>
+            <h2 className="mt-2 mb-0 text-[28px] font-semibold tracking-[-0.025em] text-white sm:text-[34px]">
+              {t('AI Project Types We Deliver')}
+            </h2>
+          </div>
+          <div className="lg:col-span-6">
+            <p className="m-0 max-w-xl text-sm leading-relaxed text-white/75 sm:text-base">
+              {t(
+                'From raw data to production-ready AI — delivered by our three engines: {br} Data Engine, Community, and AI Lab.',
+                { br: ' ' },
+              )}
+            </p>
+          </div>
+        </div>
 
-                  <div className="col-lg-12">
-                     <div className="tp-offer-all-btn text-center mt-30 fadeUp">
-                        <p>{t('Bring them together and you overcome the ordinary.')}
-                            <Link href="/service-details">{t('View All Services')}
-                            <span><i className="fa-regular fa-plus"></i></span>
-                            </Link>
-                        </p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-          </section> 
-        </>
-    );
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {OFFERING_DATA.map((item) => (
+            <Link
+              key={item.id}
+              href="/service-details"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-white no-underline transition-[background-color,border-color] duration-150 hover:border-teal/40 hover:bg-white/[0.08]"
+            >
+              <div>
+                <div className="mb-5 flex items-center justify-between">
+                  <Badge tone="neutral" mono>
+                    0{item.id}
+                  </Badge>
+                  <ArrowUpRight
+                    className="h-4 w-4 text-white/50 transition-colors group-hover:text-teal"
+                    strokeWidth={1.6}
+                  />
+                </div>
+                <h3 className="m-0 text-lg font-semibold leading-snug text-white">
+                  {t(item.title, { br: <br /> })}
+                </h3>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between gap-4 border-t border-white/10 pt-5">
+                <span className="text-xs font-medium text-teal">{t('Read Out More')}</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 p-2">
+                  <Image src={item.img} alt="" className="h-full w-full object-contain" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-center text-sm text-white/75">
+          <span>{t('Bring them together and you overcome the ordinary.')}</span>
+          <Link
+            href="/service"
+            className="inline-flex items-center gap-1.5 font-semibold text-teal no-underline hover:underline"
+          >
+            <Plus className="h-4 w-4" strokeWidth={1.75} />
+            <span>{t('View All Services')}</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default OfferArea;
