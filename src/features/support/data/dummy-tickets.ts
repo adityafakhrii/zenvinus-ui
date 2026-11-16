@@ -1,0 +1,81 @@
+import type { TicketDetail } from '../types/ticket';
+
+export const DUMMY_TICKETS: TicketDetail[] = [
+  {
+    id: 101,
+    topic: 'projects',
+    subject: 'DP invoice verification for Road Damage Annotation batch',
+    reference: 'REQ-2084',
+    status: 'answered',
+    messageCount: 2,
+    lastMessageAt: '2026-10-18T11:20:00Z',
+    createdAt: '2026-10-18T09:15:00Z',
+    requester: { name: 'Dev Preview', email: 'dev@zenvinus.local' },
+    isRequester: true,
+    messages: [
+      {
+        id: 1,
+        body: 'Hi team, we submitted the 30% DP transfer for REQ-2084 this morning. Could you confirm when the contributor batch starts?',
+        fromStaff: false,
+        author: { name: 'Dev Preview' },
+        createdAt: '2026-10-18T09:15:00Z',
+      },
+      {
+        id: 2,
+        body: 'Payment is confirmed! We have assigned 25 vetted annotators and 3 expert reviewers. Initial preview will be ready within 48 hours.',
+        fromStaff: true,
+        author: { name: 'Zenvinus Operations' },
+        createdAt: '2026-10-18T11:20:00Z',
+      },
+    ],
+  },
+  {
+    id: 102,
+    topic: 'tasks',
+    subject: 'Clarification on occluded pedestrian bounding boxes',
+    reference: 'road-damage-annotation',
+    status: 'open',
+    messageCount: 1,
+    lastMessageAt: '2026-10-17T15:40:00Z',
+    createdAt: '2026-10-17T15:40:00Z',
+    requester: { name: 'Rina Marlina', email: 'rina@contributor.local' },
+    isRequester: false,
+    messages: [
+      {
+        id: 3,
+        body: 'For frames where a motorcycle partially covers a pedestrian, should we draw the full estimated box or only the visible pixels?',
+        fromStaff: false,
+        author: { name: 'Rina Marlina' },
+        createdAt: '2026-10-17T15:40:00Z',
+      },
+    ],
+  },
+  {
+    id: 103,
+    topic: 'datasets',
+    subject: 'Export format request for Indonesian Sentiment Corpus',
+    reference: 'nusantara-bahasa-sentiment-corpus',
+    status: 'closed',
+    messageCount: 2,
+    lastMessageAt: '2026-10-12T10:05:00Z',
+    createdAt: '2026-10-11T14:00:00Z',
+    requester: { name: 'Dev Preview', email: 'dev@zenvinus.local' },
+    isRequester: true,
+    messages: [
+      {
+        id: 4,
+        body: 'Can we download the validation split in Parquet alongside JSONL?',
+        fromStaff: false,
+        author: { name: 'Dev Preview' },
+        createdAt: '2026-10-11T14:00:00Z',
+      },
+      {
+        id: 5,
+        body: 'Yes — both Parquet and JSONL artifacts are now listed in the Files tab of the dataset page.',
+        fromStaff: true,
+        author: { name: 'Zenvinus Support' },
+        createdAt: '2026-10-12T10:05:00Z',
+      },
+    ],
+  },
+];

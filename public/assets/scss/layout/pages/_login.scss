@@ -1,0 +1,310 @@
+@use '../../utils' as *;
+
+/*----------------------------------------*/
+/*  8.9 login css — uses the dashboard (edash) visual language:
+    white card + soft shadow + 12px radius, edash-input borders,
+    edash-btn / edash-btn-ghost actions, theme tokens.
+/*----------------------------------------*/
+
+/* body template berupa flex + overflow-x hidden, dan halaman login
+   tanpa header/footer — jadi section-nya sendiri yang mengisi layar
+   agar tidak ada strip putih sisa body di bawah kartu */
+.zv-login-area {
+    display: flex;
+    flex-grow: 1;
+    min-height: 100vh;
+    align-items: flex-start;
+    padding-top: 80px;
+    padding-bottom: 80px;
+    background: var(--tp-grey-2);
+    @media #{$md,$sm,$xs} {
+        padding-top: 48px;
+        padding-bottom: 48px;
+    }
+}
+
+/* same card treatment as .edash-card */
+.zv-login-card {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--tp-common-white);
+    box-shadow: 0px 4px 27px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 40px 44px 36px;
+    @media #{$lg} {
+        padding: 34px 30px 30px;
+    }
+    @media #{$xs} {
+        padding: 28px 20px 26px;
+    }
+}
+
+.zv-login-logo {
+    display: inline-block;
+    margin-bottom: 18px;
+    & img { height: 38px; width: auto; }
+}
+
+.zv-login-title {
+    display: block;
+    font-family: var(--tp-ff-heading);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--tp-heading-primary);
+    margin: 0 0 6px;
+    & span { color: var(--tp-theme-secondary); }
+}
+
+.zv-login-subtitle {
+    margin: 0 0 26px;
+    font-size: 15px;
+    color: var(--tp-text-body);
+}
+
+.zv-login-social {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.zv-login-divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+    &::before,
+    &::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(8, 13, 53, .1);
+    }
+    & span {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--tp-text-body);
+        padding: 0 16px;
+    }
+}
+
+.zv-login-phone {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    /* kedua kotak berbagi metrik persis (tinggi + font) agar terbaca
+       sebagai satu kontrol */
+    & .edash-input {
+        flex: 1;
+        min-width: 0;
+        height: 47px;
+        padding: 0 16px;
+        font-family: var(--tp-ff-heading);
+        font-weight: 500;
+        font-size: 14px;
+    }
+}
+
+/* country dropdown — same border/focus treatment as .edash-input */
+.zv-login-phone-code {
+    position: relative;
+    width: 132px;
+    flex-shrink: 0;
+    @media #{$xs} {
+        width: 112px;
+    }
+    &-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        width: 100%;
+        height: 47px;
+        padding: 0 12px 0 14px;
+        border: 1px solid rgba(8, 13, 53, .1);
+        border-radius: 10px;
+        background: var(--tp-common-white);
+        font-family: var(--tp-ff-heading);
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--tp-heading-primary);
+        cursor: pointer;
+        @extend %tp-transition-common;
+        &::after {
+            content: "";
+            flex-shrink: 0;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid var(--tp-heading-primary);
+            border-bottom: 2px solid var(--tp-heading-primary);
+            transform: rotate(45deg) translateY(-2px);
+            transition: transform .2s ease-out 0s;
+        }
+        &.open::after { transform: rotate(225deg) translateY(-2px); }
+        &:hover,
+        &.open {
+            border-color: var(--tp-theme-secondary);
+            box-shadow: 0 0 0 3px rgba(19, 205, 189, .12);
+        }
+    }
+    &-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 290px;
+        max-width: calc(100vw - 50px);
+        background: var(--tp-common-white);
+        border: 1px solid rgba(8, 13, 53, .1);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(2, 6, 38, 0.1);
+        z-index: 5;
+        overflow: hidden;
+    }
+    &-search {
+        padding: 10px;
+        border-bottom: 1px solid rgba(8, 13, 53, .06);
+        & input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid rgba(8, 13, 53, .1);
+            border-radius: 10px;
+            outline: 0;
+            padding: 0 14px;
+            font-family: var(--tp-ff-heading);
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--tp-heading-primary);
+            @extend %tp-transition-common;
+            &:focus { border-color: var(--tp-theme-secondary); }
+            &::placeholder { color: var(--tp-text-body); font-weight: 400; }
+        }
+    }
+    &-list {
+        max-height: 250px;
+        overflow-y: auto;
+        padding: 6px 0;
+    }
+    &-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 10px 14px;
+        font-size: 14px;
+        text-align: left;
+        color: var(--tp-text-body);
+        cursor: pointer;
+        transition: background .2s ease-out 0s;
+        &:hover {
+            background: var(--tp-grey-2);
+            color: var(--tp-heading-primary);
+        }
+        &.selected {
+            color: var(--tp-theme-secondary);
+            font-weight: 600;
+        }
+    }
+    &-item-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    &-item-dial {
+        flex-shrink: 0;
+        font-family: var(--tp-ff-heading);
+        font-weight: 500;
+        color: inherit;
+    }
+    &-empty {
+        padding: 14px;
+        font-size: 14px;
+        color: var(--tp-text-body);
+        margin-bottom: 0;
+    }
+}
+
+/* OTP boxes — edash-input treatment, centered digits */
+.zv-login-otp {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 24px;
+    /* input.zv-login-otp-box.edash-input beats the template's global
+       input[type=text] padding/height rule that clips digits */
+    & input.zv-login-otp-box {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+        height: 56px;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        font-family: var(--tp-ff-heading);
+        font-weight: 600;
+        font-size: 24px;
+        line-height: normal;
+    }
+}
+
+.zv-login-otp-hint {
+    font-size: 15px;
+    line-height: 26px;
+    color: var(--tp-text-body);
+    margin-bottom: 22px;
+    & strong {
+        font-weight: 600;
+        color: var(--tp-heading-primary);
+    }
+    & button {
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--tp-theme-secondary);
+        padding: 0;
+        @extend %tp-transition-common;
+        &:hover { color: var(--tp-heading-primary); }
+    }
+}
+
+.zv-login-submit {
+    width: 100%;
+    justify-content: center;
+}
+
+.zv-login-resend {
+    text-align: center;
+    margin-top: 22px;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: var(--tp-text-body);
+    & button {
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--tp-theme-secondary);
+        padding: 0;
+        @extend %tp-transition-common;
+        &:hover { color: var(--tp-heading-primary); }
+    }
+}
+
+.zv-login-terms {
+    text-align: center;
+    margin-top: 22px;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 22px;
+    color: var(--tp-text-body);
+    & a {
+        color: var(--tp-text-body);
+        text-decoration: underline;
+        @extend %tp-transition-common;
+        &:hover { color: var(--tp-theme-secondary); }
+    }
+}

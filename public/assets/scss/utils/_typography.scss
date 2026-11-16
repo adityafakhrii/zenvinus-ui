@@ -1,0 +1,27 @@
+
+// font url
+
+// Loaded once, from the <link> in src/pages/_document.tsx; keep the two in sync
+$font-url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800;900&display=swap';
+
+// font family
+$font-family: (
+    'ff': (
+        'body': "'DM Sans', sans-serif",
+        'heading': "'Raleway', sans-serif",
+        'p': "'DM Sans', sans-serif",
+        'fontawesome': '"Font Awesome 6 Pro"',
+    )
+);
+
+
+
+// font size
+$font-size: (
+    'fz': (
+        'body': 16px,
+        'p': 16px,
+    )
+);
+
+
