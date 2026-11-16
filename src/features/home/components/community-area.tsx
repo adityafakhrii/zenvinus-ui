@@ -15,7 +15,7 @@ const ICONS = {
 const ICON_TONE = {
   blue: 'bg-tone-blue-bg text-tone-blue-fg',
   mint: 'bg-tone-mint-bg text-tone-mint-fg',
-  navy: 'bg-navy text-teal',
+  navy: 'bg-tint-cyan text-teal-ink border border-line-subtle',
   orange: 'bg-tone-orange-bg text-tone-orange-fg',
 } as const;
 
@@ -153,22 +153,22 @@ const CommunityArea = () => {
             </Button>
           </article>
 
-          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-white/10 bg-navy p-6 text-white sm:flex-row sm:items-center sm:p-7">
+          <article className="flex flex-col justify-between gap-5 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 text-ink sm:flex-row sm:items-center sm:p-7">
             <div className="flex items-start gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-teal">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-tone-blue-bg text-tone-blue-fg">
                 <Eye className="h-5 w-5" strokeWidth={1.6} />
               </span>
               <div>
-                <span className="text-[11px] font-semibold text-teal">
+                <span className="text-[11px] font-semibold text-tone-blue-fg">
                   {t('Experts')}
                 </span>
-                <h3 className="mt-1 mb-0 text-xl font-semibold text-white">{t('Experts Get Paid')}</h3>
-                <p className="mt-1.5 mb-0 text-[13px] leading-relaxed text-white/75">
+                <h3 className="mt-1 mb-0 text-xl font-semibold text-ink">{t('Experts Get Paid')}</h3>
+                <p className="mt-1.5 mb-0 text-[13px] leading-relaxed text-ink-secondary">
                   {t('For reviewing community results and handling annotation projects from enterprise.')}
                 </p>
               </div>
             </div>
-            <Button href="/contact" variant="teal" size="md" className="shrink-0">
+            <Button href="/contact" variant="primary" size="md" className="shrink-0">
               {t('Join as Expert')}
             </Button>
           </article>

@@ -38,8 +38,10 @@ function describeArcSegment(
   ].join(' ');
 }
 
+const TEAL_STEPS = ['#2DD4BF', '#14B8A6', '#0D9488'] as const;
+
 /**
- * Segmented semi-circular SVG gauge matching the reference Health/Quality widget with Zenvinus Teal ramp.
+ * Segmented semi-circular SVG gauge with spacious proportional center figure and cohesive Zenvinus Teal tone ramp.
  */
 export function CustomSemiCircleGauge({
   value,
@@ -50,22 +52,22 @@ export function CustomSemiCircleGauge({
   const clamped = Math.max(0, Math.min(100, Math.round(value)));
   const filledCount = Math.round((clamped / 100) * segments);
   const cx = 120;
-  const cy = 112;
-  const rOuter = 96;
-  const rInner = 64;
-  const gapDeg = 3.5;
+  const cy = 114;
+  const rOuter = 102;
+  const rInner = 76;
+  const gapDeg = 3.2;
   const totalSweep = 180;
   const segSweep = (totalSweep - gapDeg * (segments - 1)) / segments;
 
   return (
-    <div className={cn('relative mx-auto flex w-full max-w-[240px] flex-col items-center', className)}>
-      <svg viewBox="0 0 240 132" className="h-auto w-full" role="img" aria-label={`${label}: ${clamped}%`}>
+    <div className={cn('mx-auto flex w-full max-w-[230px] flex-col items-center', className)}>
+      <svg viewBox="0 0 240 124" className="h-auto w-full overflow-visible" role="img" aria-label={`${label}: ${clamped}%`}>
         {Array.from({ length: segments }, (_, i) => {
           const startDeg = 180 + i * (segSweep + gapDeg);
           const endDeg = startDeg + segSweep;
           const isFilled = i < filledCount;
-          const progressRatio = i / Math.max(1, segments - 1);
-          const fill = isFilled ? (progressRatio < 0.5 ? '#05DAC3' : '#09AD86') : '#E6E9EE';
+          const stepIndex = Math.min(TEAL_STEPS.length - 1, Math.floor((i / Math.max(1, segments)) * TEAL_STEPS.length));
+          const fill = isFilled ? TEAL_STEPS[stepIndex] : '#E6E9EE';
 
           return (
             <path
@@ -76,13 +78,20 @@ export function CustomSemiCircleGauge({
             />
           );
         })}
-      </svg>
-      <div className="pointer-events-none -mt-12 flex flex-col items-center text-center">
-        <span className="text-[28px] font-semibold leading-none tracking-tight text-ink tabular-nums">
+
+        <text
+          x={cx}
+          y={98}
+          textAnchor="middle"
+          fill="#020626"
+          fontSize="26"
+          fontWeight="600"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
           {clamped}%
-        </span>
-        <span className="mt-1 text-xs text-ink-muted">{label}</span>
-      </div>
+        </text>
+      </svg>
+      <span className="mt-1 text-center text-xs text-ink-muted leading-tight">{label}</span>
     </div>
   );
 }

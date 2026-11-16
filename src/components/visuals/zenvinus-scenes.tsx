@@ -339,8 +339,8 @@ export function DataEnginePreviewScene() {
               stroke="#05DAC3"
               strokeWidth="1.75"
             />
-            <rect x="80" y="74" width="72" height="17" rx="3" fill="#05DAC3" />
-            <text x="86" y="86" fill="#020626" fontSize="10" fontWeight="600" fontFamily="monospace">
+            <rect x="80" y="73" width="84" height="18" rx="3" fill="#05DAC3" />
+            <text x="86" y="85.5" fill="#020626" fontSize="9.5" fontWeight="600" fontFamily="monospace">
               Pothole 0.96
             </text>
             <rect x="77" y="89" width="6" height="6" fill="#FFFFFF" stroke="#020626" strokeWidth="1" />
@@ -357,8 +357,8 @@ export function DataEnginePreviewScene() {
               stroke="#1684ED"
               strokeWidth="1.75"
             />
-            <rect x="210" y="90" width="62" height="17" rx="3" fill="#1684ED" />
-            <text x="216" y="102" fill="#FFFFFF" fontSize="10" fontWeight="600" fontFamily="monospace">
+            <rect x="210" y="89" width="72" height="18" rx="3" fill="#1684ED" />
+            <text x="216" y="101.5" fill="#FFFFFF" fontSize="9.5" fontWeight="600" fontFamily="monospace">
               Crack 0.91
             </text>
           </svg>
@@ -386,7 +386,7 @@ export function DataEnginePreviewScene() {
       </div>
 
       {/* Bottom Quality Gauge Row */}
-      <div className="mt-3 grid grid-cols-1 items-center gap-4 rounded-xl border border-line-subtle bg-canvas p-3.5 sm:grid-cols-[150px_minmax(0,1fr)]">
+      <div className="mt-3 grid grid-cols-1 items-center gap-4 rounded-xl border border-line-subtle bg-canvas p-4 sm:grid-cols-[176px_minmax(0,1fr)]">
         <div className="flex justify-center">
           <CustomSemiCircleGauge value={94} label={t('Quality score')} />
         </div>
@@ -420,10 +420,17 @@ export function CommunityEngineScene() {
   ] as const;
 
   const tiers = [
-    { id: 'beg', label: 'Beginner', percent: 28, color: '#1684ED' },
-    { id: 'int', label: 'Intermediate', percent: 42, color: '#05DAC3' },
-    { id: 'spc', label: 'Specialist', percent: 20, color: '#020626' },
-    { id: 'exp', label: 'Expert', percent: 10, color: '#F59E0B' },
+    { id: 'beg', label: 'Beginner', percent: 28, color: '#CBD5E1' },
+    { id: 'int', label: 'Intermediate', percent: 42, color: '#2DD4BF' },
+    { id: 'spc', label: 'Specialist', percent: 20, color: '#0D9488' },
+    { id: 'exp', label: 'Expert', percent: 10, color: '#020626' },
+  ] as const;
+
+  const avatars = [
+    { init: 'AR', cls: 'bg-tint-mint text-teal-ink' },
+    { init: 'BW', cls: 'bg-tone-blue-bg text-tone-blue-fg' },
+    { init: 'CH', cls: 'bg-surface text-ink border border-line' },
+    { init: 'DR', cls: 'bg-surface-muted text-ink-secondary' },
   ] as const;
 
   const tasks = [
@@ -446,11 +453,14 @@ export function CommunityEngineScene() {
       <div className="mt-3 rounded-xl border border-line-subtle bg-canvas p-3.5">
         <div className="mb-2.5 flex items-center justify-between text-xs">
           <span className="font-semibold text-ink">{t('Workforce')} Tiers</span>
-          <div className="flex -space-x-1.5">
-            {['AR', 'BW', 'CH', 'DR'].map((init) => (
+          <div className="flex items-center -space-x-1.5">
+            {avatars.map(({ init, cls }) => (
               <span
                 key={init}
-                className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-surface bg-navy font-mono text-[10px] font-semibold text-teal"
+                className={cn(
+                  'inline-flex h-6 w-6 items-center justify-center rounded-full ring-2 ring-surface font-mono text-[10px] font-semibold',
+                  cls,
+                )}
               >
                 {init}
               </span>
