@@ -295,7 +295,7 @@ const AssetDetailsArea = ({ res = 'Dataset' }: AssetDetailsAreaProps) => {
                       >
                         {copiedCitation ? (
                           <>
-                            <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={2} />
+                            <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />
                             <span className="text-teal-ink">{t('Copied')}</span>
                           </>
                         ) : (

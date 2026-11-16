@@ -500,7 +500,7 @@ const StudioExplorer = () => {
                     setSearchText(next);
                     if (!next && ex.search) ex.set({ q: undefined, page: undefined, split });
                   }}
-                  placeholder={t('Search in this split…')}
+                  placeholder={t('Search rows')}
                   aria-label={t('Search rows')}
                   clearLabel={t('Clear search')}
                   maxLength={200}

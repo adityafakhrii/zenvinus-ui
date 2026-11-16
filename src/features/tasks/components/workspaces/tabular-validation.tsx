@@ -48,7 +48,7 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
                         }`}
                         onClick={() => setRow(f.key, { verdict: 'valid' })}
                       >
-                        <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                        <Check className="h-3.5 w-3.5" strokeWidth={1.75} />
                         {t('Valid')}
                       </button>
                       <button
@@ -61,7 +61,7 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
                         }`}
                         onClick={() => setRow(f.key, { verdict: 'invalid' })}
                       >
-                        <AlertTriangle className="h-3.5 w-3.5" strokeWidth={2} />
+                        <AlertTriangle className="h-3.5 w-3.5" strokeWidth={1.75} />
                         {t('Flag')}
                       </button>
                     </div>

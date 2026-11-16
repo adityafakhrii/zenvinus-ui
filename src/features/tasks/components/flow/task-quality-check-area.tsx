@@ -136,7 +136,7 @@ const QualityCheckArea = () => {
                     c.ok ? 'bg-tone-mint-bg text-tone-mint-fg' : 'bg-tone-red-bg text-tone-red-fg',
                   )}
                 >
-                  {c.ok ? <Check className="h-4 w-4" strokeWidth={2} /> : <X className="h-4 w-4" strokeWidth={2} />}
+                  {c.ok ? <Check className="h-4 w-4" strokeWidth={1.75} /> : <X className="h-4 w-4" strokeWidth={1.75} />}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-ink">{t(c.label, c.vars)}</div>

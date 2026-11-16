@@ -487,7 +487,7 @@ export function CustomMultiSelect<T extends string = string>({
                         checked ? 'border-navy bg-navy text-white' : 'border-line-input bg-surface',
                       )}
                     >
-                      {checked && <Check className="w-3 h-3" strokeWidth={2.25} />}
+                      {checked && <Check className="w-3 h-3" strokeWidth={1.75} />}
                     </span>
                     <span className="truncate">{option.label}</span>
                   </button>

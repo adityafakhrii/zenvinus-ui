@@ -91,7 +91,7 @@ const TaskQualificationArea = () => {
               </span>
 
               <h1 className="mt-4 mb-2 text-2xl font-semibold text-ink">
-                {result.passed ? t('Qualification passed!') : t('Not passed yet')}
+                {result.passed ? t('Qualification passed') : t('Not passed yet')}
               </h1>
 
               <div className="my-4">

@@ -102,7 +102,7 @@ const AboutPage = () => {
                 className="flex flex-col rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]"
               >
                 <div className="mb-4 flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
+                  <span className="text-xs font-medium text-teal-ink">
                     {t(layer.tag)}
                   </span>
                   <span className="font-mono text-xs font-semibold text-ink-muted tabular-nums">
@@ -150,8 +150,8 @@ const AboutPage = () => {
                 key={pillar.label}
                 className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-6"
               >
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
-                  <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-ink">
+                  <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.5} />
                   {t(pillar.label)}
                 </span>
                 <h3 className="mt-2 mb-0 text-lg font-semibold text-ink">{t(pillar.title)}</h3>

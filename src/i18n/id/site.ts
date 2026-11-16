@@ -25,6 +25,7 @@ const id: Dictionary = {
     'Platform data AI & pelatihan model Indonesia. {br}Kami membantu perusahaan menyiapkan data berkualitas. Kunjungi zenvinus.co.id',
   "Indonesia's AI data & model training platform. We help companies prepare high-quality data for their AI/ML needs. Visit {site}":
     'Platform data AI & pelatihan model Indonesia. Kami membantu perusahaan menyiapkan data berkualitas untuk kebutuhan AI/ML. Kunjungi {site}',
+  Services: 'Layanan',
   'Services Req': 'Layanan',
   'Data Annotation': 'Anotasi Data',
   'Dataset Preparation': 'Persiapan Dataset',

@@ -48,7 +48,7 @@ const TaskCompletedArea = () => {
           </span>
 
           <h1 className="mt-4 mb-2 text-2xl font-semibold tracking-tight text-ink">
-            {t('Task complete — great work!')}
+            {t('Task complete')}
           </h1>
 
           <p className="mx-auto max-w-lg text-sm leading-relaxed text-ink-secondary">
@@ -82,7 +82,7 @@ const TaskCompletedArea = () => {
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             {progress.accepted.map((id) => (
               <Badge key={id} tone="mint" mono>
-                <Check className="h-3 w-3" strokeWidth={2.25} />
+                <Check className="h-3 w-3" strokeWidth={1.75} />
                 <span>{id}</span>
               </Badge>
             ))}

@@ -132,7 +132,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
   const renderFilterGroups = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+        <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
           {t('Data Type')}
         </h3>
         <div className="flex flex-col gap-2.5">
@@ -152,7 +152,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
       </div>
 
       <div className="border-t border-line-subtle pt-5">
-        <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+        <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
           {t('License')}
         </h3>
         {licenseFacets.length > 0 ? (
@@ -194,7 +194,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
               value={query}
               onChange={setQuery}
               placeholder={
-                isDataset ? t('Search datasets, or keywords...') : t('Search models, or keywords...')
+                isDataset ? t('Search datasets') : t('Search models')
               }
               size="sm"
               containerClassName="w-full sm:w-64"
@@ -371,8 +371,8 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
               <Building2 className="h-5 w-5" strokeWidth={1.6} />
             </span>
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-teal">
-                {t('FOR ENTERPRISE')}
+              <span className="text-xs font-medium text-teal">
+                {t('For enterprise')}
               </span>
               <h3 className="mt-1 mb-0 text-lg font-semibold text-white">
                 {t('Need Custom Datasets or Models?')}

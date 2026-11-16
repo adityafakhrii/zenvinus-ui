@@ -401,7 +401,7 @@ const ExpertArea = () => {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder={t('Search submissions...')}
+              placeholder={t('Search submissions')}
               size="sm"
               containerClassName="w-48 sm:w-56"
             />

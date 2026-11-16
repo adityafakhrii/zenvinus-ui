@@ -48,7 +48,7 @@ export function ViewerCell({ column, value, features }: ViewerCellProps) {
 
   if (value === null || value === undefined) {
     return (
-      <td className="px-3.5 py-2.5 font-mono text-xs italic text-ink-subtle">null</td>
+      <td className="px-3.5 py-2.5 font-mono text-xs text-ink-subtle">null</td>
     );
   }
 

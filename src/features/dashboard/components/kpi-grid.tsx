@@ -25,7 +25,7 @@ export const DeltaChip = ({ delta, good = true }: DeltaChipProps) => {
         good ? 'bg-tone-mint-bg text-tone-mint-fg' : 'bg-tone-red-bg text-tone-red-fg',
       )}
     >
-      <Icon className="h-3 w-3" strokeWidth={2} aria-hidden="true" />
+      <Icon className="h-3 w-3" strokeWidth={1.75} aria-hidden="true" />
       <span>{Math.abs(delta)}%</span>
     </span>
   );

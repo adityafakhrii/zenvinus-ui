@@ -534,8 +534,8 @@ const id: Dictionary = {
   'Filter by status': 'Filter berdasarkan status',
   'Filter by stage': 'Filter berdasarkan tahap',
   'Filter by review status': 'Filter berdasarkan status tinjauan',
-  'Search projects...': 'Cari proyek...',
-  'Search submissions...': 'Cari kiriman...',
+  'Search projects': 'Cari proyek',
+  'Search submissions': 'Cari kiriman',
   'No matching projects.': 'Tidak ada proyek yang cocok.',
   'Try clearing your search or status filter to see all workspace projects.':
     'Coba bersihkan pencarian atau filter status untuk melihat seluruh proyek ruang kerja.',

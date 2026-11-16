@@ -94,7 +94,7 @@ const DashboardHeader = () => {
         className={extraClassName}
         leftIcon={
           cta.icon === 'plus' ? (
-            <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+            <Plus className="h-3.5 w-3.5" strokeWidth={1.75} />
           ) : (
             <Search className="h-3.5 w-3.5" strokeWidth={1.75} />
           )
@@ -221,7 +221,7 @@ const DashboardHeader = () => {
                       <div className="relative flex items-center">
                         {active && (
                           <span
-                            className="absolute -left-3 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-navy"
+                            className="absolute -left-3 top-1.5 bottom-1.5 w-1 rounded-r-full bg-navy"
                             aria-hidden="true"
                           />
                         )}
@@ -343,7 +343,7 @@ const DashboardHeader = () => {
           {/* Top Utility Bar (Sidebar Mode) */}
           <header
             className={cn(
-              'sticky top-0 z-30 h-16 border-b border-[rgba(8,13,53,0.08)] bg-surface/95 backdrop-blur-sm',
+              'sticky top-0 z-30 h-16 border-b border-hairline bg-surface',
               'transition-[padding-left] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]',
               sidebarCollapsed ? 'lg:pl-[72px]' : 'lg:pl-[256px]',
             )}
@@ -416,7 +416,7 @@ const DashboardHeader = () => {
   /* Default Mode: Top Navbar */
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[rgba(8,13,53,0.08)] bg-surface/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-40 border-b border-hairline bg-surface">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-4 2xl:gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline">
@@ -450,7 +450,7 @@ const DashboardHeader = () => {
                     )}
                     {active && (
                       <span
-                        className="absolute inset-x-2.5 2xl:inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-teal"
+                        className="absolute inset-x-2.5 2xl:inset-x-3 bottom-0 h-0.5 rounded-full bg-teal"
                         aria-hidden="true"
                       />
                     )}

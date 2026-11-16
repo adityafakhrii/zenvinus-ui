@@ -217,7 +217,7 @@ const TaskRewardArea = () => {
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-surface text-teal-ink">
                 <CheckCircle2 className="h-5 w-5" strokeWidth={1.75} />
               </span>
-              <h2 className="mt-3 mb-1.5 text-lg font-semibold text-ink">{t('Reward claimed!')}</h2>
+              <h2 className="mt-3 mb-1.5 text-lg font-semibold text-ink">{t('Reward claimed')}</h2>
               <p className="m-0 text-sm text-ink-secondary">
                 {t('Rp {amount} is on its way to {method}. You will be notified when the funds arrive.', {
                   amount: total.toLocaleString(locale),

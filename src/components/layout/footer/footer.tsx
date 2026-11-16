@@ -86,7 +86,7 @@ const FooterThree = () => {
 
           {/* Column 2: Services */}
           <div className="lg:col-span-2">
-            <h3 className="m-0 mb-4 text-sm font-semibold text-white">{t('Services Req')}</h3>
+            <h3 className="m-0 mb-4 text-sm font-semibold text-white">{t('Services')}</h3>
             <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
               {SERVICE_LINKS.map((item) => (
                 <li key={item.title}>
@@ -160,7 +160,7 @@ const FooterThree = () => {
                     agreed ? 'border-teal bg-teal text-navy' : 'border-white/30 bg-transparent',
                   )}
                 >
-                  {agreed && <Check className="h-3 w-3" strokeWidth={2.5} />}
+                  {agreed && <Check className="h-3 w-3" strokeWidth={1.75} />}
                 </span>
                 <span className="text-xs leading-snug text-white/65">
                   {t('I agree to all your terms and policies')}

@@ -5,10 +5,10 @@ const id: Dictionary = {
   // Shared section labels
   'IT Solutions': 'Solusi TI',
   'Read More': 'Baca Selengkapnya',
-  'Read Out More': 'Selengkapnya',
+  'Explore service': 'Lihat layanan',
   'Learn More': 'Selengkapnya',
   'LEARN MORE': 'SELENGKAPNYA',
-  'Bring them together and you overcome the ordinary.': 'Satukan semuanya dan lampaui hal yang biasa.',
+  'Combine curation, human annotation, and evaluation in one workflow.': 'Gabungkan kurasi, anotasi manusia, dan evaluasi dalam satu alur kerja.',
   'View All Services': 'Lihat Semua Layanan',
   'View all Services': 'Lihat Semua Layanan',
   'View More Services': 'Lihat Layanan Lainnya',
@@ -32,7 +32,7 @@ const id: Dictionary = {
   Next: 'Berikutnya',
 
   // AI project types
-  'what {highlight}': 'apa {highlight}',
+  'What we deliver': 'Yang kami kerjakan',
   'we deliver': 'yang kami hadirkan',
   'AI Project Types We Deliver': 'Jenis Proyek AI yang Kami Kerjakan',
   'From raw data to production-ready AI — delivered by our three engines: {br} Data Engine, Community, and AI Lab.':
@@ -44,7 +44,7 @@ const id: Dictionary = {
 
   // Why Zenvinus
   'Zenvinus — Data Engine & AI Community Hub': 'Zenvinus — Data Engine & Pusat Komunitas AI',
-  'why {highlight}': 'mengapa {highlight}',
+  'Why Zenvinus': 'Mengapa Zenvinus',
   'One Platform For Your Entire AI Lifecycle': 'Satu Platform untuk Seluruh Siklus AI Anda',
   'Stop juggling separate vendors for datasets, labeling, and model {br} development. Zenvinus unifies the whole AI workflow in one platform.':
     'Tak perlu lagi mengurus banyak vendor terpisah untuk dataset, pelabelan, dan pengembangan model. Zenvinus menyatukan seluruh alur kerja AI dalam satu platform.',
@@ -53,8 +53,8 @@ const id: Dictionary = {
   'Distributed human workforce {br} plus research and training': 'Tenaga kerja manusia terdistribusi {br} serta riset dan pelatihan',
 
   // Data pipeline (about area, category area)
-  'it service': 'layanan TI',
-  'It Industries We’re Offering': 'Industri TI yang Kami Layani',
+  'Data-to-production workflow': 'Alur kerja data ke produksi',
+  'Eight stages from raw data to deployed AI': 'Delapan tahap dari data mentah hingga AI terpasang',
   'Raw Data': 'Data Mentah',
   Discovery: 'Penemuan',
   Curation: 'Kurasi',
@@ -197,10 +197,8 @@ const id: Dictionary = {
     'begitu terpikat dan terlena oleh {br} kesenangan teknologi sesaat. Tidak seperti {br} mereka yang mudah terpikat dan terlena {br} oleh pesona dunia',
 
   // CTA
-  'We’re Ready to {highlight} IT Business': 'Kami Siap {highlight} Bisnis TI Anda',
-  Growth: 'Menumbuhkan',
-  'Get a Free Quote': 'Dapatkan Penawaran Gratis',
-  'We’re Ready to Growth {br} IT Business': 'Kami Siap Menumbuhkan {br} Bisnis TI Anda',
+  'Enterprise solutions': 'Solusi enterprise',
+  'Build your next Indonesian AI dataset or model': 'Bangun dataset atau model AI Indonesia Anda berikutnya',
   'Phone:': 'Telepon:',
   'About Our Agency': 'Tentang Agensi Kami',
 

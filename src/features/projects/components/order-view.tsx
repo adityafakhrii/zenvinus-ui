@@ -57,7 +57,7 @@ const PipelineTimeline = ({ orderId, timeline }: { orderId: string; timeline: Ti
                 )}
               >
                 {step.state === 'done' ? (
-                  <Check className="h-4 w-4" strokeWidth={2} />
+                  <Check className="h-4 w-4" strokeWidth={1.75} />
                 ) : (
                   <ProjectIcon icon={step.icon} className="h-3.5 w-3.5" />
                 )}
@@ -170,7 +170,7 @@ const DeliverablesCard = ({ deliverables }: { deliverables: OrderDeliverables | 
         </Badge>
       </div>
 
-      <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+      <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
         {t('Datasets')}
       </h3>
       <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle rounded-xl border border-line-subtle p-0">
@@ -205,7 +205,7 @@ const DeliverablesCard = ({ deliverables }: { deliverables: OrderDeliverables | 
 
       {deliverables.models.length > 0 && (
         <div className="mt-6">
-          <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
             {t('Models')}
           </h3>
           <ul className="m-0 flex list-none flex-col divide-y divide-line-subtle rounded-xl border border-line-subtle p-0">
@@ -237,7 +237,7 @@ const DeliverablesCard = ({ deliverables }: { deliverables: OrderDeliverables | 
 
       {deliverables.inference && (
         <div className="mt-6">
-          <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
             {t('Inference')}
           </h3>
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-teal-ink/25 bg-tint-mint p-4">
@@ -304,7 +304,7 @@ const OrderStagePage = ({ orderId, stageKey }: OrderStagePageProps) => {
               )}
             >
               {s.state === 'done' ? (
-                <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                <Check className="h-3.5 w-3.5" strokeWidth={1.75} />
               ) : (
                 <Circle className="h-2.5 w-2.5 fill-current" />
               )}
@@ -322,7 +322,7 @@ const OrderStagePage = ({ orderId, stageKey }: OrderStagePageProps) => {
               )}
             >
               {stage.state === 'done' ? (
-                <Check className="h-5 w-5" strokeWidth={2} />
+                <Check className="h-5 w-5" strokeWidth={1.75} />
               ) : (
                 <ProjectIcon icon={meta.icon} className="h-5 w-5" />
               )}
@@ -482,7 +482,7 @@ const OrderStagePage = ({ orderId, stageKey }: OrderStagePageProps) => {
                       <span className="font-mono text-[11px] text-ink-muted">{i + 1}</span>
                       <span>{t(s.label)}</span>
                     </span>
-                    {s.state === 'done' && <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={2} />}
+                    {s.state === 'done' && <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />}
                   </Link>
                 </li>
               ))}

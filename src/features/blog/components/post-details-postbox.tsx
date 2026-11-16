@@ -73,7 +73,7 @@ function ShareBar({ title }: { title: string }) {
       >
         {copied ? (
           <>
-            <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={2} />
+            <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />
             <span className="text-teal-ink">{t('Link copied')}</span>
           </>
         ) : (
@@ -261,7 +261,7 @@ const PostDetailsPostbox = ({ kind = 'blog', slug }: PostDetailsPostboxProps) =>
                     {initials(author.name)}
                   </span>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
+                    <span className="text-xs font-medium text-teal-ink">
                       {t('Written by')}
                     </span>
                     <h4 className="mt-0.5 mb-0 text-base font-semibold text-ink">{author.name}</h4>

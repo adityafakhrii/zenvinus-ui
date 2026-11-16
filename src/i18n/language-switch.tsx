@@ -94,7 +94,7 @@ export function LanguageSwitch({ className = '' }: LanguageSwitchProps) {
         <span className="inline-flex h-3.5 w-5 shrink-0 overflow-hidden rounded-[2px] ring-1 ring-black/10">
           {FLAGS[active.code]}
         </span>
-        <span className="font-mono text-xs tracking-tight">{active.label}</span>
+        <span className="font-mono text-xs">{active.label}</span>
         <ChevronDown
           className={cn(
             'h-3.5 w-3.5 text-ink-muted transition-transform duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]',

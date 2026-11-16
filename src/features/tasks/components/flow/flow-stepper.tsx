@@ -66,9 +66,9 @@ const FlowStepper = ({ current }: FlowStepperProps) => {
                   )}
                 >
                   {state === 'done' ? (
-                    <Check className="h-3 w-3" strokeWidth={2.25} />
+                    <Check className="h-3 w-3" strokeWidth={1.75} />
                   ) : (
-                    <Icon className="h-3 w-3" strokeWidth={1.75} />
+                    <Icon className="h-3 w-3" strokeWidth={1.5} />
                   )}
                 </span>
                 <span className="whitespace-nowrap">{t(step.label)}</span>

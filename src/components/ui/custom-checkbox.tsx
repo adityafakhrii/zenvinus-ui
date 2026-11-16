@@ -55,7 +55,7 @@ export function CustomCheckbox({
         )}
         aria-hidden="true"
       >
-        {checked && <Check className="w-3 h-3" strokeWidth={2.25} />}
+        {checked && <Check className="w-3 h-3" strokeWidth={1.75} />}
       </span>
       {(label || description) && (
         <span className="flex flex-col">

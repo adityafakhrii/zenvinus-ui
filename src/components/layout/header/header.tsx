@@ -43,7 +43,7 @@ const HeaderOne = () => {
     <>
       <header
         className={cn(
-          'sticky top-0 z-40 h-16 border-b border-[rgba(8,13,53,0.08)] bg-surface/95 backdrop-blur-md transition-shadow duration-150',
+          'sticky top-0 z-40 h-16 border-b border-hairline bg-surface transition-shadow duration-150',
           scrolled && 'shadow-[0_4px_16px_rgba(2,6,38,0.06)]',
         )}
       >

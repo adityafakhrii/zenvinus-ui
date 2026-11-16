@@ -434,7 +434,7 @@ const InternalArea = () => {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder={t('Search projects...')}
+              placeholder={t('Search projects')}
               size="sm"
               containerClassName="w-48 sm:w-56"
             />

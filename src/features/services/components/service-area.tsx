@@ -105,7 +105,7 @@ const ServiceArea = () => {
                         {t(service.sla)}
                       </Badge>
                     </div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
+                    <span className="text-xs font-medium text-teal-ink">
                       {t(service.category)}
                     </span>
                     <h2 className="mt-1 mb-0 text-lg font-semibold text-ink">{t(service.title)}</h2>

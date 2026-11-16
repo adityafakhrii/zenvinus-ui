@@ -48,8 +48,8 @@ const id: Dictionary = {
   // Datasets & models catalog
   'Free, quality-scored datasets contributed by the community.': 'Dataset gratis berskor kualitas, dikontribusikan oleh komunitas.',
   'Community-contributed models for Indonesian language and data.': 'Model kontribusi komunitas untuk bahasa dan data Indonesia.',
-  'Search datasets, or keywords...': 'Cari dataset atau kata kunci...',
-  'Search models, or keywords...': 'Cari model atau kata kunci...',
+  'Search datasets': 'Cari dataset',
+  'Search models': 'Cari model',
   'Popular First': 'Terpopuler',
   'Highest Quality': 'Kualitas Tertinggi',
   Filters: 'Filter',
@@ -78,7 +78,7 @@ const id: Dictionary = {
   'No models match your filters. Try clearing some filters.': 'Tidak ada model yang cocok dengan filter Anda. Coba hapus beberapa filter.',
   'No datasets published yet.': 'Belum ada dataset yang diterbitkan.',
   'No models published yet.': 'Belum ada model yang diterbitkan.',
-  'FOR ENTERPRISE': 'UNTUK ENTERPRISE',
+  'For enterprise': 'Untuk enterprise',
   'Need Custom Datasets or Models?': 'Butuh Dataset atau Model Khusus?',
   'Get custom-built datasets, models, and AI research with dedicated experts and a community workforce — with custom pricing and licensing for your organization.':
     'Dapatkan dataset, model, dan riset AI yang dibuat khusus bersama pakar berdedikasi dan tenaga kerja komunitas — dengan harga dan lisensi yang disesuaikan untuk organisasi Anda.',

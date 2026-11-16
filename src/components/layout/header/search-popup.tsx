@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Building2, Cpu, Database, ListTodo, Mail, Newspaper, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, Building2, Cpu, Database, Layers, ListTodo, Mail, Newspaper } from 'lucide-react';
 import { Badge, Modal, SearchInput } from '@/components/ui';
 import { useT } from '@/i18n';
 
@@ -21,7 +21,7 @@ const PUBLIC_DESTINATIONS: ReadonlyArray<PublicDestination> = [
   { id: 'tasks', label: 'Tasks', category: 'Community', href: '/tasks', icon: ListTodo },
   { id: 'datasets', label: 'Datasets', category: 'Community', href: '/datasets', icon: Database },
   { id: 'models', label: 'Models', category: 'Community', href: '/models', icon: Cpu },
-  { id: 'service', label: 'Our Services', category: 'Company', href: '/service', icon: Sparkles },
+  { id: 'service', label: 'Our Services', category: 'Company', href: '/service', icon: Layers },
   { id: 'about', label: 'About Zenvinus', category: 'Company', href: '/about', icon: Building2 },
   { id: 'blog', label: 'Blog', category: 'Media', href: '/blog', icon: BookOpen },
   { id: 'news', label: 'News', category: 'Media', href: '/news', icon: Newspaper },
@@ -60,7 +60,7 @@ const SearchPopup = ({ searchOpen, setSearchOpen }: SearchPopupProps) => {
         <SearchInput
           value={query}
           onChange={setQuery}
-          placeholder={t('Type here to search...')}
+          placeholder={t('Search')}
           autoFocus
         />
 
@@ -85,7 +85,7 @@ const SearchPopup = ({ searchOpen, setSearchOpen }: SearchPopupProps) => {
                     </span>
                     <span className="flex shrink-0 items-center gap-2">
                       <Badge tone="neutral">{t(item.category)}</Badge>
-                      <ArrowRight className="h-3.5 w-3.5 text-ink-subtle group-hover:text-teal-ink" strokeWidth={1.6} />
+                      <ArrowRight className="h-3.5 w-3.5 text-ink-subtle group-hover:text-teal-ink" strokeWidth={1.5} />
                     </span>
                   </Link>
                 </li>

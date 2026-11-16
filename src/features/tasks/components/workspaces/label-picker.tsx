@@ -30,7 +30,7 @@ const LabelPicker = ({ labels = [], value, onChange, name = 'label' }: LabelPick
             }`}
             onClick={() => onChange(label)}
           >
-            {active && <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={2.25} />}
+            {active && <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />}
             <span>{t(label)}</span>
           </button>
         );

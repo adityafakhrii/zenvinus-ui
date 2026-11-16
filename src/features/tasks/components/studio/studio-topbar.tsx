@@ -88,7 +88,7 @@ const StudioTopbar = ({
           <ArrowLeft className="h-4 w-4" strokeWidth={1.6} />
         </Link>
 
-        <span className="hidden items-center gap-1.5 text-sm font-semibold tracking-tight text-navy sm:inline-flex shrink-0">
+        <span className="hidden items-center gap-1.5 text-sm font-semibold text-navy sm:inline-flex shrink-0">
           <Box className="h-4 w-4 text-teal-ink" strokeWidth={1.75} />
           Zenvinus Studio
         </span>

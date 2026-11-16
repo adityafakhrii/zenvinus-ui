@@ -56,7 +56,7 @@ const ServiceDetailsArea = () => {
           {/* Left Rail: Service Switcher + Quick Inquiry Card */}
           <aside className="flex flex-col gap-6 lg:col-span-4">
             <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-4 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
-              <p className="m-0 mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+              <p className="m-0 mb-3 px-2 text-xs font-medium text-ink-muted">
                 {t('All capabilities')}
               </p>
               <nav aria-label={t('Service capabilities')} className="flex flex-col gap-1">

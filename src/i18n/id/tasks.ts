@@ -43,7 +43,7 @@ const id: Dictionary = {
 
   // Task list
   'Explore real-world tasks and start contributing to AI projects.': 'Jelajahi tugas nyata dan mulai berkontribusi pada proyek AI.',
-  'Search tasks...': 'Cari tugas...',
+  'Search tasks': 'Cari tugas',
   'Newest First': 'Terbaru',
   'Highest Reward': 'Hadiah Tertinggi',
   'Ending Soon': 'Segera Berakhir',
@@ -131,7 +131,7 @@ const id: Dictionary = {
   'Tick the agreement to continue.': 'Centang persetujuan untuk melanjutkan.',
 
   // Qualification
-  'Qualification passed!': 'Kualifikasi lulus!',
+  'Qualification passed': 'Kualifikasi lulus',
   'Not passed yet': 'Belum lulus',
   'Minimum score of {score} reached. The {name} workspace is now open to you.': 'Nilai minimum {score} tercapai. Ruang kerja {name} sudah terbuka untuk Anda.',
   'Minimum score is {score}. Review the guidelines on the detail page, then try again.': 'Nilai minimum {score}. Pelajari kembali panduan di halaman detail, lalu coba lagi.',
@@ -319,7 +319,7 @@ const id: Dictionary = {
   invalid: 'tidak valid',
 
   // Completed
-  'Task complete — great work!': 'Tugas selesai — kerja bagus!',
+  'Task complete': 'Tugas selesai',
   '{accepted} of {total} items in this session passed the quality check for {title}. Continue with the next items at any time, or claim your reward.':
     '{accepted} dari {total} item pada sesi ini lolos pemeriksaan kualitas untuk {title}. Lanjutkan item berikutnya kapan saja, atau klaim hadiah Anda.',
   'items accepted': 'item diterima',
@@ -345,7 +345,7 @@ const id: Dictionary = {
   'Accuracy bonus ({pct}%)': 'Bonus akurasi ({pct}%)',
   'Total reward': 'Total hadiah',
   'Payout method': 'Metode pencairan',
-  'Reward claimed!': 'Hadiah berhasil diklaim!',
+  'Reward claimed': 'Hadiah berhasil diklaim',
   'Rp {amount} is on its way to {method}. You will be notified when the funds arrive.':
     'Rp {amount} sedang dikirim ke {method}. Anda akan menerima notifikasi saat dana masuk.',
   'Find Next Task': 'Cari Tugas Berikutnya',

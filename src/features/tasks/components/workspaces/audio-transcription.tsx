@@ -86,9 +86,9 @@ const AudioTranscription = ({ item, answer, onChange }: WorkspaceProps<'audio_tr
               }}
             >
               {playing ? (
-                <Pause className="h-4 w-4" strokeWidth={2} />
+                <Pause className="h-4 w-4" strokeWidth={1.75} />
               ) : (
-                <Play className="ml-0.5 h-4 w-4" strokeWidth={2} />
+                <Play className="ml-0.5 h-4 w-4" strokeWidth={1.75} />
               )}
             </button>
             <span className="font-mono text-sm font-semibold tabular-nums text-ink">

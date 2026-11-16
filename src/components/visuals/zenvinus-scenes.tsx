@@ -74,18 +74,18 @@ export function PipelineScene() {
         </Badge>
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-4 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas px-3.5">
         {stages.map(({ Icon, label, meta, progress }, i) => (
           <div
             key={label}
-            className="flex items-center justify-between gap-3 rounded-xl border border-line-subtle bg-canvas px-3.5 py-2.5"
+            className="flex items-center justify-between gap-3 py-2.5"
           >
             <div className="flex min-w-0 items-center gap-2.5">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface text-teal-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
-                <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
+                <Icon className="h-3.5 w-3.5" strokeWidth={1.5} />
               </span>
               <div className="min-w-0">
-                <span className="block truncate text-xs font-semibold text-ink">
+                <span className="block truncate text-xs font-medium text-ink">
                   {String(i + 1).padStart(2, '0')} · {label}
                 </span>
                 <span className="block truncate text-[11px] text-ink-muted">{meta}</span>
@@ -143,13 +143,13 @@ export function LifecycleHubScene() {
         <span className="font-mono text-[11px] text-ink-muted">ID / EN</span>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {engines.map(({ Icon, title, sub, tone }) => (
-          <div key={title} className="rounded-xl border border-line-subtle bg-canvas p-3.5">
-            <span className={cn('mb-2.5 inline-flex h-8 w-8 items-center justify-center rounded-lg', tone)}>
-              <Icon className="h-4 w-4" strokeWidth={1.6} />
+          <div key={title} className="p-3.5">
+            <span className={cn('mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg', tone)}>
+              <Icon className="h-4 w-4" strokeWidth={1.5} />
             </span>
-            <span className="block text-xs font-semibold text-ink">{title}</span>
+            <span className="block text-xs font-medium text-ink">{title}</span>
             <span className="mt-0.5 block text-[11px] text-ink-muted">{sub}</span>
           </div>
         ))}
@@ -237,18 +237,17 @@ export function WorkforceScene({ variant = 'light' }: { variant?: 'light' | 'dar
         </span>
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div
+        className={cn(
+          'mt-4 divide-y rounded-xl border px-3.5',
+          isDark ? 'divide-white/10 border-white/10 bg-white/[0.04]' : 'divide-line-subtle border-line-subtle bg-canvas',
+        )}
+      >
         {batches.map((b) => (
-          <div
-            key={b.title}
-            className={cn(
-              'rounded-xl border p-3',
-              isDark ? 'border-white/10 bg-white/[0.04]' : 'border-line-subtle bg-canvas',
-            )}
-          >
+          <div key={b.title} className="py-3">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <span className="block truncate text-xs font-semibold">{b.title}</span>
+                <span className="block truncate text-xs font-medium">{b.title}</span>
                 <span className={cn('mt-0.5 block text-[11px]', isDark ? 'text-white/65' : 'text-ink-muted')}>
                   {b.type} · <span className="font-mono">{b.rate}</span>
                 </span>
@@ -262,7 +261,7 @@ export function WorkforceScene({ variant = 'light' }: { variant?: 'light' | 'dar
                 {b.status}
               </span>
             </div>
-            <div className={cn('mt-2.5 h-1.5 overflow-hidden rounded-full', isDark ? 'bg-white/10' : 'bg-surface-muted')}>
+            <div className={cn('mt-2 h-1.5 overflow-hidden rounded-full', isDark ? 'bg-white/10' : 'bg-surface-muted')}>
               <div className="h-full rounded-full bg-teal" style={{ width: `${b.progress}%` }} />
             </div>
           </div>
@@ -301,11 +300,11 @@ export function DataEnginePreviewScene() {
   return (
     <div className="rounded-xl border border-[rgba(8,13,53,0.08)] bg-surface p-4 shadow-[0_6px_22px_rgba(2,6,38,0.04)]">
       {/* Top KPI Strip */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas sm:grid-cols-4 sm:divide-y-0">
         {metrics.map(({ Icon, value, label }) => (
-          <div key={label} className="rounded-xl border border-line-subtle bg-canvas px-3 py-2">
+          <div key={label} className="px-3 py-2">
             <div className="flex items-center gap-1.5 text-ink-muted">
-              <Icon className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.6} />
+              <Icon className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.5} />
               <span className="truncate text-[11px]">{label}</span>
             </div>
             <div className="mt-1 font-mono text-sm font-semibold text-ink tabular-nums">{value}</div>
@@ -441,9 +440,9 @@ export function CommunityEngineScene() {
 
   return (
     <div className="rounded-xl border border-[rgba(8,13,53,0.08)] bg-surface p-4 shadow-[0_6px_22px_rgba(2,6,38,0.04)]">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas sm:grid-cols-4 sm:divide-y-0">
         {stats.map((st) => (
-          <div key={st.label} className="rounded-xl border border-line-subtle bg-canvas px-3 py-2">
+          <div key={st.label} className="px-3 py-2">
             <div className="truncate text-[11px] text-ink-muted">{st.label}</div>
             <div className="mt-0.5 font-mono text-sm font-semibold text-ink tabular-nums">{st.value}</div>
           </div>
@@ -452,7 +451,7 @@ export function CommunityEngineScene() {
 
       <div className="mt-3 rounded-xl border border-line-subtle bg-canvas p-3.5">
         <div className="mb-2.5 flex items-center justify-between text-xs">
-          <span className="font-semibold text-ink">{t('Workforce')} Tiers</span>
+          <span className="font-medium text-ink">{t('Workforce')} Tiers</span>
           <div className="flex items-center -space-x-1.5">
             {avatars.map(({ init, cls }) => (
               <span
@@ -470,14 +469,14 @@ export function CommunityEngineScene() {
         <SegmentedBreakdownBar items={tiers} />
       </div>
 
-      <div className="mt-3 space-y-2">
+      <div className="mt-3 divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas px-3.5">
         {tasks.map((tk) => (
           <div
             key={tk.title}
-            className="flex items-center justify-between gap-3 rounded-xl border border-line-subtle bg-canvas px-3.5 py-2.5"
+            className="flex items-center justify-between gap-3 py-2.5"
           >
             <div className="min-w-0">
-              <div className="truncate text-xs font-semibold text-ink">{tk.title}</div>
+              <div className="truncate text-xs font-medium text-ink">{tk.title}</div>
               <div className="truncate font-mono text-[11px] text-ink-muted">{tk.meta}</div>
             </div>
             <Badge tone={tk.tone} dot>
@@ -515,14 +514,14 @@ export function AiLabEngineScene() {
         <span className="font-mono text-[11px] text-ink-muted">YOLO11m · road-damage-v12</span>
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 divide-x divide-y divide-line-subtle rounded-xl border border-line-subtle bg-canvas sm:grid-cols-4 sm:divide-y-0">
         {metrics.map((m) => (
-          <div key={m.label} className="rounded-xl border border-line-subtle bg-canvas px-3 py-2">
+          <div key={m.label} className="px-3 py-2">
             <div className="text-[11px] text-ink-muted">{m.label}</div>
             <div className="mt-0.5 flex items-baseline gap-1.5">
               <span className="font-mono text-sm font-semibold text-ink tabular-nums">{m.value}</span>
               <span className="inline-flex items-center gap-0.5 font-mono text-[10px] font-semibold text-tone-mint-fg tabular-nums">
-                <TrendingUp className="h-2.5 w-2.5" strokeWidth={2} />
+                <TrendingUp className="h-2.5 w-2.5" strokeWidth={1.75} />
                 {m.delta}
               </span>
             </div>

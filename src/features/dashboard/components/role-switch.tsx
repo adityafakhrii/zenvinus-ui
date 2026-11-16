@@ -122,7 +122,7 @@ const RoleSwitch = ({ as = 'enterprise', className }: RoleSwitchProps) => {
                     </span>
                     <span>{t(r.label)}</span>
                   </span>
-                  {active && <Check className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={2} />}
+                  {active && <Check className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.75} />}
                 </Link>
               );
             })}

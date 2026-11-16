@@ -108,7 +108,7 @@ const ProjectList = () => {
           <SearchInput
             value={search}
             onChange={setSearch}
-            placeholder={t('Search projects...')}
+            placeholder={t('Search projects')}
             size="sm"
             containerClassName="w-full sm:w-64"
           />
@@ -299,7 +299,7 @@ const TeamCard = ({ id, pending }: { id?: string; pending?: boolean }) => {
             {team.pic.initials}
           </span>
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+            <div className="text-xs font-medium text-ink-muted">
               {t('Zenvinus PIC')}
             </div>
             <div className="mt-0.5 truncate text-sm font-semibold text-ink">{team.pic.name}</div>
@@ -319,7 +319,7 @@ const TeamCard = ({ id, pending }: { id?: string; pending?: boolean }) => {
             {team.reviewer.initials}
           </span>
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+            <div className="text-xs font-medium text-ink-muted">
               {t('Reviewer (QA)')}
             </div>
             <div className="mt-0.5 truncate text-sm font-semibold text-ink">{team.reviewer.name}</div>
@@ -334,7 +334,7 @@ const TeamCard = ({ id, pending }: { id?: string; pending?: boolean }) => {
             <Users className="h-4 w-4" strokeWidth={1.6} />
           </span>
           <div className="min-w-0">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+            <div className="text-xs font-medium text-ink-muted">
               {t('Annotators')}
             </div>
             <div className="mt-0.5 truncate text-sm font-semibold text-ink">

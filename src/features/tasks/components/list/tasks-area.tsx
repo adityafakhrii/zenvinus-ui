@@ -162,7 +162,7 @@ const TasksArea = () => {
   const renderFilters = () => (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+        <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
           {t('Data Type')}
         </h3>
         <div className="flex flex-col gap-2.5">
@@ -181,7 +181,7 @@ const TasksArea = () => {
 
       {catFacets.length > 0 && (
         <div className="border-t border-line-subtle pt-5">
-          <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+          <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
             {t('Task Category')}
           </h3>
           <div className="flex flex-col gap-2.5">
@@ -200,7 +200,7 @@ const TasksArea = () => {
       )}
 
       <div className="border-t border-line-subtle pt-5">
-        <h3 className="m-0 mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+        <h3 className="m-0 mb-3 text-xs font-medium text-ink-muted">
           {t('Difficulty Level')}
         </h3>
         <CustomRadioGroup<DifficultyFilter>
@@ -230,7 +230,7 @@ const TasksArea = () => {
             <SearchInput
               value={query}
               onChange={setQuery}
-              placeholder={t('Search tasks...')}
+              placeholder={t('Search tasks')}
               size="sm"
               containerClassName="w-full sm:w-64"
             />

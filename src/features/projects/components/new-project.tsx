@@ -271,7 +271,7 @@ function CheckPill({
           : 'border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:border-ink/25 hover:text-ink',
       )}
     >
-      {active && <Check className="h-3 w-3 shrink-0" strokeWidth={2.25} />}
+      {active && <Check className="h-3 w-3 shrink-0" strokeWidth={1.75} />}
       <span>{children}</span>
     </button>
   );
@@ -351,7 +351,7 @@ function CheckCard({
             : 'border-line-subtle bg-canvas text-ink-secondary',
         )}
       >
-        {active ? <Check className="h-4 w-4" strokeWidth={2.25} /> : <ProjectIcon icon={icon} />}
+        {active ? <Check className="h-4 w-4" strokeWidth={1.75} /> : <ProjectIcon icon={icon} />}
       </span>
       <div className="min-w-0">
         <div className="text-sm font-semibold text-ink">{label}</div>
@@ -394,7 +394,7 @@ function TagInput({
             aria-label={tr('Remove {tag}', { tag })}
             className="text-ink-muted hover:text-ink cursor-pointer"
           >
-            <X className="h-3 w-3" strokeWidth={2} />
+            <X className="h-3 w-3" strokeWidth={1.75} />
           </button>
         </span>
       ))}
@@ -541,7 +541,7 @@ const NewProjectWizard = () => {
           <div className="mx-auto max-w-3xl rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.04)] sm:p-8">
             <div className="flex flex-col items-center text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-tint-mint text-teal-ink">
-                <Check className="h-6 w-6" strokeWidth={2} />
+                <Check className="h-6 w-6" strokeWidth={1.75} />
               </span>
               <h1 className="mt-4 mb-2 text-2xl font-semibold text-ink">{t('Request submitted')}</h1>
               <p className="m-0 max-w-xl text-sm leading-relaxed text-ink-secondary">
@@ -666,7 +666,7 @@ const NewProjectWizard = () => {
                       isActive ? 'bg-teal text-navy' : isDone ? 'bg-teal-ink text-white' : 'bg-canvas text-ink-muted',
                     )}
                   >
-                    {isDone ? <Check className="h-3 w-3" strokeWidth={2.25} /> : i + 1}
+                    {isDone ? <Check className="h-3 w-3" strokeWidth={1.75} /> : i + 1}
                   </span>
                   <span className="truncate">{t(s.label)}</span>
                 </button>

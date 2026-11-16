@@ -462,7 +462,7 @@ const ContributorArea = () => {
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder={t('Search tasks...')}
+              placeholder={t('Search tasks')}
               size="sm"
               containerClassName="w-48 sm:w-56"
             />

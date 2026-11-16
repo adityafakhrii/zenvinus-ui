@@ -158,7 +158,7 @@ const PaymentGateway = () => {
         <main className="min-h-screen bg-canvas px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-xl rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-8 text-center shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-tint-mint text-teal-ink">
-              <Check className="h-6 w-6" strokeWidth={2} />
+              <Check className="h-6 w-6" strokeWidth={1.75} />
             </span>
             <h1 className="mt-4 mb-2 text-2xl font-semibold text-ink">{t('Payment successful')}</h1>
             <p className="m-0 text-sm text-ink-secondary">

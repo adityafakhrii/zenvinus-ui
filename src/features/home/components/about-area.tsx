@@ -71,37 +71,36 @@ const AboutArea = () => {
           </div>
 
           <div className="lg:col-span-8">
-            <span className="text-xs font-semibold text-teal-ink">
-              {t('best {highlight}', { highlight: t('it service') })}
+            <span className="text-xs font-medium text-teal-ink">
+              {t('Data-to-production workflow')}
             </span>
-            <h2 className="mt-2 mb-6 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
-              {t('It Industries We’re Offering')}
+            <h2 className="mt-2 mb-6 text-[28px] font-medium tracking-[-0.025em] text-ink sm:text-[34px]">
+              {t('Eight stages from raw data to deployed AI')}
             </h2>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <ol className="m-0 grid list-none grid-cols-1 gap-x-8 gap-y-6 border-t border-hairline p-0 pt-6 sm:grid-cols-2">
               {PIPELINE_STEPS.map((item, idx) => {
                 const Icon = item.icon;
                 return (
-                  <div
-                    key={item.title}
-                    className="flex flex-col rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-4 transition-colors hover:border-teal-ink/30"
-                  >
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-teal-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
-                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                      </span>
-                      <span className="font-mono text-xs font-medium text-ink-muted tabular-nums">
-                        {String(idx + 1).padStart(2, '0')}
-                      </span>
+                  <li key={item.title} className="flex items-start gap-3.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-canvas text-teal-ink">
+                      <Icon className="h-4 w-4" strokeWidth={1.5} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-mono text-xs text-ink-muted tabular-nums">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        <h3 className="m-0 text-sm font-medium text-ink">{t(item.title)}</h3>
+                      </div>
+                      <p className="mt-1 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                        {t(item.description)}
+                      </p>
                     </div>
-                    <h3 className="m-0 text-sm font-semibold text-ink">{t(item.title)}</h3>
-                    <p className="mt-1.5 mb-0 text-xs leading-relaxed text-ink-secondary">
-                      {t(item.description)}
-                    </p>
-                  </div>
+                  </li>
                 );
               })}
-            </div>
+            </ol>
           </div>
         </div>
       </div>

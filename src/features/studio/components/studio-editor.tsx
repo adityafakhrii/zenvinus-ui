@@ -89,7 +89,7 @@ function Step({ number, title, done, children }: StepProps) {
             done ? 'bg-teal text-white' : 'bg-navy text-white'
           }`}
         >
-          {done ? <Check className="h-4 w-4" strokeWidth={2.25} /> : number}
+          {done ? <Check className="h-4 w-4" strokeWidth={1.75} /> : number}
         </span>
         {title}
       </h4>
@@ -260,7 +260,7 @@ function DataStep({ dataset, onImported }: DataStepProps) {
           className="flex items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-900"
           role="status"
         >
-          <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2} />
+          <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={1.75} />
           <span>
             {t('Uploaded {rows} rows into {split}, with columns {columns}.', {
               rows: result.rows.toLocaleString(locale),
@@ -529,7 +529,7 @@ const StudioEditor = () => {
             )}
             {saved && (
               <span className="inline-flex items-center gap-1 text-xs font-medium text-[#059669]" role="status">
-                <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                <Check className="h-3.5 w-3.5" strokeWidth={1.75} />
                 {t(saved)}
               </span>
             )}

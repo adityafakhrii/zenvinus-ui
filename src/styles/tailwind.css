@@ -31,6 +31,7 @@
   --color-line: #E6E9EE;
   --color-line-subtle: #EEF1F4;
   --color-line-input: #D5DBE2;
+  --color-hairline: rgba(8, 13, 53, 0.08);
 
   /* Semantic 6-tone palette */
   --color-tone-blue-bg: #E7F1FF;

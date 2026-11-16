@@ -44,14 +44,14 @@ const PostCard = ({ item, base = '/blog' }: PostCardProps) => {
               width={770}
               height={481}
               unoptimized
-              className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+              className="h-full w-full object-cover"
             />
           ) : (
             <span
               className="flex h-full w-full items-center justify-center text-ink-subtle"
               aria-hidden="true"
             >
-              <ImageIcon className="h-8 w-8" strokeWidth={1.25} />
+              <ImageIcon className="h-8 w-8" strokeWidth={1.5} />
             </span>
           )}
         </Link>

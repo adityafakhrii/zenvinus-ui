@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, AudioLines, Bot, Plus, ScanLine, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui';
 import { useT } from '@/i18n';
 import type { Offering, OfferingIconKey } from '../types/home';
 
@@ -32,10 +31,10 @@ const OfferArea = () => {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
-            <span className="text-xs font-semibold text-teal">
-              {t('what {highlight}', { highlight: t('we deliver') })}
+            <span className="text-xs font-medium text-teal">
+              {t('What we deliver')}
             </span>
-            <h2 className="mt-2 mb-0 text-[28px] font-semibold tracking-[-0.025em] text-white sm:text-[34px]">
+            <h2 className="mt-2 mb-0 text-[28px] font-medium tracking-[-0.025em] text-white sm:text-[34px]">
               {t('AI Project Types We Deliver')}
             </h2>
           </div>
@@ -60,22 +59,22 @@ const OfferArea = () => {
               >
                 <div>
                   <div className="mb-5 flex items-center justify-between">
-                    <Badge tone="neutral" mono>
+                    <span className="font-mono text-xs font-medium text-white/45 tabular-nums">
                       0{item.id}
-                    </Badge>
+                    </span>
                     <ArrowUpRight
                       className="h-4 w-4 text-white/50 transition-colors group-hover:text-teal"
-                      strokeWidth={1.6}
+                      strokeWidth={1.5}
                     />
                   </div>
-                  <h3 className="m-0 text-lg font-semibold leading-snug text-white">
+                  <h3 className="m-0 text-lg font-medium leading-snug text-white">
                     {t(item.title, { br: <br /> })}
                   </h3>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between gap-4 border-t border-white/10 pt-5">
-                  <span className="text-xs font-medium text-teal">{t('Read Out More')}</span>
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-teal/25 bg-teal/10 text-teal transition-colors group-hover:border-teal/50 group-hover:bg-teal/15">
+                <div className="mt-8 flex items-center justify-between gap-4 pt-2">
+                  <span className="text-xs font-medium text-teal">{t('Explore service')}</span>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal/25 bg-teal/10 text-teal transition-colors group-hover:border-teal/50 group-hover:bg-teal/15">
                     <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                 </div>
@@ -85,12 +84,12 @@ const OfferArea = () => {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-center text-sm text-white/75">
-          <span>{t('Bring them together and you overcome the ordinary.')}</span>
+          <span>{t('Combine curation, human annotation, and evaluation in one workflow.')}</span>
           <Link
             href="/service"
-            className="inline-flex items-center gap-1.5 font-semibold text-teal no-underline hover:underline"
+            className="inline-flex items-center gap-1.5 font-medium text-teal no-underline hover:underline"
           >
-            <Plus className="h-4 w-4" strokeWidth={1.75} />
+            <Plus className="h-4 w-4" strokeWidth={1.5} />
             <span>{t('View All Services')}</span>
           </Link>
         </div>
