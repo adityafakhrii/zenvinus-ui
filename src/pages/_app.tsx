@@ -1,3 +1,4 @@
+import '@/styles/tailwind.css';
 import '@/styles/index.scss';
 import type { AppProps } from 'next/app';
 import { Providers } from '@/providers/app-providers';

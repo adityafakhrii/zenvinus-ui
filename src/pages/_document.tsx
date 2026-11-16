@@ -1,9 +1,8 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
-// WHY: Fonts load once from here (the SCSS no longer @imports them). Raleway is for headings, DM Sans for text;
-// the weights match what the styles use, so the browser never fakes bold. Keep in sync with $font-url in _typography.scss
+// Fonts aligned to ai-guidelines/design-revamp-guide.md (Inter 400-600 + JetBrains Mono 400-500).
 const FONT_URL =
-  'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Raleway:wght@400;500;600;700;800;900&display=swap';
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap';
 
 export default function Document() {
   return (

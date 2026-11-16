@@ -3,6 +3,8 @@
 // Packages by name (Turbopack resolves them from node_modules; the old "~" and "node_modules/" prefixes are webpack-only).
 // WHY @import, not @use: the template's heading rules merge with Bootstrap's through the shared global scope;
 // with @use the h1–h6 sizes come out differently. Sass's "import" deprecation is silenced in next.config.js.
+// Wrapped in @layer legacy during the Tailwind CSS revamp so Tailwind utilities always take precedence over Bootstrap/template rules.
+@layer legacy {
 @import "react-modal-video/scss/modal-video";
 @import "react-18-image-lightbox/src/style.css";
 @import "bootstrap/scss/bootstrap";
@@ -863,3 +865,4 @@
     dt { font-size: 13px; font-weight: 600; color: var(--tp-text-body); } dd { margin: 0; font-size: 14px; color: var(--tp-heading-primary); overflow-wrap: anywhere; } }
 }
 @media (max-width: 575.98px) { .zv-support .zv-thread li { max-width: 100%; } }
+}
