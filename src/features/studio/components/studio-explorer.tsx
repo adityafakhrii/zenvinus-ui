@@ -49,7 +49,7 @@ const TYPE_ICON: Readonly<Record<string, ColGlyph>> = {
 
 const ColumnGlyph = ({ type }: { type: string }) => {
   const Icon = TYPE_ICON[type] || Type;
-  return <Icon className="h-3.5 w-3.5 shrink-0 text-[#00B2A9]" strokeWidth={1.75} aria-hidden="true" />;
+  return <Icon className="h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.75} aria-hidden="true" />;
 };
 
 const fmt = (n: unknown): string =>
@@ -116,20 +116,20 @@ function Pagination({ page, pages, hrefFor }: PaginationProps) {
   const { t } = useT();
   if (pages <= 1) return null;
   return (
-    <nav className="flex items-center justify-center gap-1.5 border-t border-[#EAEAEA] px-4 py-3.5" aria-label={t('Row pages')}>
+    <nav className="flex items-center justify-center gap-1.5 border-t border-[rgba(8,13,53,0.08)] px-4 py-3.5" aria-label={t('Row pages')}>
       {page > 1 ? (
         <Link
           href={hrefFor(page - 1)}
           shallow
           scroll={false}
           aria-label={t('Previous page')}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#EAEAEA] bg-white text-[#52525B] transition-colors hover:bg-[#F9FAFB] hover:text-[#18181B]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-white text-ink-secondary transition-colors hover:bg-canvas hover:text-ink"
         >
           <ChevronsLeft className="h-4 w-4" strokeWidth={1.6} />
         </Link>
       ) : (
         <span
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#EAEAEA] bg-[#F9FAFB] text-[#D4D4D8]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-canvas text-[#D4D4D8]"
           aria-disabled="true"
         >
           <ChevronsLeft className="h-4 w-4" strokeWidth={1.6} />
@@ -138,14 +138,14 @@ function Pagination({ page, pages, hrefFor }: PaginationProps) {
 
       {getPageItems(Math.min(page, pages), pages).map((item, i) =>
         item === '…' ? (
-          <span key={`gap-${i}`} className="px-1.5 text-xs text-[#9CA3AF]" aria-hidden="true">
+          <span key={`gap-${i}`} className="px-1.5 text-xs text-ink-subtle" aria-hidden="true">
             …
           </span>
         ) : item === page ? (
           <span
             key={item}
             aria-current="page"
-            className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-[#132B45] px-2 text-xs font-semibold tabular-nums text-white"
+            className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-navy px-2 text-xs font-semibold tabular-nums text-white"
           >
             {item}
           </span>
@@ -156,7 +156,7 @@ function Pagination({ page, pages, hrefFor }: PaginationProps) {
             shallow
             scroll={false}
             aria-label={t('Page {n}', { n: item })}
-            className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-[#EAEAEA] bg-white px-2 text-xs font-medium tabular-nums text-[#52525B] transition-colors hover:bg-[#F9FAFB] hover:text-[#18181B]"
+            className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-white px-2 text-xs font-medium tabular-nums text-ink-secondary transition-colors hover:bg-canvas hover:text-ink"
           >
             {item}
           </Link>
@@ -169,13 +169,13 @@ function Pagination({ page, pages, hrefFor }: PaginationProps) {
           shallow
           scroll={false}
           aria-label={t('Next page')}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#EAEAEA] bg-white text-[#52525B] transition-colors hover:bg-[#F9FAFB] hover:text-[#18181B]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-white text-ink-secondary transition-colors hover:bg-canvas hover:text-ink"
         >
           <ChevronsRight className="h-4 w-4" strokeWidth={1.6} />
         </Link>
       ) : (
         <span
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#EAEAEA] bg-[#F9FAFB] text-[#D4D4D8]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-canvas text-[#D4D4D8]"
           aria-disabled="true"
         >
           <ChevronsRight className="h-4 w-4" strokeWidth={1.6} />
@@ -206,16 +206,16 @@ function StatsView({ slug, split }: { slug: string; split: string }) {
 
   return (
     <div className="space-y-4">
-      <p className="m-0 text-xs font-medium text-[#6B7280] tabular-nums">
+      <p className="m-0 text-xs font-medium text-ink-muted tabular-nums">
         {t('{rows} rows', { rows: fmt(data.rows) })}
         {data.sampled ? ` · ${t('statistics computed from the first {count} rows', { count: fmt(10000) })}` : ''}
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {data.columns.map((c) => (
-          <div key={c.name} className="rounded-2xl border border-[#EAEAEA] bg-white p-5">
-            <div className="mb-3 flex items-center justify-between gap-2 border-b border-[#F0F0F2] pb-2.5">
-              <h5 className="m-0 flex items-center gap-2 text-sm font-semibold text-[#18181B]">
+          <div key={c.name} className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5">
+            <div className="mb-3 flex items-center justify-between gap-2 border-b border-line-subtle pb-2.5">
+              <h5 className="m-0 flex items-center gap-2 text-sm font-semibold text-ink">
                 <ColumnGlyph type={c.type} />
                 <span className="truncate">{c.name}</span>
               </h5>
@@ -226,39 +226,39 @@ function StatsView({ slug, split }: { slug: string; split: string }) {
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[#6B7280]">{t('Values')}</dt>
-                <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.count)}</dd>
+                <dt className="text-ink-muted">{t('Values')}</dt>
+                <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.count)}</dd>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[#6B7280]">{t('Empty')}</dt>
-                <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.nulls)}</dd>
+                <dt className="text-ink-muted">{t('Empty')}</dt>
+                <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.nulls)}</dd>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[#6B7280]">{t('Distinct')}</dt>
-                <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.distinct)}</dd>
+                <dt className="text-ink-muted">{t('Distinct')}</dt>
+                <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.distinct)}</dd>
               </div>
               {c.min != null && (
                 <div className="flex items-center justify-between gap-2">
-                  <dt className="text-[#6B7280]">Min</dt>
-                  <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.min)}</dd>
+                  <dt className="text-ink-muted">Min</dt>
+                  <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.min)}</dd>
                 </div>
               )}
               {c.max != null && (
                 <div className="flex items-center justify-between gap-2">
-                  <dt className="text-[#6B7280]">Max</dt>
-                  <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.max)}</dd>
+                  <dt className="text-ink-muted">Max</dt>
+                  <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.max)}</dd>
                 </div>
               )}
               {c.mean != null && (
                 <div className="flex items-center justify-between gap-2">
-                  <dt className="text-[#6B7280]">{t('Mean')}</dt>
-                  <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">{fmt(c.mean)}</dd>
+                  <dt className="text-ink-muted">{t('Mean')}</dt>
+                  <dd className="m-0 font-mono font-semibold tabular-nums text-ink">{fmt(c.mean)}</dd>
                 </div>
               )}
               {c.minLength != null && (
                 <div className="col-span-2 flex items-center justify-between gap-2">
-                  <dt className="text-[#6B7280]">{t('Length')}</dt>
-                  <dd className="m-0 font-mono font-semibold tabular-nums text-[#18181B]">
+                  <dt className="text-ink-muted">{t('Length')}</dt>
+                  <dd className="m-0 font-mono font-semibold tabular-nums text-ink">
                     {t('{min}–{max} chars', { min: c.minLength, max: c.maxLength })}
                   </dd>
                 </div>
@@ -266,16 +266,16 @@ function StatsView({ slug, split }: { slug: string; split: string }) {
             </dl>
 
             {(c.top?.length ?? 0) > 0 && (
-              <div className="mt-4 space-y-2 border-t border-[#F0F0F2] pt-3">
+              <div className="mt-4 space-y-2 border-t border-line-subtle pt-3">
                 {(c.top ?? []).map((top) => {
                   const pct = c.count ? Math.round((top.count / c.count) * 100) : 0;
                   return (
                     <div key={top.value} className="grid grid-cols-[minmax(0,1fr)_80px_34px] items-center gap-2 text-xs" title={`${top.value}: ${top.count}`}>
-                      <span className="truncate font-medium text-[#52525B]">{top.value}</span>
-                      <span className="h-1.5 overflow-hidden rounded-full bg-[#F3F4F6]">
-                        <span className="block h-full rounded-full bg-[#00B2A9]" style={{ width: `${pct}%` }} />
+                      <span className="truncate font-medium text-ink-secondary">{top.value}</span>
+                      <span className="h-1.5 overflow-hidden rounded-full bg-canvas">
+                        <span className="block h-full rounded-full bg-teal" style={{ width: `${pct}%` }} />
                       </span>
-                      <span className="text-right font-mono text-[11px] font-semibold tabular-nums text-[#18181B]">{pct}%</span>
+                      <span className="text-right font-mono text-[11px] font-semibold tabular-nums text-ink">{pct}%</span>
                     </div>
                   );
                 })}
@@ -319,7 +319,7 @@ const StudioExplorer = () => {
             <p className="m-0 text-sm text-ink-secondary">
               {t('Choose a dataset from the {list}.', {
                 list: (
-                  <Link href={base} className="text-[#008C85] underline">
+                  <Link href={base} className="text-teal-ink underline">
                     {t('studio list')}
                   </Link>
                 ),
@@ -366,13 +366,13 @@ const StudioExplorer = () => {
         <div>
           <Link
             href={base}
-            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#18181B]"
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted transition-colors hover:text-ink"
           >
             <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
             {t('All datasets')}
           </Link>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h2 className="m-0 text-xl font-bold tracking-tight text-[#18181B]">{dataset.name}</h2>
+            <h2 className="m-0 text-xl font-semibold tracking-tight text-ink">{dataset.name}</h2>
             <Badge tone={STATUS_TONE[dataset.status] || 'neutral'} dot>
               {t(STATUS_LABEL[dataset.status] || dataset.status)}
             </Badge>
@@ -416,11 +416,11 @@ const StudioExplorer = () => {
         />
       ) : (
         <>
-          <div className="rounded-2xl border border-[#EAEAEA] bg-white p-4">
-            <p className="mb-2.5 text-xs text-[#6B7280]">
+          <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4">
+            <p className="mb-2.5 text-xs text-ink-muted">
               {t('Splits are parts of the dataset, such as {train} and {test}. Choose one to view:', {
-                train: <strong className="font-semibold text-[#18181B]">train</strong>,
-                test: <strong className="font-semibold text-[#18181B]">test</strong>,
+                train: <strong className="font-semibold text-ink">train</strong>,
+                test: <strong className="font-semibold text-ink">test</strong>,
               })}
             </p>
             <nav className="flex flex-wrap gap-2" aria-label={t('Splits')}>
@@ -438,14 +438,14 @@ const StudioExplorer = () => {
                     aria-current={active ? 'page' : undefined}
                     className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${
                       active
-                        ? 'border-[#132B45] bg-[#132B45] text-white'
-                        : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                        ? 'border-navy bg-navy text-white'
+                        : 'border-line bg-canvas text-ink-secondary hover:border-line-input hover:bg-white hover:text-ink'
                     }`}
                   >
                     <span className="font-mono">{s.name}</span>
                     <span
                       className={`rounded-md px-1.5 py-0.5 font-mono text-[11px] tabular-nums ${
-                        active ? 'bg-white/15 text-white' : 'bg-white text-[#6B7280]'
+                        active ? 'bg-white/15 text-white' : 'bg-white text-ink-muted'
                       }`}
                     >
                       {fmt(s.rows)}
@@ -512,7 +512,7 @@ const StudioExplorer = () => {
           {ex.view === 'stats' ? (
             <StatsView slug={ex.slug} split={split} />
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
+            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
               {rowsQuery.isLoading && (
                 <div className="p-4">
                   <TableSkeleton />
@@ -528,7 +528,7 @@ const StudioExplorer = () => {
               )}
               {rows && (
                 <>
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#EAEAEA] bg-[#F9FAFB] px-4 py-2.5 text-xs text-[#6B7280] tabular-nums">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(8,13,53,0.08)] bg-canvas px-4 py-2.5 text-xs text-ink-muted tabular-nums">
                     <span>
                       {rows.total === 0
                         ? ex.search
@@ -544,7 +544,7 @@ const StudioExplorer = () => {
                     {ex.search && (
                       <button
                         type="button"
-                        className="font-medium text-[#008C85] hover:underline"
+                        className="font-medium text-teal-ink hover:underline"
                         onClick={() => ex.set({ q: undefined, page: undefined, split })}
                       >
                         {t('Clear search')}
@@ -559,8 +559,8 @@ const StudioExplorer = () => {
                     >
                       <table className="w-full border-collapse text-left text-xs">
                         <thead>
-                          <tr className="border-b border-[#EAEAEA] bg-[#FAFAFA] font-semibold text-[#52525B]">
-                            <th className="w-12 px-3 py-2.5 font-mono text-[#9CA3AF]">#</th>
+                          <tr className="border-b border-[rgba(8,13,53,0.08)] bg-surface-soft font-semibold text-ink-secondary">
+                            <th className="w-12 px-3 py-2.5 font-mono text-ink-subtle">#</th>
                             {columns.map((c) => (
                               <th key={c.name} title={c.type} className="px-3 py-2.5 whitespace-nowrap">
                                 <span className="inline-flex items-center gap-1.5">
@@ -571,10 +571,10 @@ const StudioExplorer = () => {
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#F0F0F2]">
+                        <tbody className="divide-y divide-line-subtle">
                           {rows.data.map((row, i) => (
-                            <tr key={offset + i} className="hover:bg-[#FAFAFA]">
-                              <td className="px-3 py-2 font-mono text-[11px] tabular-nums text-[#9CA3AF]">{offset + i}</td>
+                            <tr key={offset + i} className="hover:bg-surface-soft">
+                              <td className="px-3 py-2 font-mono text-[11px] tabular-nums text-ink-subtle">{offset + i}</td>
                               {row.map((cell, j) => (
                                 <ViewerCell key={j} column={columns[j]?.name} value={cell} features={features} />
                               ))}

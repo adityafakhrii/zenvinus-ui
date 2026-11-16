@@ -25,12 +25,12 @@ const LabelPicker = ({ labels = [], value, onChange, name = 'label' }: LabelPick
             aria-checked={active}
             className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
               active
-                ? 'border-[#132B45] bg-[#132B45] text-white shadow-xs'
-                : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#18181B] hover:border-[#00B2A9]/60 hover:bg-white'
+                ? 'border-navy bg-navy text-white shadow-xs'
+                : 'border-line bg-canvas text-ink hover:border-teal-ink/60 hover:bg-white'
             }`}
             onClick={() => onChange(label)}
           >
-            {active && <Check className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={2.25} />}
+            {active && <Check className="h-3.5 w-3.5 text-teal-ink" strokeWidth={2.25} />}
             <span>{t(label)}</span>
           </button>
         );

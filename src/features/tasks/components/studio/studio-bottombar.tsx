@@ -65,7 +65,7 @@ const DECISION_META: Readonly<
   },
   escalate: {
     Icon: ArrowUpRight,
-    className: 'border-[#D4D4D8] bg-[#F4F4F5] text-[#132B45] hover:bg-[#E4E4E7]',
+    className: 'border-line-input bg-canvas text-navy hover:bg-[#E4E4E7]',
   },
 };
 
@@ -82,7 +82,7 @@ const StudioBottombar = (props: StudioBottombarProps) => {
   const { t } = useT();
 
   return (
-    <footer className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-[#EAEAEA] bg-white px-4 py-2.5 sm:px-5">
+    <footer className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-[rgba(8,13,53,0.08)] bg-white px-4 py-2.5 sm:px-5">
       <div className="flex items-center">
         <Button
           variant="ghost"
@@ -95,16 +95,16 @@ const StudioBottombar = (props: StudioBottombarProps) => {
         </Button>
       </div>
 
-      <div className="flex items-center gap-1.5 text-xs font-medium text-[#6B7280]">
+      <div className="flex items-center gap-1.5 text-xs font-medium text-ink-muted">
         {props.reviewMode ? (
           <>
-            <ShieldCheck className="h-4 w-4 text-[#132B45]" strokeWidth={1.6} />
+            <ShieldCheck className="h-4 w-4 text-navy" strokeWidth={1.6} />
             <span>{t('Inspect any item, then decide — the decision applies to the whole submission')}</span>
           </>
         ) : draftSavedAt ? (
           <>
-            <CloudUpload className="h-4 w-4 text-[#008C85]" strokeWidth={1.6} />
-            <span className="text-[#008C85]">{t('Draft saved automatically')}</span>
+            <CloudUpload className="h-4 w-4 text-teal-ink" strokeWidth={1.6} />
+            <span className="text-teal-ink">{t('Draft saved automatically')}</span>
           </>
         ) : props.hasAnswer ? (
           <>
@@ -113,7 +113,7 @@ const StudioBottombar = (props: StudioBottombarProps) => {
           </>
         ) : (
           <>
-            <PenSquare className="h-4 w-4 text-[#9CA3AF]" strokeWidth={1.6} />
+            <PenSquare className="h-4 w-4 text-ink-subtle" strokeWidth={1.6} />
             <span>{t('No answer yet')}</span>
           </>
         )}

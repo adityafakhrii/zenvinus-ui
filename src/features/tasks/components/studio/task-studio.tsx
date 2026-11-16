@@ -177,7 +177,7 @@ const TaskStudio = () => {
 
   if (!ready || !task) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F9FAFB] p-6">
+      <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
         <div className="w-full max-w-4xl">
           <BentoSkeleton />
         </div>
@@ -211,7 +211,7 @@ const TaskStudio = () => {
   }));
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#F9FAFB] lg:h-dvh lg:overflow-hidden">
+    <div className="relative flex min-h-screen flex-col bg-canvas lg:h-dvh lg:overflow-hidden">
       {reviewMode && review && (
         <ReviewBanner
           review={review}
@@ -243,7 +243,7 @@ const TaskStudio = () => {
                 action={
                   <p className="m-0 text-sm text-ink-secondary">
                     {t('Task type {type} has no editor yet. Please contact the task manager.', {
-                      type: <code className="rounded bg-[#F4F4F5] px-1.5 py-0.5 font-mono text-xs">{task.type}</code>,
+                      type: <code className="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs">{task.type}</code>,
                     })}
                   </p>
                 }
@@ -307,13 +307,13 @@ const TaskStudio = () => {
       )}
 
       {submitting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#132B45]/40 p-4 backdrop-blur-[2px]">
-          <div className="flex w-full max-w-sm flex-col items-center rounded-2xl border border-[#EAEAEA] bg-white p-6 text-center shadow-xl">
-            <Loader2 className="mb-3 h-7 w-7 animate-spin text-[#00B2A9]" strokeWidth={1.75} />
-            <h4 className="text-base font-semibold text-[#18181B]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 p-4 backdrop-blur-[2px]">
+          <div className="flex w-full max-w-sm flex-col items-center rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-6 text-center shadow-xl">
+            <Loader2 className="mb-3 h-7 w-7 animate-spin text-teal-ink" strokeWidth={1.75} />
+            <h4 className="text-base font-semibold text-ink">
               {reviewMode ? t('Recording decision…') : t('Submitting item…')}
             </h4>
-            <p className="mt-1 text-sm text-[#6B7280]">
+            <p className="mt-1 text-sm text-ink-muted">
               {reviewMode
                 ? t('Your decision is being sent to the Expert Workspace.')
                 : t('Your answer is being sent to Quality Check.')}

@@ -33,12 +33,12 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
     body = <BentoSkeleton />;
   } else if (!user) {
     body = (
-      <div className="mx-auto max-w-lg rounded-2xl border border-[#EAEAEA] bg-white p-8 text-center">
-        <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F3F4F6] text-[#132B45]">
+      <div className="mx-auto max-w-lg rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-8 text-center">
+        <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-canvas text-navy">
           <Database className="h-5 w-5" strokeWidth={1.6} />
         </span>
-        <h4 className="text-lg font-semibold text-[#18181B]">{t('Sign in to use the Dataset Studio')}</h4>
-        <p className="mt-1.5 text-sm leading-relaxed text-[#6B7280]">
+        <h4 className="text-lg font-semibold text-ink">{t('Sign in to use the Dataset Studio')}</h4>
+        <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
           {t('With the studio you can look through the rows of every dataset, and add and publish your own.')}
         </p>
         <div className="mt-5 flex justify-center">
@@ -46,9 +46,9 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
             {t('Sign in')}
           </Button>
         </div>
-        <p className="mt-4 text-xs text-[#6B7280]">
+        <p className="mt-4 text-xs text-ink-muted">
           {t('Only want to browse?')}{' '}
-          <Link href="/datasets" className="font-medium text-[#008C85] hover:underline">
+          <Link href="/datasets" className="font-medium text-teal-ink hover:underline">
             {t('See the public datasets')}
           </Link>
           .
@@ -57,12 +57,12 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
     );
   } else if (!can(STUDIO_PERMS.explore)) {
     body = (
-      <div className="mx-auto max-w-lg rounded-2xl border border-[#EAEAEA] bg-white p-8 text-center">
-        <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F3F4F6] text-[#52525B]">
+      <div className="mx-auto max-w-lg rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-8 text-center">
+        <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-canvas text-ink-secondary">
           <Lock className="h-5 w-5" strokeWidth={1.6} />
         </span>
-        <h4 className="text-lg font-semibold text-[#18181B]">{t('No access to the Dataset Studio yet')}</h4>
-        <p className="mt-1.5 text-sm leading-relaxed text-[#6B7280]">
+        <h4 className="text-lg font-semibold text-ink">{t('No access to the Dataset Studio yet')}</h4>
+        <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
           {t('Your account does not have a role with studio access. Ask an administrator to give you one.')}
         </p>
         <div className="mt-5 flex justify-center">
@@ -75,16 +75,16 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
   }
 
   const content = (
-    <section className={`min-h-[calc(100vh-220px)] bg-[#F9FAFB] ${isPublic ? 'pb-20 pt-28 sm:pt-32' : 'py-8 sm:py-10'}`}>
+    <section className={`min-h-[calc(100vh-220px)] bg-canvas ${isPublic ? 'pb-20 pt-28 sm:pt-32' : 'py-8 sm:py-10'}`}>
       <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6">
         {isPublic && (
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <Badge tone="mint">{t('Dataset Studio')}</Badge>
-            <h1 className="text-2xl font-bold tracking-tight text-[#18181B] sm:text-3xl">{t(title || 'Dataset Studio')}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{t(title || 'Dataset Studio')}</h1>
           </div>
         )}
         {title && !isPublic && (
-          <h1 className="mb-6 text-2xl font-bold tracking-tight text-[#18181B]">{t(title)}</h1>
+          <h1 className="mb-6 text-2xl font-semibold tracking-tight text-ink">{t(title)}</h1>
         )}
         {body}
       </div>

@@ -73,17 +73,17 @@ const RequestForm = ({ topic }: RequestFormProps) => {
   const signedOut = !user && !sessionLoading;
 
   return (
-    <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6" id="request">
-      <div className="mb-4 border-b border-[#F0F0F2] pb-3">
-        <h3 className="m-0 text-base font-semibold text-[#18181B]">{t('Send a request')}</h3>
-        <p className="mt-1 mb-0 text-xs text-[#6B7280]">
+    <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 sm:p-6" id="request">
+      <div className="mb-4 border-b border-line-subtle pb-3">
+        <h3 className="m-0 text-base font-semibold text-ink">{t('Send a request')}</h3>
+        <p className="mt-1 mb-0 text-xs text-ink-muted">
           {t('Add the project, task or invoice ID so we can find it faster.')}
         </p>
       </div>
 
       {signedOut ? (
-        <div className="space-y-3 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] p-4 text-center">
-          <p className="m-0 text-xs text-[#6B7280]">{t('Sign in to send a request and follow the replies here.')}</p>
+        <div className="space-y-3 rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas p-4 text-center">
+          <p className="m-0 text-xs text-ink-muted">{t('Sign in to send a request and follow the replies here.')}</p>
           <Button
             variant="primary"
             size="sm"
@@ -155,7 +155,7 @@ const RequestForm = ({ topic }: RequestFormProps) => {
               {t(create.error.message)}
             </p>
           )}
-          <p className="m-0 text-xs text-[#6B7280]">{t('Replies appear in "Your requests" above.')}</p>
+          <p className="m-0 text-xs text-ink-muted">{t('Replies appear in "Your requests" above.')}</p>
         </form>
       )}
     </div>

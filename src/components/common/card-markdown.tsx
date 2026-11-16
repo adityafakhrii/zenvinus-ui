@@ -10,7 +10,7 @@ import type { ReactNode } from 'react';
  * - ``` fenced code blocks, and blocks that are a JSON object or array (sample rows)
  * - `inline code` and **bold**
  * - > quotes
- * Styling lives in .hf-prose, so every card uses the same type scale.
+ * Callers apply typography styling via their wrapping prose container.
  */
 
 function inline(text: string, keyBase: string | number): ReactNode[] {

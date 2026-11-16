@@ -54,18 +54,18 @@ const SupportPage = () => {
     <>
       <DashboardHeader />
       <main>
-        <section className="min-h-[calc(100vh-140px)] bg-[#F9FAFB] py-8 sm:py-10">
+        <section className="min-h-[calc(100vh-140px)] bg-canvas py-8 sm:py-10">
           <div className="mx-auto max-w-[1280px] space-y-6 px-4 sm:px-6">
             <div>
-              <h1 className="m-0 text-2xl font-bold tracking-tight text-[#18181B]">{t('Support')}</h1>
-              <p className="mt-1 mb-0 text-sm text-[#6B7280]">
+              <h1 className="m-0 text-2xl font-semibold tracking-tight text-ink">{t('Support')}</h1>
+              <p className="mt-1 mb-0 text-sm text-ink-muted">
                 {t('Find an answer below, or send us a request and follow the replies here.')}
               </p>
             </div>
 
             <TicketsCard />
 
-            <div className="space-y-3 rounded-2xl border border-[#EAEAEA] bg-white p-4 sm:p-5">
+            <div className="space-y-3 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4 sm:p-5">
               <SearchInput
                 id="zv-support-q"
                 value={query}
@@ -83,8 +83,8 @@ const SupportPage = () => {
                   onClick={() => setTopic('all')}
                   className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
                     topic === 'all'
-                      ? 'border-[#132B45] bg-[#132B45] text-white'
-                      : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                      ? 'border-navy bg-navy text-white'
+                      : 'border-line bg-canvas text-ink-secondary hover:border-line-input hover:bg-white hover:text-ink'
                   }`}
                 >
                   {t('All')}
@@ -100,8 +100,8 @@ const SupportPage = () => {
                       onClick={() => setTopic(tp.key)}
                       className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
                         active
-                          ? 'border-[#132B45] bg-[#132B45] text-white'
-                          : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                          ? 'border-navy bg-navy text-white'
+                          : 'border-line bg-canvas text-ink-secondary hover:border-line-input hover:bg-white hover:text-ink'
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
@@ -114,24 +114,24 @@ const SupportPage = () => {
 
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
               <div className="lg:col-span-8">
-                <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
-                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#F0F0F2] pb-3">
+                <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 sm:p-6">
+                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-line-subtle pb-3">
                     <div>
-                      <h2 className="m-0 text-base font-semibold text-[#18181B]">
+                      <h2 className="m-0 text-base font-semibold text-ink">
                         {t('Frequently asked questions')}
                       </h2>
-                      <p className="mt-0.5 mb-0 text-xs text-[#6B7280]">
+                      <p className="mt-0.5 mb-0 text-xs text-ink-muted">
                         {t('{count} answers', { count: items.length })}
                       </p>
                     </div>
                   </div>
 
                   {items.length === 0 ? (
-                    <p className="m-0 py-6 text-center text-sm text-[#6B7280]">
+                    <p className="m-0 py-6 text-center text-sm text-ink-muted">
                       {t('No answer matches your search. Send us a request and we will help.')}
                     </p>
                   ) : (
-                    <ul className="m-0 list-none divide-y divide-[#F0F0F2] p-0">
+                    <ul className="m-0 list-none divide-y divide-line-subtle p-0">
                       {items.map((f) => {
                         const isOpen = open === f.id;
                         return (
@@ -141,24 +141,24 @@ const SupportPage = () => {
                               aria-expanded={isOpen}
                               aria-controls={`faq-${f.id}`}
                               onClick={() => setOpen(isOpen ? null : f.id)}
-                              className="flex w-full items-center justify-between gap-4 py-3.5 text-left text-sm font-semibold text-[#18181B] transition-colors hover:text-[#008C85]"
+                              className="flex w-full items-center justify-between gap-4 py-3.5 text-left text-sm font-semibold text-ink transition-colors hover:text-teal-ink"
                             >
                               <span>{t(f.question)}</span>
                               <ChevronDown
-                                className={`h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-200 ${
-                                  isOpen ? 'rotate-180 text-[#008C85]' : ''
+                                className={`h-4 w-4 shrink-0 text-ink-muted transition-transform duration-200 ${
+                                  isOpen ? 'rotate-180 text-teal-ink' : ''
                                 }`}
                                 strokeWidth={1.75}
                                 aria-hidden="true"
                               />
                             </button>
                             {isOpen && (
-                              <div id={`faq-${f.id}`} className="pb-4 pr-6 text-sm leading-relaxed text-[#52525B]">
+                              <div id={`faq-${f.id}`} className="pb-4 pr-6 text-sm leading-relaxed text-ink-secondary">
                                 <p className="m-0">{t(f.answer)}</p>
                                 {f.link && (
                                   <Link
                                     href={f.link.href}
-                                    className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#008C85] hover:underline"
+                                    className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-teal-ink hover:underline"
                                   >
                                     {t(f.link.label)}
                                     <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -177,27 +177,27 @@ const SupportPage = () => {
               <div className="space-y-5 lg:col-span-4">
                 <RequestForm topic={topic === 'all' ? undefined : topic} />
 
-                <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
-                  <h3 className="mb-3 text-base font-semibold text-[#18181B]">{t('Other ways to reach us')}</h3>
+                <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 sm:p-6">
+                  <h3 className="mb-3 text-base font-semibold text-ink">{t('Other ways to reach us')}</h3>
                   <ul className="m-0 list-none space-y-3 p-0 text-sm">
                     <li className="flex items-start gap-3">
-                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F9FAFB] text-[#132B45]">
+                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-canvas text-navy">
                         <Mail className="h-4 w-4" strokeWidth={1.6} />
                       </span>
                       <div>
-                        <span className="block text-xs text-[#6B7280]">{t('Email')}</span>
-                        <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#18181B] hover:text-[#008C85]">
+                        <span className="block text-xs text-ink-muted">{t('Email')}</span>
+                        <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-ink hover:text-teal-ink">
                           {SUPPORT_EMAIL}
                         </a>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F9FAFB] text-[#132B45]">
+                      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-canvas text-navy">
                         <Handshake className="h-4 w-4" strokeWidth={1.6} />
                       </span>
                       <div>
-                        <span className="block text-xs text-[#6B7280]">{t('Sales and partnerships')}</span>
-                        <Link href="/contact" className="font-medium text-[#18181B] hover:text-[#008C85]">
+                        <span className="block text-xs text-ink-muted">{t('Sales and partnerships')}</span>
+                        <Link href="/contact" className="font-medium text-ink hover:text-teal-ink">
                           {t('Contact page')}
                         </Link>
                       </div>

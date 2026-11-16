@@ -5,16 +5,13 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
 import { Loader2 } from 'lucide-react';
 import { cn } from './cn';
 
-export type ButtonVariant = 'legacy' | 'primary' | 'teal' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'teal' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonBaseProps {
-  /** 'legacy' keeps existing template styling until all pages are revamped; Tailwind variants use the new UI kit. */
   variant?: ButtonVariant;
   size?: ButtonSize;
   block?: boolean;
-  /** Legacy Font Awesome icon class (kept for backwards compatibility during revamp phases). */
-  icon?: string;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   loading?: boolean;
@@ -50,7 +47,7 @@ const VARIANT_CLASSES = {
     'bg-transparent text-ink-secondary border border-transparent hover:bg-canvas hover:text-ink focus-visible:ring-2 focus-visible:ring-teal-ink/40',
   danger:
     'bg-tone-red-fg text-white border border-tone-red-fg hover:bg-tone-red-ink hover:border-tone-red-ink focus-visible:ring-2 focus-visible:ring-tone-red-fg/35',
-} as const satisfies Record<Exclude<ButtonVariant, 'legacy'>, string>;
+} as const satisfies Record<ButtonVariant, string>;
 
 const SIZE_CLASSES = {
   sm: 'h-9 px-3.5 text-[13px] gap-1.5 rounded-[8px]',
@@ -59,81 +56,19 @@ const SIZE_CLASSES = {
 } as const satisfies Record<ButtonSize, string>;
 
 /**
- * Shared Button primitive supporting both legacy template CTA styling (during phased migration)
- * and the new Tailwind design system variants.
+ * Shared Tailwind Button primitive aligned to Zenvinus tokens and size scale.
  */
 function Button(props: ButtonProps) {
   const {
-    variant = 'legacy',
+    variant = 'primary',
     size = 'md',
     block = false,
-    icon,
     leftIcon,
     rightIcon,
     loading = false,
     className = '',
     children,
   } = props;
-
-  if (variant === 'legacy') {
-    const legacyClasses = [
-      'tp-btn',
-      'zv-btn',
-      size === 'sm' && 'zv-btn-sm',
-      block && 'zv-btn-block',
-      className,
-    ]
-      .filter(Boolean)
-      .join(' ');
-    const content = (
-      <>
-        <span className="zv-btn-label">{children}</span>
-        {icon && <i className={icon} aria-hidden="true"></i>}
-      </>
-    );
-
-    if (isLink(props)) {
-      const {
-        variant: _variant,
-        size: _size,
-        block: _block,
-        icon: _icon,
-        leftIcon: _leftIcon,
-        rightIcon: _rightIcon,
-        loading: _loading,
-        className: _className,
-        children: _children,
-        href,
-        ...rest
-      } = props;
-      return (
-        <Link href={href} className={legacyClasses} {...rest}>
-          {content}
-        </Link>
-      );
-    }
-
-    const {
-      variant: _variant,
-      size: _size,
-      block: _block,
-      icon: _icon,
-      leftIcon: _leftIcon,
-      rightIcon: _rightIcon,
-      loading: _loading,
-      className: _className,
-      children: _children,
-      href: _href,
-      type = 'button',
-      ...rest
-    } = props;
-    return (
-      // eslint-disable-next-line react/button-has-type -- type is always set (default "button")
-      <button type={type} className={legacyClasses} {...rest}>
-        {content}
-      </button>
-    );
-  }
 
   const tailwindClasses = cn(
     'inline-flex items-center justify-center font-medium leading-none whitespace-nowrap select-none cursor-pointer',
@@ -158,7 +93,6 @@ function Button(props: ButtonProps) {
       variant: _variant,
       size: _size,
       block: _block,
-      icon: _icon,
       leftIcon: _leftIcon,
       rightIcon: _rightIcon,
       loading: _loading,
@@ -178,7 +112,6 @@ function Button(props: ButtonProps) {
     variant: _variant,
     size: _size,
     block: _block,
-    icon: _icon,
     leftIcon: _leftIcon,
     rightIcon: _rightIcon,
     loading: _loading,

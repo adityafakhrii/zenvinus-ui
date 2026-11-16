@@ -14,11 +14,11 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
     onChange({ ...answer, rows: { ...answer.rows, [key]: { ...answer.rows?.[key], ...patch } } });
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[680px] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-[#EAEAEA] bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+            <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">
               <th className="px-4 py-3">{t('Field')}</th>
               <th className="px-4 py-3">{t('Value')}</th>
               <th className="px-4 py-3">{t('Rule')}</th>
@@ -26,16 +26,16 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
               <th className="px-4 py-3">{t('Note')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F2]">
+          <tbody className="divide-y divide-line-subtle">
             {(item.fields || []).map((f) => {
               const row: TabularRowAnswer = answer.rows?.[f.key] || {};
               const valid = row.verdict === 'valid';
               const invalid = row.verdict === 'invalid';
               return (
-                <tr key={f.key} className="hover:bg-[#FAFAFA]">
-                  <td className="px-4 py-3 font-semibold text-[#18181B]">{t(f.label)}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-[#18181B]">{f.value}</td>
-                  <td className="px-4 py-3 text-xs text-[#6B7280]">{t(f.rule)}</td>
+                <tr key={f.key} className="hover:bg-surface-soft">
+                  <td className="px-4 py-3 font-semibold text-ink">{t(f.label)}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-ink">{f.value}</td>
+                  <td className="px-4 py-3 text-xs text-ink-muted">{t(f.rule)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <button
@@ -44,7 +44,7 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
                         className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                           valid
                             ? 'border-[#10B981] bg-[#10B981] text-white'
-                            : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#10B981]/50 hover:bg-white'
+                            : 'border-line bg-canvas text-ink-secondary hover:border-[#10B981]/50 hover:bg-white'
                         }`}
                         onClick={() => setRow(f.key, { verdict: 'valid' })}
                       >
@@ -57,7 +57,7 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
                         className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                           invalid
                             ? 'border-[#FF5A5F] bg-[#FF5A5F] text-white'
-                            : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#FF5A5F]/50 hover:bg-white'
+                            : 'border-line bg-canvas text-ink-secondary hover:border-[#FF5A5F]/50 hover:bg-white'
                         }`}
                         onClick={() => setRow(f.key, { verdict: 'invalid' })}
                       >

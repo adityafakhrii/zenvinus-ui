@@ -43,13 +43,13 @@ const TicketsCard = () => {
   const loginHref = `/login?next=${encodeURIComponent(router.asPath || '/dashboard/support')}`;
 
   return (
-    <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#F0F0F2] pb-4">
+    <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line-subtle pb-4">
         <div>
-          <h2 className="m-0 text-base font-semibold text-[#18181B]">
+          <h2 className="m-0 text-base font-semibold text-ink">
             {effectiveScope === 'all' ? t('All support tickets') : t('Your requests')}
           </h2>
-          <p className="mt-1 mb-0 text-xs text-[#6B7280]">
+          <p className="mt-1 mb-0 text-xs text-ink-muted">
             {effectiveScope === 'all'
               ? t('Requests from every user. Open one to reply as the Zenvinus team.')
               : t('Open a request to read the replies and answer them.')}
@@ -96,8 +96,8 @@ const TicketsCard = () => {
                   onClick={() => setStatus(f.key)}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
                     active
-                      ? 'border-[#132B45] bg-[#132B45] text-white'
-                      : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white hover:text-[#18181B]'
+                      ? 'border-navy bg-navy text-white'
+                      : 'border-line bg-canvas text-ink-secondary hover:border-line-input hover:bg-white hover:text-ink'
                   }`}
                 >
                   {t(f.label)}
@@ -115,7 +115,7 @@ const TicketsCard = () => {
           )}
 
           {data && data.data.length === 0 && (
-            <p className="m-0 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-5 text-center text-sm text-[#6B7280]">
+            <p className="m-0 rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas px-4 py-5 text-center text-sm text-ink-muted">
               {status
                 ? t('No requests with this status.')
                 : effectiveScope === 'all'
@@ -125,16 +125,16 @@ const TicketsCard = () => {
           )}
 
           {data && data.data.length > 0 && (
-            <ul className="m-0 list-none divide-y divide-[#F0F0F2] overflow-hidden rounded-xl border border-[#EAEAEA] p-0">
+            <ul className="m-0 list-none divide-y divide-line-subtle overflow-hidden rounded-xl border border-[rgba(8,13,53,0.08)] p-0">
               {data.data.map((tk) => (
                 <li key={tk.id}>
                   <Link
                     href={ticketHref(tk.id, as)}
-                    className="flex flex-col gap-2 px-4 py-3.5 transition-colors hover:bg-[#FAFAFA] sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 px-4 py-3.5 transition-colors hover:bg-surface-soft sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
-                      <strong className="block truncate text-sm font-semibold text-[#18181B]">{tk.subject}</strong>
-                      <span className="mt-0.5 block text-xs text-[#6B7280]">
+                      <strong className="block truncate text-sm font-semibold text-ink">{tk.subject}</strong>
+                      <span className="mt-0.5 block text-xs text-ink-muted">
                         <span className="font-mono">#{tk.id}</span> · {t(topicLabel(tk.topic))}
                         {tk.reference && ` · ${tk.reference}`}
                         {tk.requester && ` · ${tk.requester.name || tk.requester.email}`}
@@ -144,11 +144,11 @@ const TicketsCard = () => {
                     <div className="flex shrink-0 items-center gap-3">
                       <div className="flex flex-col items-start sm:items-end gap-1">
                         <TicketStatusBadge status={tk.status} asTeam={effectiveScope === 'all'} />
-                        <span className="text-[11px] text-[#9CA3AF]">
+                        <span className="text-[11px] text-ink-subtle">
                           {formatDateTime(tk.lastMessageAt)} · {t('{count} messages', { count: tk.messageCount })}
                         </span>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-[#9CA3AF]" strokeWidth={1.75} />
+                      <ChevronRight className="h-4 w-4 text-ink-subtle" strokeWidth={1.75} />
                     </div>
                   </Link>
                 </li>

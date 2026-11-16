@@ -16,7 +16,7 @@ const SiteOrDashboardLayout = ({ children }: { children: ReactNode }) => {
     return (
       <>
         <DashboardHeader />
-        <main className="zv-in-dashboard">{children}</main>
+        <main>{children}</main>
         <DashboardFooter />
       </>
     );

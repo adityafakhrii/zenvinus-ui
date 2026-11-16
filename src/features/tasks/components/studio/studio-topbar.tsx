@@ -77,19 +77,19 @@ const StudioTopbar = ({
   );
 
   return (
-    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#EAEAEA] bg-white px-4 py-2.5 sm:px-5">
+    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[rgba(8,13,53,0.08)] bg-white px-4 py-2.5 sm:px-5">
       <div className="flex min-w-0 items-center gap-2.5">
         <Link
           href={`/task-details?task=${task.slug}`}
-          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#EAEAEA] bg-[#F9FAFB] text-[#52525B] transition-colors hover:border-[#132B45]/30 hover:bg-white hover:text-[#18181B]"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-canvas text-ink-secondary transition-colors hover:border-navy/30 hover:bg-white hover:text-ink"
           title={t('Exit studio')}
           aria-label={t('Exit studio')}
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={1.6} />
         </Link>
 
-        <span className="hidden items-center gap-1.5 text-sm font-semibold tracking-tight text-[#132B45] sm:inline-flex shrink-0">
-          <Box className="h-4 w-4 text-[#00B2A9]" strokeWidth={1.75} />
+        <span className="hidden items-center gap-1.5 text-sm font-semibold tracking-tight text-navy sm:inline-flex shrink-0">
+          <Box className="h-4 w-4 text-teal-ink" strokeWidth={1.75} />
           Zenvinus Studio
         </span>
 
@@ -102,7 +102,7 @@ const StudioTopbar = ({
           </Badge>
         )}
 
-        <span className="max-w-[200px] truncate text-sm font-semibold text-[#18181B] sm:max-w-[300px]" title={task.title}>
+        <span className="max-w-[200px] truncate text-sm font-semibold text-ink sm:max-w-[300px]" title={task.title}>
           {task.title}
         </span>
 
@@ -118,9 +118,9 @@ const StudioTopbar = ({
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs font-medium text-[#6B7280] tabular-nums">
+        <span className="text-xs font-medium text-ink-muted tabular-nums">
           {t('Item {current} / {total}', {
-            current: <strong className="font-semibold text-[#18181B]">{Math.min(itemIdx + 1, total || 1)}</strong>,
+            current: <strong className="font-semibold text-ink">{Math.min(itemIdx + 1, total || 1)}</strong>,
             total,
           })}
         </span>
@@ -149,8 +149,8 @@ const StudioTopbar = ({
           aria-pressed={guidelinesOpen}
           className={`inline-flex h-8 items-center gap-2 rounded-lg border px-3 text-xs font-medium transition-colors ${
             guidelinesOpen
-              ? 'border-[#132B45] bg-[#132B45] text-white'
-              : 'border-[#EAEAEA] bg-white text-[#18181B] hover:border-[#D4D4D8] hover:bg-[#F9FAFB]'
+              ? 'border-navy bg-navy text-white'
+              : 'border-[rgba(8,13,53,0.08)] bg-white text-ink hover:border-line-input hover:bg-canvas'
           }`}
         >
           <BookOpen className="h-3.5 w-3.5" strokeWidth={1.6} />
@@ -159,7 +159,7 @@ const StudioTopbar = ({
             className={`hidden sm:inline-flex h-4 min-w-4 items-center justify-center rounded px-1 font-mono text-[10px] font-semibold ${
               guidelinesOpen
                 ? 'border border-white/25 bg-white/10 text-white'
-                : 'border border-[#D4D4D8] bg-[#F4F4F5] text-[#52525B]'
+                : 'border border-line-input bg-canvas text-ink-secondary'
             }`}
           >
             G

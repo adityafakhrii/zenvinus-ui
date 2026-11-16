@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { Loader2 } from 'lucide-react';
 
 /** Custom orders now live at /dashboard/projects?id=REQ-xxxx; this keeps old links working. */
 const OrdersRedirect = () => {
@@ -11,7 +12,11 @@ const OrdersRedirect = () => {
     }
   }, [router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps -- run once when the query is ready
 
-  return <div className="tflow-loading"><span className="spinner-border"></span></div>;
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-canvas">
+      <Loader2 className="h-6 w-6 animate-spin text-teal-ink" strokeWidth={1.75} aria-label="Loading" />
+    </div>
+  );
 };
 
 export default OrdersRedirect;

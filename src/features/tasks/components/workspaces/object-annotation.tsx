@@ -43,7 +43,7 @@ const DRAW_MIN = 1.5; // percent — a smaller drag counts as a click, not a dra
 const MOVE_NOISE = 0.6; // percent — pointer travel below this is a click, not a drag
 const CLOSE_DIST = 2.5; // percent — clicking this near the first vertex closes a polygon
 const HANDLES = ['nw', 'ne', 'sw', 'se'] as const;
-const CLASS_COLORS = ['#3b82f6', '#f97316', '#22c55e', '#00b2a9', '#eab308', '#ec4899', '#14b8a6', '#ef4444'];
+const CLASS_COLORS = ['#3b82f6', '#f97316', '#22c55e', '#05dac3', '#eab308', '#ec4899', '#14b8a6', '#ef4444'];
 const UNLABELLED_COLOR = '#94a3b8';
 
 type Tool = 'select' | 'box' | 'poly' | 'hand';
@@ -559,7 +559,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
   return (
     <div className="flex min-h-[540px] flex-1 flex-col gap-3 lg:flex-row">
       {/* Left tool rail */}
-      <div className="flex flex-row gap-1.5 rounded-2xl border border-[#EAEAEA] bg-white p-2 lg:flex-col">
+      <div className="flex flex-row gap-1.5 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-2 lg:flex-col">
         {TOOLS.map(({ id, Icon, key, title }) => {
           const on = tool === id;
           return (
@@ -572,8 +572,8 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
               onClick={() => setTool(id)}
               className={`flex h-11 w-11 flex-col items-center justify-center rounded-xl border text-[10px] font-semibold transition-colors ${
                 on
-                  ? 'border-[#132B45] bg-[#132B45] text-white'
-                  : 'border-transparent bg-transparent text-[#52525B] hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]'
+                  ? 'border-navy bg-navy text-white'
+                  : 'border-transparent bg-transparent text-ink-secondary hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink'
               }`}
             >
               <Icon className="h-4 w-4" strokeWidth={1.75} />
@@ -584,17 +584,17 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
       </div>
 
       {/* Main precision canvas */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#EAEAEA] bg-white px-3.5 py-2">
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-[#52525B]">
-            <ImageIcon className="h-3.5 w-3.5 text-[#00B2A9]" strokeWidth={1.75} />
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[rgba(8,13,53,0.08)] bg-white px-3.5 py-2">
+          <span className="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-ink-secondary">
+            <ImageIcon className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />
             {item.id}
           </span>
 
           <div className="flex items-center gap-1">
             <button
               type="button"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B] disabled:opacity-35"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-secondary transition-colors hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink disabled:opacity-35"
               disabled={historyRef.current.idx <= 0}
               onClick={undo}
               title={t('Undo (Ctrl+Z)')}
@@ -604,7 +604,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
             </button>
             <button
               type="button"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B] disabled:opacity-35"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-secondary transition-colors hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink disabled:opacity-35"
               disabled={historyRef.current.idx + 1 >= historyRef.current.stack.length}
               onClick={redo}
               title={t('Redo (Ctrl+Shift+Z)')}
@@ -617,7 +617,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
 
             <button
               type="button"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-secondary transition-colors hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink"
               onClick={() => zoomAt(vp.w / 2, vp.h / 2, 0.8)}
               title={t('Zoom out')}
               aria-label={t('Zoom out')}
@@ -626,7 +626,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
             </button>
             <button
               type="button"
-              className="inline-flex h-7 min-w-[46px] items-center justify-center rounded-lg border border-[#EAEAEA] bg-[#F9FAFB] px-2 font-mono text-[11px] font-semibold tabular-nums text-[#18181B] transition-colors hover:bg-white"
+              className="inline-flex h-7 min-w-[46px] items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-canvas px-2 font-mono text-[11px] font-semibold tabular-nums text-ink transition-colors hover:bg-white"
               onClick={fitView}
               title={t('Fit to canvas')}
             >
@@ -634,7 +634,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
             </button>
             <button
               type="button"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-[#52525B] transition-colors hover:border-[#EAEAEA] hover:bg-[#F9FAFB] hover:text-[#18181B]"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-secondary transition-colors hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink"
               onClick={() => zoomAt(vp.w / 2, vp.h / 2, 1.25)}
               title={t('Zoom in')}
               aria-label={t('Zoom in')}
@@ -644,7 +644,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
           </div>
         </div>
 
-        <div ref={viewportRef} className={`relative min-h-[420px] flex-1 overflow-hidden bg-[#0F172A] ${cursorClass}`}>
+        <div ref={viewportRef} className={`relative min-h-[420px] flex-1 overflow-hidden bg-[#0B1220] ${cursorClass}`}>
           <div
             ref={stageRef}
             className="absolute select-none"
@@ -712,7 +712,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                     HANDLES.map((h) => (
                       <span
                         key={h}
-                        className={`absolute h-2.5 w-2.5 rounded-xs border border-white bg-[#132B45] shadow-xs ${HANDLE_POS[h]}`}
+                        className={`absolute h-2.5 w-2.5 rounded-xs border border-white bg-navy shadow-xs ${HANDLE_POS[h]}`}
                         onPointerDown={(e) => startResize(e, raw, h)}
                       />
                     ))}
@@ -750,7 +750,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
 
             {edit?.mode === 'draw' && (
               <div
-                className="pointer-events-none absolute border-2 border-dashed border-[#00B2A9] bg-[#00B2A9]/15"
+                className="pointer-events-none absolute border-2 border-dashed border-teal-ink bg-teal/15"
                 style={{
                   left: `${Math.min(edit.start.x, edit.current.x)}%`,
                   top: `${Math.min(edit.start.y, edit.current.y)}%`,
@@ -768,8 +768,8 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
               >
                 <polygon
                   points={polyPts.map((p) => `${p[0]},${p[1]}`).join(' ')}
-                  fill="rgba(0, 178, 169, 0.14)"
-                  stroke="#00B2A9"
+                  fill="rgba(56, 189, 248, 0.12)"
+                  stroke="#38BDF8"
                   strokeWidth={1.5}
                   vectorEffect="non-scaling-stroke"
                 />
@@ -779,7 +779,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                     cx={p[0]}
                     cy={p[1]}
                     r={i === 0 && polyPts.length >= 3 ? 1.1 : 0.7}
-                    fill={i === 0 && polyPts.length >= 3 ? '#22c55e' : '#00B2A9'}
+                    fill={i === 0 && polyPts.length >= 3 ? '#22c55e' : '#38BDF8'}
                   />
                 ))}
               </svg>
@@ -790,9 +790,9 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
 
       {/* Right classes & annotations inspector */}
       <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-[276px]">
-        <div className="rounded-2xl border border-[#EAEAEA] bg-white p-4">
-          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
-            <Tag className="h-3.5 w-3.5 text-[#132B45]" strokeWidth={1.75} />
+        <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4">
+          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
+            <Tag className="h-3.5 w-3.5 text-navy" strokeWidth={1.75} />
             {t('Classes')}
           </h5>
           <div className="space-y-1.5">
@@ -805,8 +805,8 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                   type="button"
                   className={`flex w-full items-center gap-2 rounded-xl border px-2.5 py-2 text-left text-xs font-medium transition-colors ${
                     on
-                      ? 'border-[#132B45] bg-[#132B45] text-white'
-                      : 'border-[#EAEAEA] bg-[#F9FAFB] text-[#18181B] hover:border-[#D4D4D8] hover:bg-white'
+                      ? 'border-navy bg-navy text-white'
+                      : 'border-[rgba(8,13,53,0.08)] bg-canvas text-ink hover:border-line-input hover:bg-white'
                   }`}
                   onClick={() => onClassClick(cls)}
                 >
@@ -814,14 +814,14 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                   <span className="min-w-0 flex-1 truncate">{t(cls)}</span>
                   <span
                     className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
-                      on ? 'bg-white/15 text-white' : 'bg-white text-[#6B7280]'
+                      on ? 'bg-white/15 text-white' : 'bg-white text-ink-muted'
                     }`}
                   >
                     {count}
                   </span>
                   <kbd
                     className={`rounded px-1 font-mono text-[10px] ${
-                      on ? 'bg-white/15 text-white' : 'border border-[#D4D4D8] bg-white text-[#52525B]'
+                      on ? 'bg-white/15 text-white' : 'border border-line-input bg-white text-ink-secondary'
                     }`}
                   >
                     {i + 1}
@@ -832,15 +832,15 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
           </div>
         </div>
 
-        <div className="flex-1 rounded-2xl border border-[#EAEAEA] bg-white p-4">
-          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
-            <Layers className="h-3.5 w-3.5 text-[#132B45]" strokeWidth={1.75} />
+        <div className="flex-1 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4">
+          <h5 className="mb-2.5 flex items-center gap-1.5 text-xs font-semibold text-ink-muted">
+            <Layers className="h-3.5 w-3.5 text-navy" strokeWidth={1.75} />
             {t('Annotations')}
-            <span className="font-mono text-[#9CA3AF]">({shapes.length})</span>
+            <span className="font-mono text-ink-subtle">({shapes.length})</span>
           </h5>
 
           {shapes.length === 0 ? (
-            <p className="text-xs leading-relaxed text-[#6B7280]">
+            <p className="text-xs leading-relaxed text-ink-muted">
               {t('No annotations yet — pick Box (B) or Polygon (P), then click or drag on the image.')}
             </p>
           ) : (
@@ -854,8 +854,8 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                     key={`${kind}-${id}`}
                     className={`flex items-center gap-1.5 rounded-xl border px-2 py-1.5 text-xs transition-colors ${
                       isSel
-                        ? 'border-[#00B2A9] bg-[#E6F7F6]'
-                        : 'border-[#EAEAEA] bg-[#F9FAFB] hover:border-[#D4D4D8] hover:bg-white'
+                        ? 'border-teal-ink bg-tint-mint'
+                        : 'border-[rgba(8,13,53,0.08)] bg-canvas hover:border-line-input hover:bg-white'
                     }`}
                   >
                     <button
@@ -867,15 +867,15 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
                         className="h-3 w-3 shrink-0 rounded-xs border-2"
                         style={{ borderColor: colorOf(cls) }}
                       />
-                      <span className="font-mono font-semibold text-[#18181B]">{label}</span>
-                      <span className="min-w-0 flex-1 truncate text-[#6B7280]">
+                      <span className="font-mono font-semibold text-ink">{label}</span>
+                      <span className="min-w-0 flex-1 truncate text-ink-muted">
                         {cls ? t(cls) : t('unlabelled')}
                       </span>
                     </button>
                     {kind !== 'mask' && (
                       <button
                         type="button"
-                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[#9CA3AF] transition-colors hover:bg-[#FEF2F2] hover:text-[#DC2626]"
+                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-[#FEF2F2] hover:text-[#DC2626]"
                         title={t('Delete {id}', { id })}
                         aria-label={t('Delete {id}', { id })}
                         onClick={() => deleteShape(kind, id)}

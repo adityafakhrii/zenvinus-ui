@@ -82,11 +82,11 @@ interface StepProps {
 
 function Step({ number, title, done, children }: StepProps) {
   return (
-    <section className="rounded-2xl border border-[#EAEAEA] bg-white p-5 sm:p-6">
-      <h4 className="mb-4 flex items-center gap-2.5 text-base font-semibold text-[#18181B]">
+    <section className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 sm:p-6">
+      <h4 className="mb-4 flex items-center gap-2.5 text-base font-semibold text-ink">
         <span
-          className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-            done ? 'bg-[#00B2A9] text-white' : 'bg-[#132B45] text-white'
+          className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold ${
+            done ? 'bg-teal text-white' : 'bg-navy text-white'
           }`}
         >
           {done ? <Check className="h-4 w-4" strokeWidth={2.25} /> : number}
@@ -128,38 +128,40 @@ function DataStep({ dataset, onImported }: DataStepProps) {
   return (
     <div className="space-y-5">
       {dataset.splits.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-[#EAEAEA]">
-          <table className="w-full border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-[#EAEAEA] bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
-                <th className="px-4 py-2.5">{t('Split')}</th>
-                <th className="px-4 py-2.5">{t('Rows')}</th>
-                <th className="px-4 py-2.5 text-right" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#F0F0F2]">
-              {dataset.splits.map((s) => (
-                <tr key={s.name}>
-                  <td className="px-4 py-2.5 font-mono text-xs font-semibold text-[#18181B]">{s.name}</td>
-                  <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-[#52525B]">
-                    {s.rows.toLocaleString(locale)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right">
-                    <Link
-                      href={`${base}/explore?slug=${dataset.slug}&split=${s.name}`}
-                      className="text-xs font-medium text-[#008C85] hover:underline"
-                    >
-                      {t('View data')}
-                    </Link>
-                  </td>
+        <div className="overflow-hidden rounded-xl border border-[rgba(8,13,53,0.08)]">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">
+                  <th className="px-4 py-2.5">{t('Split')}</th>
+                  <th className="px-4 py-2.5">{t('Rows')}</th>
+                  <th className="px-4 py-2.5 text-right" />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-line-subtle">
+                {dataset.splits.map((s) => (
+                  <tr key={s.name}>
+                    <td className="px-4 py-2.5 font-mono text-xs font-semibold text-ink">{s.name}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-ink-secondary">
+                      {s.rows.toLocaleString(locale)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      <Link
+                        href={`${base}/explore?slug=${dataset.slug}&split=${s.name}`}
+                        className="text-xs font-medium text-teal-ink hover:underline"
+                      >
+                        {t('View data')}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#52525B]">
-          <Info className="h-4 w-4 shrink-0 text-[#00B2A9]" strokeWidth={1.75} />
+        <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas px-4 py-3 text-xs text-ink-secondary">
+          <Info className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.75} />
           <span>{t('This dataset has no data yet. Upload a CSV file below.')}</span>
         </div>
       )}
@@ -201,8 +203,8 @@ function DataStep({ dataset, onImported }: DataStepProps) {
                   onClick={() => setSplit(preset)}
                   className={`rounded-lg border px-2.5 py-1 font-mono text-[11px] font-medium transition-colors ${
                     split === preset
-                      ? 'border-[#132B45] bg-[#132B45] text-white'
-                      : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#D4D4D8] hover:bg-white'
+                      ? 'border-navy bg-navy text-white'
+                      : 'border-line bg-canvas text-ink-secondary hover:border-line-input hover:bg-white'
                   }`}
                 >
                   {preset}
@@ -210,11 +212,11 @@ function DataStep({ dataset, onImported }: DataStepProps) {
               ))}
             </div>
             {splitValid && (
-              <p className="m-0 text-xs text-[#6B7280]">
+              <p className="m-0 text-xs text-ink-muted">
                 {t('A split is one part of the dataset: {train} to learn from, {validation} and {test} to check results. With a single file, keep {train}.', {
-                  train: <strong className="font-mono text-[#18181B]">train</strong>,
-                  validation: <strong className="font-mono text-[#18181B]">validation</strong>,
-                  test: <strong className="font-mono text-[#18181B]">test</strong>,
+                  train: <strong className="font-mono text-ink">train</strong>,
+                  validation: <strong className="font-mono text-ink">validation</strong>,
+                  test: <strong className="font-mono text-ink">test</strong>,
                 })}
               </p>
             )}
@@ -243,7 +245,7 @@ function DataStep({ dataset, onImported }: DataStepProps) {
           >
             {mutation.isPending ? t('Uploading…') : t('Upload CSV')}
           </Button>
-          {!file && <span className="text-xs text-[#9CA3AF]">{t('Choose a file first.')}</span>}
+          {!file && <span className="text-xs text-ink-subtle">{t('Choose a file first.')}</span>}
         </div>
       </form>
 
@@ -275,7 +277,7 @@ function DataStep({ dataset, onImported }: DataStepProps) {
         </div>
       )}
 
-      <p className="m-0 text-xs text-[#6B7280]">
+      <p className="m-0 text-xs text-ink-muted">
         {t('The original file is kept and listed under Files and versions on the dataset page.')}
       </p>
     </div>
@@ -404,13 +406,13 @@ const StudioEditor = () => {
         <div>
           <Link
             href={base}
-            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] transition-colors hover:text-[#18181B]"
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted transition-colors hover:text-ink"
           >
             <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} />
             {t('All datasets')}
           </Link>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h2 className="m-0 text-xl font-bold tracking-tight text-[#18181B]">
+            <h2 className="m-0 text-xl font-semibold tracking-tight text-ink">
               {isNew ? t('New dataset') : dataset?.name}
             </h2>
             {dataset && (
@@ -419,7 +421,7 @@ const StudioEditor = () => {
               </Badge>
             )}
           </div>
-          {dataset && <p className="mt-1 mb-0 text-xs text-[#6B7280]">{t(STATUS_HINT[dataset.status])}</p>}
+          {dataset && <p className="mt-1 mb-0 text-xs text-ink-muted">{t(STATUS_HINT[dataset.status])}</p>}
         </div>
 
         {dataset && (
@@ -539,7 +541,7 @@ const StudioEditor = () => {
         {dataset ? (
           <DataStep dataset={dataset} onImported={refresh} />
         ) : (
-          <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#6B7280]">
+          <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas px-4 py-3 text-xs text-ink-muted">
             <Lock className="h-4 w-4 shrink-0" strokeWidth={1.6} />
             <span>{t('Create the dataset in step 1 first. Then you can upload CSV files here.')}</span>
           </div>
@@ -548,7 +550,7 @@ const StudioEditor = () => {
 
       <Step number={3} title={t('Publish')} done={published}>
         {!dataset ? (
-          <div className="flex items-center gap-2.5 rounded-xl border border-[#EAEAEA] bg-[#F9FAFB] px-4 py-3 text-xs text-[#6B7280]">
+          <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(8,13,53,0.08)] bg-canvas px-4 py-3 text-xs text-ink-muted">
             <Lock className="h-4 w-4 shrink-0" strokeWidth={1.6} />
             <span>{t('Available after you create the dataset.')}</span>
           </div>
@@ -558,14 +560,14 @@ const StudioEditor = () => {
               {checklist.map(([ok, label, todo, optional]) => (
                 <li key={label} className="flex items-start gap-2.5 text-sm">
                   {ok ? (
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#00B2A9]" strokeWidth={1.75} />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.75} />
                   ) : optional ? (
                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" strokeWidth={1.75} />
                   ) : (
-                    <Circle className="mt-0.5 h-4 w-4 shrink-0 text-[#9CA3AF]" strokeWidth={1.75} />
+                    <Circle className="mt-0.5 h-4 w-4 shrink-0 text-ink-subtle" strokeWidth={1.75} />
                   )}
-                  <span className="text-[#52525B]">
-                    <strong className="font-semibold text-[#18181B]">{t(label)}</strong>
+                  <span className="text-ink-secondary">
+                    <strong className="font-semibold text-ink">{t(label)}</strong>
                     {ok ? '' : ` — ${t(todo)}`}
                   </span>
                 </li>
@@ -600,7 +602,7 @@ const StudioEditor = () => {
                 </Button>
               )}
               {!published && !canPublish && (
-                <span className="text-xs text-[#6B7280]">{t('Complete the items above to publish.')}</span>
+                <span className="text-xs text-ink-muted">{t('Complete the items above to publish.')}</span>
               )}
             </div>
           </div>

@@ -22,7 +22,7 @@ export interface ServiceBlogPost {
   title: ReactNode;
 }
 
-/** One question of the service details FAQ (Bootstrap collapse) */
+/** One question of the service details FAQ accordion */
 export interface FaqItem {
   id: number;
   question: string;

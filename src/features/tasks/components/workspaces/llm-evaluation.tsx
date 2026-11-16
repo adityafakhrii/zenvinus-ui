@@ -16,7 +16,7 @@ interface ScaleProps {
 
 const Scale = ({ label, value, onChange }: ScaleProps) => (
   <div className="flex items-center justify-between gap-3 py-1.5">
-    <span className="text-xs font-medium text-[#52525B]">{label}</span>
+    <span className="text-xs font-medium text-ink-secondary">{label}</span>
     <div className="flex items-center gap-1.5" role="radiogroup" aria-label={label}>
       {[1, 2, 3, 4, 5].map((n) => {
         const active = value === n;
@@ -28,8 +28,8 @@ const Scale = ({ label, value, onChange }: ScaleProps) => (
             aria-checked={active}
             className={`inline-flex h-7 w-7 items-center justify-center rounded-lg border text-xs font-semibold tabular-nums transition-colors ${
               active
-                ? 'border-[#132B45] bg-[#132B45] text-white'
-                : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#00B2A9]/60 hover:bg-white hover:text-[#18181B]'
+                ? 'border-navy bg-navy text-white'
+                : 'border-line bg-canvas text-ink-secondary hover:border-teal-ink/60 hover:bg-white hover:text-ink'
             }`}
             onClick={() => onChange(n)}
           >
@@ -56,17 +56,17 @@ const ResponseCard = ({ resp, answer, onChange }: ResponseCardProps) => {
   return (
     <div
       className={`flex flex-col justify-between rounded-2xl border bg-white p-5 transition-colors ${
-        preferred ? 'border-[#00B2A9] ring-1 ring-[#00B2A9]/25' : 'border-[#EAEAEA]'
+        preferred ? 'border-teal-ink ring-1 ring-teal-ink/20' : 'border-[rgba(8,13,53,0.08)]'
       }`}
     >
       <div>
         <div className="mb-3 flex items-center justify-between">
           <Badge tone={preferred ? 'mint' : 'blue'}>{t('Response {label}', { label: resp.label })}</Badge>
         </div>
-        <p className="text-sm leading-relaxed text-[#18181B]">{resp.text}</p>
+        <p className="text-sm leading-relaxed text-ink">{resp.text}</p>
       </div>
 
-      <div className="mt-5 border-t border-[#F0F0F2] pt-4">
+      <div className="mt-5 border-t border-line-subtle pt-4">
         <Scale
           label={t('Helpfulness')}
           value={answer[helpfulnessKey]}
@@ -82,8 +82,8 @@ const ResponseCard = ({ resp, answer, onChange }: ResponseCardProps) => {
           aria-pressed={preferred}
           className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors ${
             preferred
-              ? 'border-[#00B2A9] bg-[#E6F7F6] text-[#008C85]'
-              : 'border-[#E5E7EB] bg-[#F9FAFB] text-[#52525B] hover:border-[#132B45]/30 hover:bg-white hover:text-[#18181B]'
+              ? 'border-teal-ink bg-tint-mint text-teal-ink'
+              : 'border-line bg-canvas text-ink-secondary hover:border-navy/30 hover:bg-white hover:text-ink'
           }`}
           onClick={() => onChange({ ...answer, preference: resp.label })}
         >
@@ -97,11 +97,11 @@ const ResponseCard = ({ resp, answer, onChange }: ResponseCardProps) => {
 
 const LLMEvaluation = ({ item, answer, onChange }: WorkspaceProps<'llm_evaluation'>) => (
   <div className="space-y-4">
-    <div className="rounded-2xl border border-[#EAEAEA] bg-white p-5">
-      <span className="mb-2 inline-block rounded-md border border-[#EAEAEA] bg-[#F9FAFB] px-2 py-0.5 font-mono text-[11px] font-medium text-[#52525B]">
+    <div className="rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5">
+      <span className="mb-2 inline-block rounded-md border border-[rgba(8,13,53,0.08)] bg-canvas px-2 py-0.5 font-mono text-[11px] font-medium text-ink-secondary">
         {item.id}
       </span>
-      <p className="text-[15px] font-medium leading-relaxed text-[#18181B]">{item.prompt}</p>
+      <p className="text-[15px] font-medium leading-relaxed text-ink">{item.prompt}</p>
     </div>
 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

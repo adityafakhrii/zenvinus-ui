@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { Loader2 } from 'lucide-react';
 
 /**
  * The old workspace page now lives at /task-studio (the Annotation Studio).
@@ -14,7 +15,11 @@ const TaskWorkspacePage = () => {
     }
   }, [router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div className="tflow-loading"><span className="spinner-border"></span></div>;
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-canvas">
+      <Loader2 className="h-6 w-6 animate-spin text-teal-ink" strokeWidth={1.75} aria-label="Loading" />
+    </div>
+  );
 };
 
 export default TaskWorkspacePage;

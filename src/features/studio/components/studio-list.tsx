@@ -47,7 +47,7 @@ const StudioList = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="m-0 text-sm text-[#6B7280]">
+        <p className="m-0 text-sm text-ink-muted">
           {t('Add your own datasets to the catalog and look through the data in each one.')}
         </p>
         {data?.canCreate && (
@@ -60,16 +60,16 @@ const StudioList = () => {
       {data?.canCreate && (
         <ol className="grid grid-cols-1 gap-3 md:grid-cols-3" aria-label={t('How to add a dataset')}>
           {STEPS.map(({ Icon, title, text }, i) => (
-            <li key={title} className="flex items-start gap-3 rounded-2xl border border-[#EAEAEA] bg-white p-4">
-              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#132B45] font-mono text-xs font-semibold text-white">
+            <li key={title} className="flex items-start gap-3 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4">
+              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-navy font-mono text-xs font-semibold text-white">
                 {i + 1}
               </span>
               <div className="min-w-0">
-                <strong className="flex items-center gap-1.5 text-sm font-semibold text-[#18181B]">
-                  <Icon className="h-4 w-4 text-[#00B2A9]" strokeWidth={1.75} />
+                <strong className="flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  <Icon className="h-4 w-4 text-teal-ink" strokeWidth={1.75} />
                   {t(title)}
                 </strong>
-                <p className="mt-1 mb-0 text-xs leading-relaxed text-[#6B7280]">{t(text)}</p>
+                <p className="mt-1 mb-0 text-xs leading-relaxed text-ink-muted">{t(text)}</p>
               </div>
             </li>
           ))}
@@ -104,11 +104,11 @@ const StudioList = () => {
       )}
 
       {datasets.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-[#EAEAEA] bg-white">
+        <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[780px] border-collapse text-left text-sm">
               <thead>
-                <tr className="border-b border-[#EAEAEA] bg-[#F9FAFB] text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+                <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">
                   <th className="px-5 py-3.5">{t('Dataset')}</th>
                   <th className="px-4 py-3.5">{t('Status')}</th>
                   <th className="px-4 py-3.5">{t('Type')}</th>
@@ -120,11 +120,11 @@ const StudioList = () => {
                   <th className="px-5 py-3.5 text-right" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F0F0F2]">
+              <tbody className="divide-y divide-line-subtle">
                 {datasets.map((d) => (
-                  <tr key={d.id} className="transition-colors hover:bg-[#FAFAFA]">
-                    <td className="px-5 py-3.5 font-semibold text-[#18181B]">
-                      <Link href={`${base}/explore?slug=${d.slug}`} className="hover:text-[#008C85]">
+                  <tr key={d.id} className="transition-colors hover:bg-surface-soft">
+                    <td className="px-5 py-3.5 font-semibold text-ink">
+                      <Link href={`${base}/explore?slug=${d.slug}`} className="hover:text-teal-ink">
                         {d.name}
                       </Link>
                     </td>
@@ -135,18 +135,18 @@ const StudioList = () => {
                         </Badge>
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-[#52525B]">{t(TYPE_LABEL[d.dataType] || d.dataType)}</td>
-                    <td className="px-4 py-3.5 text-xs text-[#52525B]">
+                    <td className="px-4 py-3.5 text-ink-secondary">{t(TYPE_LABEL[d.dataType] || d.dataType)}</td>
+                    <td className="px-4 py-3.5 text-xs text-ink-secondary">
                       {d.splits.length ? (
                         <span className="font-mono">{d.splits.map((s) => s.name).join(', ')}</span>
                       ) : (
-                        <span className="text-[#9CA3AF]">{t('No data yet')}</span>
+                        <span className="text-ink-subtle">{t('No data yet')}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-[#18181B]">
+                    <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-ink">
                       {d.rows.toLocaleString(locale)}
                     </td>
-                    <td className="px-4 py-3.5 text-xs text-[#6B7280]">{formatDate(d.updatedAt)}</td>
+                    <td className="px-4 py-3.5 text-xs text-ink-muted">{formatDate(d.updatedAt)}</td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-2">
                         <Button

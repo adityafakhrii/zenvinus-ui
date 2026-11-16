@@ -12,8 +12,8 @@ const ImageClassification = ({ item, answer, onChange }: WorkspaceProps<'image_c
   const { t } = useT();
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-      <div className="relative flex min-h-[340px] items-center justify-center overflow-hidden rounded-2xl border border-[#EAEAEA] bg-[#F3F4F6] p-4 lg:col-span-7">
-        <span className="absolute left-3.5 top-3.5 z-10 rounded-md border border-[#EAEAEA] bg-white/95 px-2 py-0.5 font-mono text-[11px] font-medium text-[#18181B] shadow-xs">
+      <div className="relative flex min-h-[340px] items-center justify-center overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-4 lg:col-span-7">
+        <span className="absolute left-3.5 top-3.5 z-10 rounded-md border border-[rgba(8,13,53,0.08)] bg-white/95 px-2 py-0.5 font-mono text-[11px] font-medium text-ink shadow-xs">
           {item.id}
         </span>
         <Image
@@ -26,10 +26,10 @@ const ImageClassification = ({ item, answer, onChange }: WorkspaceProps<'image_c
         />
       </div>
 
-      <div className="flex flex-col justify-between rounded-2xl border border-[#EAEAEA] bg-white p-5 lg:col-span-5">
+      <div className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-5 lg:col-span-5">
         <div>
-          <h4 className="text-base font-semibold text-[#18181B]">{t('Choose the product category')}</h4>
-          <p className="mt-1.5 text-sm leading-relaxed text-[#6B7280]">
+          <h4 className="text-base font-semibold text-ink">{t('Choose the product category')}</h4>
+          <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
             {t('Use the main product as the reference; ignore the background and other props.')}
           </p>
           <div className="mt-5">
