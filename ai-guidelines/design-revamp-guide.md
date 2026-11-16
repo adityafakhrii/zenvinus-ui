@@ -14,6 +14,30 @@ Sebelum menyentuh kode komponen atau stylesheet apa pun, AI agent **wajib** memb
 2. **Metodologi Anti-AI-Slop (`unslop`):** [../.agents/unslop/skills/unslop/SKILL.md](../.agents/unslop/skills/unslop/SKILL.md) beserta [signs.md](../.agents/unslop/skills/unslop/references/signs.md) dan [tokens.md](../.agents/unslop/skills/unslop/references/tokens.md) *(unslop by Damir Sokolovsky, CC BY 4.0)*.
 3. **Konvensi Codebase & Alur Produk:** [../docs/frontend.md](../docs/frontend.md), [../docs/ZENVINUS-workflows-v3.md](../docs/ZENVINUS-workflows-v3.md), dan [../AGENTS.md](../AGENTS.md).
 
+### Kepatuhan Wajib terhadap Client Frontend Guide (`docs/frontend.md`)
+Seluruh hasil revamp **wajib** mematuhi arsitektur dan aturan TypeScript dari client di [docs/frontend.md](../docs/frontend.md):
+- **Batas Import & Barrel:**
+  - `src/pages/*` hanya me-wire `<Wrapper>` + `<SEO>` + screen dari `@/features/<feature>/screens` (tanpa logika bisnis di `src/pages/`).
+  - Antar-fitur hanya boleh saling import melalui `index.ts` (jangan pernah import internal folder fitur lain atau `screens.ts`).
+  - `src/components/*` **dilarang** mengimpor `src/features/*` (kecuali `site-or-dashboard-layout.tsx`, `header.tsx`, dan `mobile-nav.tsx`). Komponen UI baru diletakkan di `src/components/ui/` tanpa ketergantungan ke fitur apa pun.
+  - Semua barrel (`index.ts`, `screens.ts`) wajib pakai **named exports** — **dilarang `export *`**.
+- **Naming (`kebab-case` untuk File):**
+  - Seluruh nama file dan folder wajib `kebab-case` (contoh: `src/components/ui/custom-select.tsx`, `src/components/ui/custom-date-picker.tsx`, `src/components/ui/charts/bar-chart.tsx`, `src/features/dashboard/store/layout-slice.ts`), **bukan** `PascalCase.tsx`.
+  - Nama komponen `PascalCase`, props `interface <Component>Props`, hooks `use-<name>.ts`, konstanta modul `UPPER_SNAKE_CASE`.
+- **TypeScript Strict & Oxlint (`bun run typecheck` + `bun run lint`):**
+  - Tanpa file `.js` di `src/` (`allowJs: false`).
+  - **Dilarang `any`**, `@ts-ignore`, `@ts-expect-error`, `!` non-null assertion, dan **`enum`** (ganti dengan `as const satisfies ...` + derived union type).
+  - Gunakan `interface` untuk kontrak objek/props yang dapat di-extend (`CustomSelectProps`), dan `type` untuk union/discriminated union (`type NavMode = 'topbar' | 'sidebar'`, atau pola `LinkButtonProps | NativeButtonProps` di `button.tsx`).
+  - Selalu gunakan **inline type imports** (`import type` / `import { type ... }`), dan **jangan** menamai variabel biasa berawalan `use...` (Oxlint menganggapnya hook).
+  - Nilai dari `localStorage` / `JSON.parse` / `catch` bertipe `unknown` dan wajib di-narrow dengan type guard sebelum dipakai.
+- **State Management & Hydration (`PersistedSlice`):**
+  - Data list/detail (termasuk yang sekarang memakai dummy services) tetap diakses lewat **TanStack Query** (`useQuery` / `useMutation`) — jangan disalin ke Redux.
+  - State UI global lintas halaman (seperti preferensi navigasi `navMode` & `sidebarCollapsed`) disimpan di **Redux Toolkit** mengikuti kontrak `PersistedSlice<S>` di `src/store/persistence.ts` + `@/lib/storage` (`readJson`/`writeJson`), didaftarkan di `src/store/store.ts`, dan mengekspor `<Feature>RootState` sendiri agar slice tidak mengimpor `src/store/store.ts`.
+  - Initial state pada SSR dan render pertama browser harus identik (default `'topbar'`) agar bebas React 19 hydration mismatch; efek yang membaca state hasil restore menunggu `selectStorageHydrated`.
+- **Side Effects & Public Page Rules:**
+  - Pertahankan `"sideEffects": ["*.css", "*.scss"]` di `package.json`: jangan menaruh kode yang dieksekusi saat import (top-level `window.*`). File entry Tailwind memakai ekstensi `.css` / `.scss`.
+  - Halaman publik tidak memakai breadcrumb banner (`src/components/common/breadcrumb.tsx`), dan halaman detail/flow baru dipetakan di `SECTION_OF` pada `src/components/layout/header/menu-data.ts`.
+
 ---
 
 ## 2. Stack Styling Wajib: Utamakan Tailwind CSS
@@ -106,7 +130,7 @@ Salah satu persyaratan utama revamp adalah **fleksibilitas mode navigasi** pada 
   - Tambahkan bagian **Workspace Navigation** dengan komponen **Custom Radio Card** (dilengkapi pratinjau *mini wireframe* visual untuk masing-masing mode):
     1. **Top Navbar (Default)** — Bar atas tunggal sticky (`64px`) + bar Role Switcher sekunder yang ringkas.
     2. **Sidebar** — Sidebar kiri (`256px`, bisa di-collapse ke `72px`) ala referensi desain + utility header bar di kanan atas.
-  - Simpan preferensi ke **Redux Toolkit** (`uiPreferences` / `layoutSlice`) dan persist di `localStorage` via `@/lib/storage` agar pilihan bertahan antar-reload dan langsung mengubah shell layout tanpa refresh halaman.
+  - Simpan preferensi ke **Redux Toolkit** di `src/features/dashboard/store/layout-slice.ts` (`navMode: 'topbar' | 'sidebar'`, `sidebarCollapsed: boolean`, default `'topbar'`) mengikuti kontrak `PersistedSlice<LayoutState>` (`src/store/persistence.ts`) + `@/lib/storage` (`readJson`/`writeJson`) dan daftarkan di `src/store/store.ts`. Initial state SSR & client render pertama harus sama (`'topbar'`) agar aman dari hydration mismatch, dan langsung mengubah shell layout tanpa reload halaman.
 
 ### B. Spesifikasi Mode 1: Top Navbar (Default)
 - **Struktur Sticky Header (`height: 64px`, `#FFFFFF`, border-bottom `1px solid rgba(8, 13, 53, 0.08)`):**
@@ -128,7 +152,8 @@ Salah satu persyaratan utama revamp adalah **fleksibilitas mode navigasi** pada 
 
 ## 6. Sistem Custom Component (Dilarang Style Bawaan Browser)
 
-AI agent **wajib membangun atau menstandarkan seluruh komponen input dan overlay secara custom** di `src/components/ui/` sehingga tidak ada satu pun elemen di seluruh 45 halaman yang tampil dengan gaya OS/browser bawaan (`<select>` native, kalender OS `<input type="date">`, `window.confirm`, radio/checkbox bawaan browser, atau scrollbar/tooltip kasar).
+AI agent **wajib membangun atau menstandarkan seluruh komponen input dan overlay secara custom** di `src/components/ui/` (dengan penamaan file **`kebab-case`** sesuai `docs/frontend.md`, mis. `custom-select.tsx`, `custom-date-picker.tsx`, `custom-radio.tsx`, `custom-checkbox.tsx`, `modal.tsx`, `drawer.tsx`, `file-dropzone.tsx`, `segmented-control.tsx`, `toast.tsx`) sehingga tidak ada satu pun elemen di seluruh 45 halaman yang tampil dengan gaya OS/browser bawaan (`<select>` native, kalender OS `<input type="date">`, `window.confirm`, radio/checkbox bawaan browser, atau scrollbar/tooltip kasar).
+*(Pastikan komponen di `src/components/ui/` tidak mengimpor `src/features/*`, dan pertahankan pola discriminated union `LinkButtonProps | NativeButtonProps` di `src/components/ui/button.tsx`.)*
 
 Berikut daftar komponen custom wajib dan penggantian yang harus dilakukan:
 
@@ -277,10 +302,10 @@ Saat mulai mengeksekusi revamp di kode nanti, jalankan dalam fase berikut agar a
 1. **Fase 1 — Tailwind Setup, Font, Icons & Custom UI Kit (`src/styles/`, `src/pages/_document.tsx`, `src/components/ui/`):**
    - Pasang **Tailwind CSS** dan **`lucide-react`**: `bun add -d tailwindcss @tailwindcss/postcss postcss && bun add lucide-react`.
    - Rombak font di [src/pages/_document.tsx](../src/pages/_document.tsx) (atau `next/font/google`) dari `DM Sans` + `Raleway` ke **`Inter` (`400, 500, 600`) + `JetBrains Mono` (`400, 500`)** dan definisikan seluruh `@theme` tokens (warna dari `color-system.md`, spacing `4px` scale, radius, motion curve).
-   - Bangun seluruh custom primitives berbasis Tailwind CSS (`CustomSelect`, `CustomDatePicker`, `CustomDateTimePicker`, `CustomRadioGroup`/`Card`, `CustomCheckbox`/`Switch`, `Modal`/`ConfirmDialog`, `Drawer`, `Popover`/`Tooltip`, `SegmentedControl`, `FileDropzone`, `Toast`) serta custom SVG charts (`CustomBarChart`, `CustomSemiCircleGauge`, `SegmentedBreakdownBar`, `CustomProgressBar`).
+   - Bangun seluruh custom primitives berbasis Tailwind CSS dengan file **`kebab-case`** di `src/components/ui/` (`custom-select.tsx`, `custom-date-picker.tsx`, `custom-radio.tsx`, `custom-checkbox.tsx`, `modal.tsx`, `drawer.tsx`, `popover.tsx`, `segmented-control.tsx`, `file-dropzone.tsx`, `toast.tsx`) serta custom SVG charts di `src/components/ui/charts/` (`bar-chart.tsx`, `semi-circle-gauge.tsx`, `segmented-breakdown-bar.tsx`, `progress-bar.tsx`) — tanpa mengimpor `features/*` dan bebas dari `any` maupun `enum`.
    - Pastikan class komponen baru bebas dari tabrakan selector Bootstrap legacy.
 2. **Fase 2 — Dual-Mode App Shell (`Top Navbar` Default + `Sidebar` Switchable):**
-   - Tambah Redux slice preferensi layout navigasi (`navMode: 'topbar' | 'sidebar'`, default `'topbar'`, persisted di `localStorage`).
+   - Tambah slice Redux `src/features/dashboard/store/layout-slice.ts` (`navMode: 'topbar' | 'sidebar'`, default `'topbar'`, dengan `LayoutRootState` + `PersistedSlice` + `selectStorageHydrated`) dan daftarkan di `src/store/store.ts`.
    - Bangun `DashboardShell` dengan Tailwind CSS yang mendukung kedua mode + Mobile Drawer responsif + Global Quick Search.
    - Integrasikan pemilih mode navigasi di `/dashboard/settings`.
 3. **Fase 3 — Revamp 4 Role Dashboards (`/dashboard`):**
