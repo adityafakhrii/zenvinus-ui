@@ -50,7 +50,7 @@ const HeaderOne = () => {
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline" aria-label="Zenvinus">
-              <Image src={Logo} alt="Zenvinus" priority className="h-7 w-auto object-contain" />
+              <Image src={Logo} alt="Zenvinus" priority className="h-5 w-auto object-contain" />
             </Link>
 
             <nav className="hidden lg:flex items-center" aria-label={t('Main menu')}>

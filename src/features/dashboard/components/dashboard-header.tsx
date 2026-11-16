@@ -112,7 +112,7 @@ const DashboardHeader = () => {
       side="left"
       title={
         <Link href="/" className="inline-flex items-center no-underline" onClick={() => setMobileOpen(false)}>
-          <Image src={Logo} alt="Zenvinus" className="h-7 w-auto" priority />
+          <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
         </Link>
       }
       subtitle={t('Workspace')}
@@ -204,7 +204,7 @@ const DashboardHeader = () => {
                     Z
                   </span>
                 ) : (
-                  <Image src={Logo} alt="Zenvinus" className="h-7 w-auto" priority />
+                  <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
                 )}
               </Link>
             </div>
@@ -359,7 +359,7 @@ const DashboardHeader = () => {
                   <Menu className="h-4 w-4" strokeWidth={1.5} />
                 </button>
                 <Link href="/" className="inline-flex items-center no-underline lg:hidden">
-                  <Image src={Logo} alt="Zenvinus" className="h-6 w-auto" priority />
+                  <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
                 </Link>
                 <button
                   type="button"
@@ -420,7 +420,7 @@ const DashboardHeader = () => {
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-4 2xl:gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline">
-              <Image src={Logo} alt="Zenvinus" className="h-7 w-auto" priority />
+              <Image src={Logo} alt="Zenvinus" className="h-5 w-auto object-contain" priority />
             </Link>
 
             <nav
