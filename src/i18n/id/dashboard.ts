@@ -581,6 +581,9 @@ const id: Dictionary = {
   'Feedback / rubric note': 'Catatan masukan / rubrik',
   'Optional notes on edge cases, rubric criteria, or revision hints...':
     'Catatan opsional tentang kasus khusus, kriteria rubrik, atau arahan revisi...',
+  'Role simulator (QA)': 'Simulasi role (QA)',
+  'Minimize role switcher': 'Ciutkan pengalih role',
+  'Show role switcher': 'Tampilkan pengalih role',
 };
 
 export default id;

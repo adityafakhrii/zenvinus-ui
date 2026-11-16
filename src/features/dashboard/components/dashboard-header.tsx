@@ -7,7 +7,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Menu,
-  PanelLeft,
   Plus,
   Search,
   Settings,
@@ -128,11 +127,6 @@ const DashboardHeader = () => {
       }
     >
       <div className="flex flex-col gap-5">
-        <div>
-          <p className="m-0 mb-2 text-xs font-medium text-ink-muted">{t('Workspace role')}</p>
-          <RoleSwitch as={role} variant="compact" />
-        </div>
-
         <nav className="flex flex-col gap-1" aria-label={t('Main menu')}>
           {navItems.map((item) => {
             const active = item === activeMatch;
@@ -214,12 +208,6 @@ const DashboardHeader = () => {
                 )}
               </Link>
             </div>
-
-            {!sidebarCollapsed && (
-              <div className="border-b border-line-subtle px-3 py-3">
-                <RoleSwitch as={role} variant="compact" />
-              </div>
-            )}
 
             <nav className="flex-1 overflow-y-auto px-3 py-3" aria-label={t('Main menu')}>
               <div className="flex flex-col gap-1">
@@ -420,6 +408,7 @@ const DashboardHeader = () => {
         </div>
         {mobileDrawer}
         <QuickSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+        <RoleSwitch as={role} />
       </>
     );
   }
@@ -523,26 +512,9 @@ const DashboardHeader = () => {
         </div>
       </header>
 
-      <div className="border-b border-[rgba(8,13,53,0.08)] bg-surface">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-3 overflow-x-auto">
-            <span className="hidden sm:inline text-xs font-medium text-ink-muted shrink-0">
-              {t('Workspace')}
-            </span>
-            <RoleSwitch as={role} variant="bar" />
-          </div>
-          <Link
-            href="/dashboard/settings"
-            className="hidden md:inline-flex shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-1 text-xs font-medium text-ink-secondary no-underline hover:bg-canvas hover:text-ink transition-colors"
-          >
-            <PanelLeft className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.5} />
-            <span>{t('Top Navbar')}</span>
-          </Link>
-        </div>
-      </div>
-
       {mobileDrawer}
       <QuickSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <RoleSwitch as={role} />
     </>
   );
 };
