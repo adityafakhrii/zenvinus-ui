@@ -28,6 +28,9 @@ const id: Dictionary = {
   'Start Your AI Project': 'Mulai Proyek AI Anda',
   'Data Engine': 'Data Engine',
   'AI Lab': 'AI Lab',
+  'Automated + QA': 'Otomatis + QA',
+  '4,821 Contributors': '4.821 Kontributor',
+  'Experiment & Eval': 'Eksperimen & Evaluasi',
   prev: 'sebelumnya',
   Next: 'Berikutnya',
 

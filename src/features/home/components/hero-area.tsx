@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react';
-import { Badge, Button, CustomProgressBar, SegmentedControl, cn } from '@/components/ui';
+import { Button, CustomProgressBar, SegmentedControl, cn } from '@/components/ui';
 import type { SegmentedOption } from '@/components/ui';
 import { useT } from '@/i18n';
 
@@ -17,7 +17,6 @@ type EngineKey = 'data' | 'community' | 'lab';
 interface EnginePreview {
   title: string;
   badge: string;
-  tone: 'mint' | 'blue' | 'purple';
   headline: string;
   metricLabel: string;
   metricValue: string;
@@ -30,7 +29,6 @@ const PREVIEW_DATA: Readonly<Record<EngineKey, EnginePreview>> = {
   data: {
     title: 'Data Engine',
     badge: 'Automated + QA',
-    tone: 'mint',
     headline: 'Turn raw data into AI-ready data.',
     metricLabel: 'Items QA-reviewed',
     metricValue: '184,210',
@@ -41,7 +39,6 @@ const PREVIEW_DATA: Readonly<Record<EngineKey, EnginePreview>> = {
   community: {
     title: 'Community',
     badge: '4,821 Contributors',
-    tone: 'blue',
     headline: 'Scale human intelligence when AI needs people.',
     metricLabel: 'QA Pass Rate',
     metricValue: '97.8%',
@@ -52,7 +49,6 @@ const PREVIEW_DATA: Readonly<Record<EngineKey, EnginePreview>> = {
   lab: {
     title: 'AI Lab',
     badge: 'Experiment & Eval',
-    tone: 'purple',
     headline: 'Research, experiment, evaluate, and improve AI.',
     metricLabel: 'Models benchmarked',
     metricValue: '24',
@@ -165,8 +161,11 @@ const HeroArea = () => {
               <div key={activeEngine} className="mt-5 flex flex-col gap-4 zv-animate-panel">
                 <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl bg-navy p-5 text-white">
                   <div className="min-w-0 flex-1">
-                    <Badge tone={preview.tone}>{preview.badge}</Badge>
-                    <h2 className="mt-2.5 mb-0 text-lg font-semibold leading-snug text-white">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-teal">
+                      <span className="h-1.5 w-1.5 rounded-full bg-teal" aria-hidden="true" />
+                      {t(preview.badge)}
+                    </span>
+                    <h2 className="mt-2 mb-0 text-lg font-semibold leading-snug text-white">
                       {t(preview.headline)}
                     </h2>
                   </div>
