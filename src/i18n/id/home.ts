@@ -292,6 +292,7 @@ const id: Dictionary = {
   Backup: 'Pencadangan',
   Services: 'Layanan',
   Experts: 'Pakar',
+  Annotated: 'Teranotasi',
   Machine: 'Machine',
   Learning: 'Learning',
   Programming: 'Pemrograman',

@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ArrowLeft, CheckCircle2, ChevronDown } from 'lucide-react';
-import pipeline_img from '@assets/img/engines/data-engine.png';
 import { Badge, Button, cn } from '@/components/ui';
+import { DataEnginePreviewScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 import SERVICE_FAQ from '../data/accordion';
 import SERVICES_CATALOG from '../data/our-service-data';
@@ -109,13 +108,7 @@ const ServiceDetailsArea = () => {
                 </Button>
               </div>
 
-              <div className="overflow-hidden rounded-xl border border-line-subtle bg-canvas p-4">
-                <Image
-                  src={pipeline_img}
-                  alt={t(activeService.title)}
-                  className="h-auto max-h-[320px] w-full rounded-lg object-contain"
-                />
-              </div>
+              <DataEnginePreviewScene />
 
               <h2 className="mt-6 mb-0 text-lg font-semibold text-ink">
                 {t('Key deliverables & quality guarantees')}

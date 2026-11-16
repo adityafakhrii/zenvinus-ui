@@ -1,14 +1,18 @@
 import React from 'react';
-import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 import { Badge, cn } from '@/components/ui';
+import {
+  AiLabEngineScene,
+  CommunityEngineScene,
+  DataEnginePreviewScene,
+} from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
-import type { Engine } from '../types/home';
+import type { Engine, EngineId } from '../types/home';
 
 const ENGINES_DATA: ReadonlyArray<Engine> = [
   {
+    id: 'data',
     num: '01',
-    img: '/assets/img/engines/data-engine.png',
     title: 'Data Engine',
     tagline: 'Turn raw data into AI-ready data.',
     description:
@@ -23,8 +27,8 @@ const ENGINES_DATA: ReadonlyArray<Engine> = [
     ],
   },
   {
+    id: 'community',
     num: '02',
-    img: '/assets/img/engines/community.png',
     title: 'Community',
     tagline: 'Scale human intelligence when AI needs people.',
     description:
@@ -39,8 +43,8 @@ const ENGINES_DATA: ReadonlyArray<Engine> = [
     ],
   },
   {
+    id: 'lab',
     num: '03',
-    img: '/assets/img/engines/ai-lab.png',
     title: 'AI Lab',
     tagline: 'Research, experiment, evaluate, and improve AI.',
     description:
@@ -56,8 +60,19 @@ const ENGINES_DATA: ReadonlyArray<Engine> = [
   },
 ];
 
+function EngineScene({ id }: { id: EngineId }) {
+  switch (id) {
+    case 'data':
+      return <DataEnginePreviewScene />;
+    case 'community':
+      return <CommunityEngineScene />;
+    case 'lab':
+      return <AiLabEngineScene />;
+  }
+}
+
 /**
- * Clean 3-Engine showcase cards pairing technical capabilities with framed product artwork.
+ * Clean 3-Engine showcase cards pairing technical capabilities with native Zenvinus product previews.
  */
 const EnginesArea = () => {
   const { t } = useT();
@@ -103,15 +118,7 @@ const EnginesArea = () => {
               </div>
 
               <div className={cn('lg:col-span-6', idx % 2 === 1 && 'lg:order-1')}>
-                <div className="overflow-hidden rounded-xl border border-[rgba(8,13,53,0.08)] bg-surface p-4">
-                  <Image
-                    src={item.img}
-                    alt={t(item.title)}
-                    width={675}
-                    height={590}
-                    className="h-auto w-full rounded-lg object-contain"
-                  />
-                </div>
+                <EngineScene id={item.id} />
               </div>
             </article>
           ))}

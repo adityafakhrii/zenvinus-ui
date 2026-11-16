@@ -8,11 +8,12 @@ export interface PipelineStep {
   description: string;
 }
 
+export type EngineId = 'data' | 'community' | 'lab';
+
 /** Data Engine, Community or AI Lab */
 export interface Engine {
+  id: EngineId;
   num: string;
-  /** Path under /public */
-  img: string;
   title: string;
   tagline: string;
   description: string;
