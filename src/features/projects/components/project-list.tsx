@@ -83,7 +83,7 @@ const ProjectList = () => {
   }, [allProjects, search, statusFilter]);
 
   return (
-    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+    <section className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -371,7 +371,7 @@ const PostedProjectDetail = ({ id }: { id: string }) => {
   ];
 
   return (
-    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+    <section className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <Link
           href="/dashboard/projects"
@@ -700,7 +700,7 @@ const ProjectDetail = ({ id }: { id: string }) => {
   ];
 
   return (
-    <section className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+    <section className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <Link
           href="/dashboard/projects"
@@ -789,7 +789,41 @@ const ProjectDetail = ({ id }: { id: string }) => {
               <h2 className="m-0 text-base font-semibold text-ink">{t('Batch Progress')}</h2>
               <p className="mt-0.5 mb-0 text-xs text-ink-muted">{t('Delivery status per dataset batch')}</p>
             </div>
-            <div className="overflow-x-auto rounded-xl border border-line-subtle">
+            {/* Mobile card list (< md) */}
+            <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+              {batches.map((b) => (
+                <div key={b.id} className="flex flex-col gap-2.5 p-4">
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-ink">{b.label}</div>
+                      <div className="font-mono text-xs text-ink-muted">{b.id}</div>
+                    </div>
+                    <Badge tone={badgeToneOf(b.statusTone)} dot className="shrink-0">
+                      {t(b.status)}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CustomProgressBar value={b.delivered} height="sm" className="flex-1" />
+                    <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                      {b.delivered}%
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 font-mono text-xs text-ink-secondary tabular-nums">
+                    <span>
+                      {b.items.toLocaleString(locale)} {t('items')}
+                    </span>
+                    <span>
+                      {t('Due')}: {b.due}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table (>= md) */}
+            <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
               <table className="w-full min-w-[600px] border-collapse text-left text-sm">
                 <thead>
                   <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">

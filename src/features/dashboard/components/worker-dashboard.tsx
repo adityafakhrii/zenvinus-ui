@@ -497,67 +497,118 @@ const ContributorArea = () => {
             }
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line-subtle">
-            <table className="w-full min-w-[680px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
-                  <th className="px-4 py-3 font-medium">{t('Task')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Progress')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Reward')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Status')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle bg-surface">
-                {filteredTasks.map((task) => (
-                  <tr key={task.name} className="transition-colors hover:bg-canvas/60">
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-                            iconTileToneClass(task.tone),
-                          )}
-                        >
-                          <DashboardLucideIcon icon={task.icon} className="h-4 w-4" strokeWidth={1.6} />
-                        </span>
-                        <div className="min-w-0">
-                          <div className="truncate font-medium text-ink">{task.name}</div>
-                          <div className="text-xs text-ink-muted">{t(task.typeLabel)}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="w-48 px-4 py-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <CustomProgressBar value={task.progress} height="sm" className="flex-1" />
-                        <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
-                          {task.progress}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
-                      {money(task.reward, locale)}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={toBadgeTone(task.statusTone)} dot>
-                        {t(task.status)}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3.5 text-right">
-                      <Button
-                        href={`/task-studio?task=${task.slug}`}
-                        variant="secondary"
-                        size="sm"
-                        rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+          <>
+            {/* Mobile card list (< md) */}
+            <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+              {filteredTasks.map((task) => (
+                <div key={task.name} className="flex flex-col gap-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={cn(
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                          iconTileToneClass(task.tone),
+                        )}
                       >
-                        {t('Open Studio')}
-                      </Button>
-                    </td>
+                        <DashboardLucideIcon icon={task.icon} className="h-4 w-4" strokeWidth={1.6} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-medium text-ink">{task.name}</div>
+                        <div className="text-xs text-ink-muted">{t(task.typeLabel)}</div>
+                      </div>
+                    </div>
+                    <Badge tone={toBadgeTone(task.statusTone)} dot className="shrink-0">
+                      {t(task.status)}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <CustomProgressBar value={task.progress} height="sm" className="flex-1" />
+                    <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                      {task.progress}%
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-mono text-xs font-semibold text-ink tabular-nums">
+                      {money(task.reward, locale)}
+                    </span>
+                    <Button
+                      href={`/task-studio?task=${task.slug}`}
+                      variant="secondary"
+                      size="sm"
+                      rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                    >
+                      {t('Open Studio')}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table (>= md) */}
+            <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
+              <table className="w-full min-w-[680px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                    <th className="px-4 py-3 font-medium">{t('Task')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Progress')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Reward')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Status')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line-subtle bg-surface">
+                  {filteredTasks.map((task) => (
+                    <tr key={task.name} className="transition-colors hover:bg-canvas/60">
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                              iconTileToneClass(task.tone),
+                            )}
+                          >
+                            <DashboardLucideIcon icon={task.icon} className="h-4 w-4" strokeWidth={1.6} />
+                          </span>
+                          <div className="min-w-0">
+                            <div className="truncate font-medium text-ink">{task.name}</div>
+                            <div className="text-xs text-ink-muted">{t(task.typeLabel)}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="w-48 px-4 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <CustomProgressBar value={task.progress} height="sm" className="flex-1" />
+                          <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                            {task.progress}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
+                        {money(task.reward, locale)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Badge tone={toBadgeTone(task.statusTone)} dot>
+                          {t(task.status)}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
+                        <Button
+                          href={`/task-studio?task=${task.slug}`}
+                          variant="secondary"
+                          size="sm"
+                          rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                        >
+                          {t('Open Studio')}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </BentoCard>
     </DashboardCanvas>

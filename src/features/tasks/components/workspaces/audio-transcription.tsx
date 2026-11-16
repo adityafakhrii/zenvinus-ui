@@ -45,7 +45,7 @@ const AudioTranscription = ({ item, answer, onChange }: WorkspaceProps<'audio_tr
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-      <div className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-6 lg:col-span-6">
+      <div className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-4 sm:p-6 lg:col-span-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="rounded-md border border-[rgba(8,13,53,0.08)] bg-canvas px-2 py-0.5 font-mono text-[11px] font-medium text-ink-secondary">
             {item.id} · {item.duration}
@@ -59,7 +59,7 @@ const AudioTranscription = ({ item, answer, onChange }: WorkspaceProps<'audio_tr
           </div>
         </div>
 
-        <div className="my-8 flex h-20 items-end justify-between gap-1 rounded-xl border border-line-subtle bg-canvas px-4 py-3">
+        <div className="my-6 flex h-20 items-end justify-between gap-0.5 rounded-xl border border-line-subtle bg-canvas px-3 py-3 sm:my-8 sm:gap-1 sm:px-4">
           {bars.map((h, i) => {
             const active = i / bars.length <= elapsed / total;
             return (

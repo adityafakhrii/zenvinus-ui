@@ -263,7 +263,7 @@ const TicketPage = () => {
     <>
       <DashboardHeader />
       <main>
-        <section className="min-h-[calc(100vh-140px)] bg-canvas py-8 sm:py-10">
+        <section className="min-h-[calc(100vh-140px)] bg-canvas pt-8 pb-24 sm:py-10">
           <div className="mx-auto max-w-[1280px] space-y-5 px-4 sm:px-6">
             <Link
               href={supportHref(as)}

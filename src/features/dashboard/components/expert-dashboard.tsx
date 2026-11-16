@@ -436,141 +436,267 @@ const ExpertArea = () => {
             }
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line-subtle">
-            <table className="w-full min-w-[780px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
-                  <th className="px-4 py-3 font-medium">{t('Submission')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Contributor')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Items')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Review Status')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle bg-surface">
-                {filteredQueue.map((row) => {
-                  const actionable = !DONE_STATUSES.includes(row.status) && !row.own;
-                  const statusTone = STATUS_TONE[row.status] ?? row.tone ?? 'blue';
-                  const hasDetails = Boolean(row.ledger || row.decision || (row.history?.length ?? 0) > 0);
-                  const isOpen = expanded === row.id;
+          <>
+            {/* Mobile card list (< md) */}
+            <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+              {filteredQueue.map((row) => {
+                const actionable = !DONE_STATUSES.includes(row.status) && !row.own;
+                const statusTone = STATUS_TONE[row.status] ?? row.tone ?? 'blue';
+                const hasDetails = Boolean(row.ledger || row.decision || (row.history?.length ?? 0) > 0);
+                const isOpen = expanded === row.id;
 
-                  return (
-                    <React.Fragment key={row.id}>
-                      <tr className={cn('transition-colors hover:bg-canvas/60', isOpen && 'bg-tint-mint/50')}>
-                        <td className="px-4 py-3.5">
-                          <div className="font-medium text-ink">{row.task}</div>
-                          <div className="mt-0.5 text-xs text-ink-muted">
-                            <span className="font-mono">{row.id}</span> · {t(row.taskType)} · {t(row.note)}
+                return (
+                  <div
+                    key={row.id}
+                    className={cn('flex flex-col gap-3 p-4 transition-colors', isOpen && 'bg-tint-mint/50')}
+                  >
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-ink">{row.task}</div>
+                        <div className="mt-0.5 text-xs text-ink-muted">
+                          <span className="font-mono">{row.id}</span> · {t(row.taskType)} · {t(row.note)}
+                        </div>
+                      </div>
+                      <Badge tone={toBadgeTone(statusTone)} dot className="shrink-0">
+                        {t(row.status)}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-secondary">
+                      <span>{row.contributor}</span>
+                      <span className="font-mono font-semibold text-ink tabular-nums">
+                        {row.items} {t('items')}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {row.own ? (
+                        <span
+                          className="inline-flex items-center gap-1.5 rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-ink-muted"
+                          title={t('Acceptance rule: you cannot review your own submission')}
+                        >
+                          <Lock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                          {t('Own submission')}
+                        </span>
+                      ) : actionable ? (
+                        <>
+                          <Button
+                            href={`/task-studio?task=${row.slug}&review=${row.id}`}
+                            variant="secondary"
+                            size="sm"
+                          >
+                            {t('Review in Studio')}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="primary"
+                            size="sm"
+                            onClick={() => openDecisionModal(row)}
+                          >
+                            {t('Decide')}
+                          </Button>
+                        </>
+                      ) : (
+                        <span className="text-xs text-ink-muted">
+                          {t('Reviewed {date}', { date: row.reviewedAt || '' })}
+                        </span>
+                      )}
+
+                      {hasDetails && (
+                        <button
+                          type="button"
+                          onClick={() => setExpanded(isOpen ? null : row.id)}
+                          className="ml-auto inline-flex items-center gap-1 rounded-lg border border-line-subtle bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-canvas hover:text-ink cursor-pointer"
+                        >
+                          <span>{isOpen ? t('Hide details') : t('Details')}</span>
+                          <ChevronDown
+                            className={cn(
+                              'h-3.5 w-3.5 transition-transform duration-150',
+                              isOpen && 'rotate-180',
+                            )}
+                            strokeWidth={1.6}
+                          />
+                        </button>
+                      )}
+                    </div>
+
+                    {isOpen && (
+                      <div className="flex flex-col gap-2 rounded-xl border border-line-subtle bg-canvas/80 p-3 text-xs text-ink-secondary">
+                        {row.ledger && (
+                          <div className="flex items-start gap-2">
+                            <Wallet className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
+                            <span>
+                              <strong className="text-ink">{t('Ledger:')}</strong>{' '}
+                              {t(row.ledger.status)} (${(row.ledger.amount / 100).toFixed(2)}) — {t(row.ledger.note)}
+                            </span>
                           </div>
-                        </td>
-                        <td className="px-4 py-3.5 text-ink-secondary">{row.contributor}</td>
-                        <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
-                          {row.items}
-                        </td>
-                        <td className="px-4 py-3.5">
-                          <Badge tone={toBadgeTone(statusTone)} dot>
-                            {t(row.status)}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3.5 text-right">
-                          <div className="inline-flex flex-wrap items-center justify-end gap-2">
-                            {row.own ? (
-                              <span
-                                className="inline-flex items-center gap-1.5 rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-ink-muted"
-                                title={t('Acceptance rule: you cannot review your own submission')}
-                              >
-                                <Lock className="h-3.5 w-3.5" strokeWidth={1.5} />
-                                {t('Own submission')}
-                              </span>
-                            ) : actionable ? (
-                              <>
-                                <Button
-                                  href={`/task-studio?task=${row.slug}&review=${row.id}`}
-                                  variant="secondary"
-                                  size="sm"
+                        )}
+                        {row.decision && (
+                          <div className="flex items-start gap-2">
+                            <UserCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
+                            <span>
+                              <strong className="text-ink">{t('Last decision:')}</strong>{' '}
+                              {t('{action} by {name}', {
+                                action: t(row.decision.action),
+                                name: row.decision.reviewerName,
+                              })}{' '}
+                              · {row.decision.rubric} · {row.decision.at}
+                            </span>
+                          </div>
+                        )}
+                        {(row.history?.length ?? 0) > 0 && (
+                          <div className="flex items-start gap-2">
+                            <History className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-muted" strokeWidth={1.6} />
+                            <span>
+                              <strong className="text-ink">{t('Decision history:')}</strong>{' '}
+                              {(row.history ?? []).map((h) => `${t(h.action)} (${h.at})`).join(' → ')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop table (>= md) */}
+            <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
+              <table className="w-full min-w-[780px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                    <th className="px-4 py-3 font-medium">{t('Submission')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Contributor')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Items')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Review Status')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-subtle bg-surface">
+                  {filteredQueue.map((row) => {
+                    const actionable = !DONE_STATUSES.includes(row.status) && !row.own;
+                    const statusTone = STATUS_TONE[row.status] ?? row.tone ?? 'blue';
+                    const hasDetails = Boolean(row.ledger || row.decision || (row.history?.length ?? 0) > 0);
+                    const isOpen = expanded === row.id;
+
+                    return (
+                      <React.Fragment key={row.id}>
+                        <tr className={cn('transition-colors hover:bg-canvas/60', isOpen && 'bg-tint-mint/50')}>
+                          <td className="px-4 py-3.5">
+                            <div className="font-medium text-ink">{row.task}</div>
+                            <div className="mt-0.5 text-xs text-ink-muted">
+                              <span className="font-mono">{row.id}</span> · {t(row.taskType)} · {t(row.note)}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3.5 text-ink-secondary">{row.contributor}</td>
+                          <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
+                            {row.items}
+                          </td>
+                          <td className="px-4 py-3.5">
+                            <Badge tone={toBadgeTone(statusTone)} dot>
+                              {t(row.status)}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3.5 text-right">
+                            <div className="inline-flex flex-wrap items-center justify-end gap-2">
+                              {row.own ? (
+                                <span
+                                  className="inline-flex items-center gap-1.5 rounded-md bg-canvas px-2.5 py-1 text-xs font-medium text-ink-muted"
+                                  title={t('Acceptance rule: you cannot review your own submission')}
                                 >
-                                  {t('Review in Studio')}
-                                </Button>
-                                <Button
+                                  <Lock className="h-3.5 w-3.5" strokeWidth={1.5} />
+                                  {t('Own submission')}
+                                </span>
+                              ) : actionable ? (
+                                <>
+                                  <Button
+                                    href={`/task-studio?task=${row.slug}&review=${row.id}`}
+                                    variant="secondary"
+                                    size="sm"
+                                  >
+                                    {t('Review in Studio')}
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={() => openDecisionModal(row)}
+                                  >
+                                    {t('Decide')}
+                                  </Button>
+                                </>
+                              ) : (
+                                <span className="text-xs text-ink-muted">
+                                  {t('Reviewed {date}', { date: row.reviewedAt || '' })}
+                                </span>
+                              )}
+
+                              {hasDetails && (
+                                <button
                                   type="button"
-                                  variant="primary"
-                                  size="sm"
-                                  onClick={() => openDecisionModal(row)}
+                                  onClick={() => setExpanded(isOpen ? null : row.id)}
+                                  className="inline-flex items-center gap-1 rounded-lg border border-line-subtle bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-canvas hover:text-ink cursor-pointer"
                                 >
-                                  {t('Decide')}
-                                </Button>
-                              </>
-                            ) : (
-                              <span className="text-xs text-ink-muted">
-                                {t('Reviewed {date}', { date: row.reviewedAt || '' })}
-                              </span>
-                            )}
-
-                            {hasDetails && (
-                              <button
-                                type="button"
-                                onClick={() => setExpanded(isOpen ? null : row.id)}
-                                className="inline-flex items-center gap-1 rounded-lg border border-line-subtle bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-canvas hover:text-ink cursor-pointer"
-                              >
-                                <span>{isOpen ? t('Hide details') : t('Details')}</span>
-                                <ChevronDown
-                                  className={cn(
-                                    'h-3.5 w-3.5 transition-transform duration-150',
-                                    isOpen && 'rotate-180',
-                                  )}
-                                  strokeWidth={1.6}
-                                />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-
-                      {isOpen && (
-                        <tr className="bg-canvas/70">
-                          <td colSpan={5} className="px-4 py-3">
-                            <div className="flex flex-col gap-2 text-xs text-ink-secondary">
-                              {row.ledger && (
-                                <div className="flex items-start gap-2">
-                                  <Wallet className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
-                                  <span>
-                                    <strong className="text-ink">{t('Ledger:')}</strong>{' '}
-                                    {t(row.ledger.status)} (${(row.ledger.amount / 100).toFixed(2)}) — {t(row.ledger.note)}
-                                  </span>
-                                </div>
-                              )}
-                              {row.decision && (
-                                <div className="flex items-start gap-2">
-                                  <UserCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
-                                  <span>
-                                    <strong className="text-ink">{t('Last decision:')}</strong>{' '}
-                                    {t('{action} by {name}', {
-                                      action: t(row.decision.action),
-                                      name: row.decision.reviewerName,
-                                    })}{' '}
-                                    · {row.decision.rubric} · {row.decision.at}
-                                  </span>
-                                </div>
-                              )}
-                              {(row.history?.length ?? 0) > 0 && (
-                                <div className="flex items-start gap-2">
-                                  <History className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-muted" strokeWidth={1.6} />
-                                  <span>
-                                    <strong className="text-ink">{t('Decision history:')}</strong>{' '}
-                                    {(row.history ?? []).map((h) => `${t(h.action)} (${h.at})`).join(' → ')}
-                                  </span>
-                                </div>
+                                  <span>{isOpen ? t('Hide details') : t('Details')}</span>
+                                  <ChevronDown
+                                    className={cn(
+                                      'h-3.5 w-3.5 transition-transform duration-150',
+                                      isOpen && 'rotate-180',
+                                    )}
+                                    strokeWidth={1.6}
+                                  />
+                                </button>
                               )}
                             </div>
                           </td>
                         </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+
+                        {isOpen && (
+                          <tr className="bg-canvas/70">
+                            <td colSpan={5} className="px-4 py-3">
+                              <div className="flex flex-col gap-2 text-xs text-ink-secondary">
+                                {row.ledger && (
+                                  <div className="flex items-start gap-2">
+                                    <Wallet className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
+                                    <span>
+                                      <strong className="text-ink">{t('Ledger:')}</strong>{' '}
+                                      {t(row.ledger.status)} (${(row.ledger.amount / 100).toFixed(2)}) — {t(row.ledger.note)}
+                                    </span>
+                                  </div>
+                                )}
+                                {row.decision && (
+                                  <div className="flex items-start gap-2">
+                                    <UserCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-ink" strokeWidth={1.6} />
+                                    <span>
+                                      <strong className="text-ink">{t('Last decision:')}</strong>{' '}
+                                      {t('{action} by {name}', {
+                                        action: t(row.decision.action),
+                                        name: row.decision.reviewerName,
+                                      })}{' '}
+                                      · {row.decision.rubric} · {row.decision.at}
+                                    </span>
+                                  </div>
+                                )}
+                                {(row.history?.length ?? 0) > 0 && (
+                                  <div className="flex items-start gap-2">
+                                    <History className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-muted" strokeWidth={1.6} />
+                                    <span>
+                                      <strong className="text-ink">{t('Decision history:')}</strong>{' '}
+                                      {(row.history ?? []).map((h) => `${t(h.action)} (${h.at})`).join(' → ')}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </BentoCard>
 

@@ -234,7 +234,7 @@ const TaskStudio = () => {
       />
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 sm:p-6">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3 sm:p-6">
           {!workspace && (
             <div className="flex flex-1 items-center justify-center">
               <EmptyState

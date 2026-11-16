@@ -87,7 +87,7 @@ const HeroArea = () => {
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
           {/* Left Copy Column */}
           <div className="lg:col-span-6">
-            <h1 className="m-0 text-[36px] font-medium leading-[1.06] tracking-[-0.03em] text-ink sm:text-[48px] xl:text-[56px] zv-animate-enter">
+            <h1 className="m-0 text-[32px] font-medium leading-[1.06] tracking-[-0.03em] text-ink sm:text-[48px] xl:text-[56px] zv-animate-enter">
               {t('Build Better AI')}
               <span className="mt-1 block text-teal-ink">{t('With Better Data')}</span>
             </h1>
@@ -117,7 +117,7 @@ const HeroArea = () => {
               </Button>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-line-subtle pt-6 zv-animate-enter zv-delay-3">
+            <div className="mt-10 grid grid-cols-3 gap-2.5 sm:gap-4 border-t border-line-subtle pt-6 zv-animate-enter zv-delay-3">
               <div>
                 <div className="text-xl font-semibold text-ink tabular-nums sm:text-2xl">97.8%</div>
                 <div className="mt-0.5 text-xs text-ink-muted">{t('QA Pass Rate')}</div>

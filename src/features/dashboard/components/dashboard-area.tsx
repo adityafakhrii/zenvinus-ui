@@ -430,18 +430,18 @@ const DashboardArea = () => {
           }
         >
           {/* Compact Stage Pill Strip */}
-          <div className="mb-4 grid grid-cols-3 gap-2">
-            <div className="rounded-xl bg-canvas px-3 py-2">
+          <div className="mb-4 grid grid-cols-3 gap-1.5 sm:gap-2">
+            <div className="min-w-0 rounded-xl bg-canvas px-2.5 py-2 sm:px-3">
               <div className="text-base font-semibold text-ink tabular-nums">{counts.inProgress}</div>
-              <div className="text-[11px] text-ink-muted">{t('In Progress')}</div>
+              <div className="truncate text-[11px] text-ink-muted">{t('In Progress')}</div>
             </div>
-            <div className="rounded-xl bg-canvas px-3 py-2">
+            <div className="min-w-0 rounded-xl bg-canvas px-2.5 py-2 sm:px-3">
               <div className="text-base font-semibold text-ink tabular-nums">{counts.review}</div>
-              <div className="text-[11px] text-ink-muted">{t('In Review')}</div>
+              <div className="truncate text-[11px] text-ink-muted">{t('In Review')}</div>
             </div>
-            <div className="rounded-xl bg-canvas px-3 py-2">
+            <div className="min-w-0 rounded-xl bg-canvas px-2.5 py-2 sm:px-3">
               <div className="text-base font-semibold text-ink tabular-nums">{counts.completed}</div>
-              <div className="text-[11px] text-ink-muted">{t('Completed')}</div>
+              <div className="truncate text-[11px] text-ink-muted">{t('Completed')}</div>
             </div>
           </div>
 
@@ -513,69 +513,121 @@ const DashboardArea = () => {
             }
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line-subtle">
-            <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
-                  <th className="px-4 py-3 font-medium">{t('Project')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Type')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Items')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Progress')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Spend')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Status')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle bg-surface">
-                {filteredProjects.map((project) => (
-                  <tr key={project.id} className="transition-colors hover:bg-canvas/60">
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-                            iconTileToneClass(project.tone),
-                          )}
+          <>
+            {/* Mobile card list (< md) */}
+            <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+              {filteredProjects.map((project) => (
+                <div key={project.id} className="flex flex-col gap-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={cn(
+                          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                          iconTileToneClass(project.tone),
+                        )}
+                      >
+                        <DashboardLucideIcon icon={project.icon} className="h-4 w-4" strokeWidth={1.6} />
+                      </span>
+                      <div className="min-w-0">
+                        <Link
+                          href={`/dashboard/projects?id=${project.id}`}
+                          className="block truncate text-sm font-medium text-ink no-underline hover:text-teal-ink"
                         >
-                          <DashboardLucideIcon icon={project.icon} className="h-4 w-4" strokeWidth={1.6} />
-                        </span>
-                        <div className="min-w-0">
-                          <Link
-                            href={`/dashboard/projects?id=${project.id}`}
-                            className="block truncate font-medium text-ink no-underline hover:text-teal-ink"
-                          >
-                            {project.name}
-                          </Link>
-                          <span className="font-mono text-xs text-ink-muted tabular-nums">{project.id}</span>
-                        </div>
+                          {project.name}
+                        </Link>
+                        <span className="font-mono text-xs text-ink-muted tabular-nums">{project.id}</span>
                       </div>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={toBadgeTone(project.tone)}>{t(project.typeLabel)}</Badge>
-                    </td>
-                    <td className="px-4 py-3.5 text-right font-mono text-xs font-medium text-ink tabular-nums">
-                      {project.items.toLocaleString(locale)}
-                    </td>
-                    <td className="w-44 px-4 py-3.5">
-                      <div className="flex items-center gap-2.5">
-                        <CustomProgressBar value={project.delivered} height="sm" className="flex-1" />
-                        <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
-                          {project.delivered}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
-                      {money(project.spend, locale)}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={toBadgeTone(project.statusTone)} dot>
-                        {t(project.status)}
-                      </Badge>
-                    </td>
+                    </div>
+                    <Badge tone={toBadgeTone(project.statusTone)} dot className="shrink-0">
+                      {t(project.status)}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-2.5">
+                    <CustomProgressBar value={project.delivered} height="sm" className="flex-1" />
+                    <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                      {project.delivered}%
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <Badge tone={toBadgeTone(project.tone)}>{t(project.typeLabel)}</Badge>
+                    <div className="flex items-center gap-3 font-mono tabular-nums">
+                      <span className="text-ink-muted">
+                        {project.items.toLocaleString(locale)} {t('items')}
+                      </span>
+                      <span className="font-semibold text-ink">{money(project.spend, locale)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table (>= md) */}
+            <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
+              <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                    <th className="px-4 py-3 font-medium">{t('Project')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Type')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Items')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Progress')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Spend')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Status')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line-subtle bg-surface">
+                  {filteredProjects.map((project) => (
+                    <tr key={project.id} className="transition-colors hover:bg-canvas/60">
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                              iconTileToneClass(project.tone),
+                            )}
+                          >
+                            <DashboardLucideIcon icon={project.icon} className="h-4 w-4" strokeWidth={1.6} />
+                          </span>
+                          <div className="min-w-0">
+                            <Link
+                              href={`/dashboard/projects?id=${project.id}`}
+                              className="block truncate font-medium text-ink no-underline hover:text-teal-ink"
+                            >
+                              {project.name}
+                            </Link>
+                            <span className="font-mono text-xs text-ink-muted tabular-nums">{project.id}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Badge tone={toBadgeTone(project.tone)}>{t(project.typeLabel)}</Badge>
+                      </td>
+                      <td className="px-4 py-3.5 text-right font-mono text-xs font-medium text-ink tabular-nums">
+                        {project.items.toLocaleString(locale)}
+                      </td>
+                      <td className="w-44 px-4 py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <CustomProgressBar value={project.delivered} height="sm" className="flex-1" />
+                          <span className="w-9 text-right font-mono text-xs text-ink-secondary tabular-nums">
+                            {project.delivered}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
+                        {money(project.spend, locale)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Badge tone={toBadgeTone(project.statusTone)} dot>
+                          {t(project.status)}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </BentoCard>
     </DashboardCanvas>

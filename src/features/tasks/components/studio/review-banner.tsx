@@ -27,13 +27,13 @@ export interface ReviewBannerProps {
 const ReviewBanner = ({ review, reviewerName, rubric }: ReviewBannerProps) => {
   const { t } = useT();
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[rgba(8,13,53,0.08)] border-l-4 border-l-navy bg-surface-soft px-4 py-2 text-xs text-ink-secondary sm:px-5">
-      <div className="flex flex-wrap items-center gap-2.5 min-w-0">
+    <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[rgba(8,13,53,0.08)] border-l-4 border-l-navy bg-surface-soft px-3 py-2 text-xs text-ink-secondary sm:gap-3 sm:px-5">
+      <div className="flex flex-wrap items-center gap-2 min-w-0 sm:gap-2.5">
         <Badge tone="blue" className="gap-1.5 font-semibold">
           <ShieldCheck className="h-3.5 w-3.5 text-teal-ink" strokeWidth={1.75} />
           {t('Review Mode')}
         </Badge>
-        <span className="max-w-[260px] truncate font-semibold text-ink" title={review.task}>
+        <span className="max-w-full truncate font-semibold text-ink sm:max-w-[260px]" title={review.task}>
           {review.task}
         </span>
         <span className="text-ink-muted">
@@ -48,7 +48,7 @@ const ReviewBanner = ({ review, reviewerName, rubric }: ReviewBannerProps) => {
         </Badge>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 shrink-0">
+      <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-start shrink-0">
         <span
           className="inline-flex items-center gap-1.5 text-ink-muted"
           title={t('Decisions are recorded under your name')}

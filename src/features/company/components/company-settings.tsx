@@ -319,7 +319,7 @@ export default function CompanySettings() {
     <>
       <DashboardHeader />
 
-      <main className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <main className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="flex flex-col gap-4 border-b border-line-subtle pb-6 sm:flex-row sm:items-end sm:justify-between">

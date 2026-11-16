@@ -469,50 +469,88 @@ const InternalArea = () => {
             }
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-line-subtle">
-            <table className="w-full min-w-[700px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
-                  <th className="px-4 py-3 font-medium">{t('Request / Project')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Company')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Budget')}</th>
-                  <th className="px-4 py-3 font-medium">{t('Status')}</th>
-                  <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle bg-surface">
-                {filteredQueue.map((row) => (
-                  <tr key={row.id} className="transition-colors hover:bg-canvas/60">
-                    <td className="px-4 py-3.5">
-                      <div className="font-medium text-ink">{row.name}</div>
+          <>
+            {/* Mobile card list (< md) */}
+            <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+              {filteredQueue.map((row) => (
+                <div key={row.id} className="flex flex-col gap-3 p-4">
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-ink">{row.name}</div>
                       <div className="mt-0.5 font-mono text-xs text-ink-muted">
                         {row.id} · {t(row.type)}
                       </div>
-                    </td>
-                    <td className="px-4 py-3.5 text-ink-secondary">{t(row.company)}</td>
-                    <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
-                      {t(row.budget)}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <Badge tone={toBadgeTone(row.statusTone)} dot>
-                        {t(row.status)}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3.5 text-right">
-                      <Button
-                        href={`/lab?id=${row.id}`}
-                        variant={row.action ? 'primary' : 'secondary'}
-                        size="sm"
-                        rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
-                      >
-                        {row.action ? t('Review') : t('Open')}
-                      </Button>
-                    </td>
+                    </div>
+                    <Badge tone={toBadgeTone(row.statusTone)} dot className="shrink-0">
+                      {t(row.status)}
+                    </Badge>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span className="text-ink-secondary">{t(row.company)}</span>
+                    <span className="font-mono font-semibold text-ink tabular-nums">{t(row.budget)}</span>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      href={`/lab?id=${row.id}`}
+                      variant={row.action ? 'primary' : 'secondary'}
+                      size="sm"
+                      rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                    >
+                      {row.action ? t('Review') : t('Open')}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table (>= md) */}
+            <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
+              <table className="w-full min-w-[700px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">
+                    <th className="px-4 py-3 font-medium">{t('Request / Project')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Company')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Budget')}</th>
+                    <th className="px-4 py-3 font-medium">{t('Status')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('Actions')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line-subtle bg-surface">
+                  {filteredQueue.map((row) => (
+                    <tr key={row.id} className="transition-colors hover:bg-canvas/60">
+                      <td className="px-4 py-3.5">
+                        <div className="font-medium text-ink">{row.name}</div>
+                        <div className="mt-0.5 font-mono text-xs text-ink-muted">
+                          {row.id} · {t(row.type)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 text-ink-secondary">{t(row.company)}</td>
+                      <td className="px-4 py-3.5 text-right font-mono text-xs font-semibold text-ink tabular-nums">
+                        {t(row.budget)}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <Badge tone={toBadgeTone(row.statusTone)} dot>
+                          {t(row.status)}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
+                        <Button
+                          href={`/lab?id=${row.id}`}
+                          variant={row.action ? 'primary' : 'secondary'}
+                          size="sm"
+                          rightIcon={<ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                        >
+                          {row.action ? t('Review') : t('Open')}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </BentoCard>
     </DashboardCanvas>

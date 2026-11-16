@@ -192,7 +192,7 @@ const PaymentGateway = () => {
     <>
       <DashboardHeader />
 
-      <main className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <main className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <Link
             href={`/dashboard/projects?id=${id}`}

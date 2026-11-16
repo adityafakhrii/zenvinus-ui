@@ -557,9 +557,9 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
     tool === 'box' || tool === 'poly' ? 'cursor-crosshair' : tool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-default';
 
   return (
-    <div className="flex min-h-[540px] flex-1 flex-col gap-3 lg:flex-row">
+    <div className="flex flex-1 flex-col gap-3 lg:min-h-[540px] lg:flex-row">
       {/* Left tool rail */}
-      <div className="flex flex-row gap-1.5 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-2 lg:flex-col">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-1.5 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white p-2 sm:justify-start lg:flex-col">
         {TOOLS.map(({ id, Icon, key, title }) => {
           const on = tool === id;
           return (
@@ -570,7 +570,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
               aria-label={t(title)}
               aria-pressed={on}
               onClick={() => setTool(id)}
-              className={`flex h-11 w-11 flex-col items-center justify-center rounded-xl border text-[10px] font-semibold transition-colors ${
+              className={`flex h-10 flex-1 min-w-[52px] flex-col items-center justify-center rounded-xl border text-[10px] font-semibold transition-colors sm:h-11 sm:w-11 sm:flex-none lg:w-11 ${
                 on
                   ? 'border-navy bg-navy text-white'
                   : 'border-transparent bg-transparent text-ink-secondary hover:border-[rgba(8,13,53,0.08)] hover:bg-canvas hover:text-ink'
@@ -644,7 +644,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
           </div>
         </div>
 
-        <div ref={viewportRef} className={`relative min-h-[420px] flex-1 overflow-hidden bg-[#0B1220] ${cursorClass}`}>
+        <div ref={viewportRef} className={`relative min-h-[280px] sm:min-h-[380px] lg:min-h-[460px] flex-1 overflow-hidden bg-[#0B1220] touch-none ${cursorClass}`}>
           <div
             ref={stageRef}
             className="absolute select-none"
@@ -795,7 +795,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
             <Tag className="h-3.5 w-3.5 text-navy" strokeWidth={1.75} />
             {t('Classes')}
           </h5>
-          <div className="space-y-1.5">
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-1">
             {classes.map((cls, i) => {
               const count = shapes.filter((s) => classOf(s.kind, s.id) === cls).length;
               const on = activeClass === cls;
@@ -844,7 +844,7 @@ const ObjectAnnotation = ({ item, answer, onChange }: WorkspaceProps<'object_ann
               {t('No annotations yet — pick Box (B) or Polygon (P), then click or drag on the image.')}
             </p>
           ) : (
-            <div className="space-y-1.5">
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
               {shapes.map(({ kind, id }) => {
                 const cls = classOf(kind, id);
                 const isSel = selected?.kind === kind && selected.id === id;

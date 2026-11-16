@@ -94,7 +94,7 @@ const CompanyTeam = () => {
     <>
       <DashboardHeader />
 
-      <main className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <main className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -171,7 +171,55 @@ const CompanyTeam = () => {
                 </Badge>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-line-subtle">
+              {/* Mobile card list (< md) */}
+              <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+                {initialMembers.map((member) => {
+                  const currentRole = memberRoles[member.email] ?? member.role;
+                  return (
+                    <div key={member.email} className="flex flex-col gap-3 p-4">
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <span
+                            className={cn(
+                              'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
+                              AVATAR_TONE[member.tone] ?? 'bg-canvas text-ink',
+                            )}
+                          >
+                            {member.initials}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-medium text-ink">{member.name}</div>
+                            <div className="truncate text-xs text-ink-muted">{member.email}</div>
+                          </div>
+                        </div>
+                        <Badge tone={TONE_BADGE[member.statusTone] ?? 'neutral'} dot className="shrink-0">
+                          {t(member.status)}
+                        </Badge>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <CustomSelect
+                          value={currentRole}
+                          onChange={(next) => {
+                            setMemberRoles((prev) => ({ ...prev, [member.email]: next }));
+                            pushToast(member.name, t(next));
+                          }}
+                          options={roleOptions}
+                          size="sm"
+                          ariaLabel={t('Manage {name}', { name: member.name })}
+                          containerClassName="flex-1 min-w-[140px]"
+                        />
+                        <span className="shrink-0 font-mono text-xs font-semibold text-ink tabular-nums">
+                          {member.projects} {t('Projects')}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Desktop table (>= md) */}
+              <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
                 <table className="w-full min-w-[640px] border-collapse text-left text-sm">
                   <thead>
                     <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">

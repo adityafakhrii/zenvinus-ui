@@ -77,8 +77,8 @@ const StudioTopbar = ({
   );
 
   return (
-    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[rgba(8,13,53,0.08)] bg-white px-4 py-2.5 sm:px-5">
-      <div className="flex min-w-0 items-center gap-2.5">
+    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-2.5 border-b border-[rgba(8,13,53,0.08)] bg-white px-3 py-2.5 sm:gap-3 sm:px-5">
+      <div className="flex min-w-0 flex-1 items-center gap-2 sm:flex-initial sm:gap-2.5">
         <Link
           href={`/task-details?task=${task.slug}`}
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[rgba(8,13,53,0.08)] bg-canvas text-ink-secondary transition-colors hover:border-navy/30 hover:bg-white hover:text-ink"
@@ -96,13 +96,13 @@ const StudioTopbar = ({
         <span className="hidden h-4 w-px bg-[#EAEAEA] sm:inline-block shrink-0" aria-hidden="true" />
 
         {meta && (
-          <Badge tone={TONE_BADGE[meta.tone] || 'mint'} className="shrink-0 gap-1.5">
+          <Badge tone={TONE_BADGE[meta.tone] || 'mint'} className="hidden shrink-0 gap-1.5 sm:inline-flex">
             <TypeIcon className="h-3.5 w-3.5" strokeWidth={1.6} />
             {t(meta.label)}
           </Badge>
         )}
 
-        <span className="max-w-[200px] truncate text-sm font-semibold text-ink sm:max-w-[300px]" title={task.title}>
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-ink sm:flex-initial sm:max-w-[300px]" title={task.title}>
           {task.title}
         </span>
 
@@ -117,21 +117,21 @@ const StudioTopbar = ({
         )}
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs font-medium text-ink-muted tabular-nums">
+      <div className="order-3 flex w-full items-center justify-between gap-3 border-t border-line-subtle pt-2 sm:order-none sm:w-auto sm:justify-start sm:border-0 sm:pt-0 shrink-0">
+        <span className="shrink-0 text-xs font-medium text-ink-muted tabular-nums">
           {t('Item {current} / {total}', {
             current: <strong className="font-semibold text-ink">{Math.min(itemIdx + 1, total || 1)}</strong>,
             total,
           })}
         </span>
-        <div className="w-24 sm:w-32">
+        <div className="flex-1 sm:w-28 md:w-32 sm:flex-none">
           <CustomProgressBar value={pct} tone="teal" height="sm" />
         </div>
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
         {isDev && (
-          <div className="w-[180px]" title={t('Development only — override task.type')}>
+          <div className="w-[140px] sm:w-[180px]" title={t('Development only — override task.type')}>
             <CustomSelect
               size="sm"
               options={devOptions}
@@ -147,14 +147,14 @@ const StudioTopbar = ({
           type="button"
           onClick={onToggleGuidelines}
           aria-pressed={guidelinesOpen}
-          className={`inline-flex h-8 items-center gap-2 rounded-lg border px-3 text-xs font-medium transition-colors ${
+          className={`inline-flex h-8 items-center gap-1.5 sm:gap-2 rounded-lg border px-2.5 sm:px-3 text-xs font-medium transition-colors ${
             guidelinesOpen
               ? 'border-navy bg-navy text-white'
               : 'border-[rgba(8,13,53,0.08)] bg-white text-ink hover:border-line-input hover:bg-canvas'
           }`}
         >
           <BookOpen className="h-3.5 w-3.5" strokeWidth={1.6} />
-          <span>{t('Guidelines')}</span>
+          <span className="sr-only sm:not-sr-only">{t('Guidelines')}</span>
           <kbd
             className={`hidden sm:inline-flex h-4 min-w-4 items-center justify-center rounded px-1 font-mono text-[10px] font-semibold ${
               guidelinesOpen

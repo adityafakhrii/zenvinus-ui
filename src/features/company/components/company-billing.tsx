@@ -91,7 +91,7 @@ const CompanyBilling = () => {
     <>
       <DashboardHeader />
 
-      <main className="min-h-screen bg-canvas pb-16 pt-6 sm:pt-8">
+      <main className="min-h-screen bg-canvas pb-24 sm:pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -125,7 +125,51 @@ const CompanyBilling = () => {
                 </p>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-line-subtle">
+              {/* Mobile card list (< md) */}
+              <div className="divide-y divide-line-subtle rounded-xl border border-line-subtle bg-surface md:hidden">
+                {invoices.map((inv) => (
+                  <div key={inv.id} className="flex flex-col gap-3 p-4">
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="min-w-0">
+                        <div className="font-mono text-xs font-semibold text-ink">{inv.id}</div>
+                        <div className="mt-0.5 text-xs text-ink-muted">{t(inv.period)}</div>
+                      </div>
+                      <Badge tone={STATUS_BADGE[inv.statusTone] ?? 'neutral'} dot className="shrink-0">
+                        {t(inv.status)}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span className="text-ink-secondary">{inv.method}</span>
+                      <span className="font-mono font-semibold text-ink tabular-nums">
+                        {money(inv.amount, locale)}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-end">
+                      {inv.status === 'Paid' ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label={t('Download {name}', { name: inv.id })}
+                          onClick={() => pushToast(inv.id, t('Action previewed in local dummy mode.'))}
+                          leftIcon={<Download className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                        >
+                          {t('Download')}
+                        </Button>
+                      ) : (
+                        <span className="font-mono text-xs text-ink-muted">
+                          {t('due {date}', { date: inv.date })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table (>= md) */}
+              <div className="hidden overflow-x-auto rounded-xl border border-line-subtle md:block">
                 <table className="w-full min-w-[620px] border-collapse text-left text-sm">
                   <thead>
                     <tr className="border-b border-line-subtle bg-canvas text-xs font-medium text-ink-secondary">

@@ -54,7 +54,7 @@ const SupportPage = () => {
     <>
       <DashboardHeader />
       <main>
-        <section className="min-h-[calc(100vh-140px)] bg-canvas py-8 sm:py-10">
+        <section className="min-h-[calc(100vh-140px)] bg-canvas pt-8 pb-24 sm:py-10">
           <div className="mx-auto max-w-[1280px] space-y-6 px-4 sm:px-6">
             <div>
               <h1 className="m-0 text-2xl font-semibold tracking-tight text-ink">{t('Support')}</h1>

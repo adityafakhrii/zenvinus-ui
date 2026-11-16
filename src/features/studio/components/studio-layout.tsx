@@ -75,7 +75,11 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
   }
 
   const content = (
-    <section className={`min-h-[calc(100vh-220px)] bg-canvas ${isPublic ? 'pb-20 pt-28 sm:pt-32' : 'py-8 sm:py-10'}`}>
+    <section
+      className={`min-h-[calc(100vh-220px)] bg-canvas ${
+        isPublic ? 'pt-8 pb-20 sm:pt-10' : 'pt-6 pb-24 sm:py-10'
+      }`}
+    >
       <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6">
         {(isPublic || title) && (
           <h1 className="mb-6 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">

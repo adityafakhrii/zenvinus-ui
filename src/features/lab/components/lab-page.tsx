@@ -118,7 +118,7 @@ const LabTopbar = () => {
           >
             {t('Company view')}
           </Button>
-          <div className="flex items-center gap-2 rounded-full border border-[rgba(8,13,53,0.08)] bg-canvas py-1 pl-1 pr-3">
+          <div className="flex items-center gap-2 rounded-full border border-[rgba(8,13,53,0.08)] bg-canvas p-1 lg:pr-3">
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-navy text-[11px] font-semibold text-white">
               RW
             </span>
@@ -168,7 +168,102 @@ const LabQueue = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile card list (< md) */}
+          <div className="divide-y divide-line-subtle md:hidden">
+            {posted.map((r) => (
+              <div key={r.id} className="flex flex-col gap-3 p-4">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                        ICON_BG_MAP[r.tone] || 'bg-tone-blue-bg text-tone-blue-fg'
+                      }`}
+                    >
+                      <LabGlyph icon={r.icon} />
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/lab?id=${r.id}`}
+                        className="block truncate text-sm font-semibold text-ink hover:text-teal-ink"
+                      >
+                        {r.name}
+                      </Link>
+                      <span className="block truncate text-xs text-ink-muted">
+                        <span className="font-mono">{r.id}</span> · {t(r.typeLabel)}
+                        {r.useCase ? ` · ${r.useCase}` : ''}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="shrink-0">{statusChip(t(r.status), r.statusTone)}</div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-ink-secondary">{r.company?.name || r.owner}</span>
+                  <span className="font-mono font-semibold tabular-nums text-ink">
+                    {r.budgetRange || t('TBD')}
+                  </span>
+                </div>
+
+                <div className="flex justify-end">
+                  <Link
+                    href={`/lab?id=${r.id}`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-navy hover:text-teal-ink"
+                  >
+                    {r.statusKey === 'pending' || r.statusKey === 'in_review' ? t('Review') : t('Open')}
+                    <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </Link>
+                </div>
+              </div>
+            ))}
+
+            {seeded.map((r) => (
+              <div key={r.id} className="flex flex-col gap-3 p-4">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                        ICON_BG_MAP[r.tone] || 'bg-tone-blue-bg text-tone-blue-fg'
+                      }`}
+                    >
+                      <LabGlyph icon={r.icon} />
+                    </span>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/dashboard/projects?id=${r.id}`}
+                        className="block truncate text-sm font-semibold text-ink hover:text-teal-ink"
+                      >
+                        {r.title}
+                      </Link>
+                      <span className="block truncate text-xs text-ink-muted">
+                        <span className="font-mono">{r.id}</span> · {t(r.type)} · {t('sample')}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="shrink-0">{statusChip(t(r.status), r.statusTone)}</div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-ink-muted">{t('Sample order')}</span>
+                  <span className="font-mono font-semibold tabular-nums text-ink">
+                    {money(r.amount, locale)}
+                  </span>
+                </div>
+
+                <div className="flex justify-end">
+                  <Link
+                    href={`/dashboard/projects?id=${r.id}`}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-navy hover:text-teal-ink"
+                  >
+                    {t('Pipeline')}
+                    <ChevronRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table (>= md) */}
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[740px] border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">

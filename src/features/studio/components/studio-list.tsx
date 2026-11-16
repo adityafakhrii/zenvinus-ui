@@ -104,77 +104,141 @@ const StudioList = () => {
       )}
 
       {datasets.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[780px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">
-                  <th className="px-5 py-3.5">{t('Dataset')}</th>
-                  <th className="px-4 py-3.5">{t('Status')}</th>
-                  <th className="px-4 py-3.5">{t('Type')}</th>
-                  <th className="px-4 py-3.5" title={t('Parts of the dataset, such as train and test')}>
-                    {t('Splits')}
-                  </th>
-                  <th className="px-4 py-3.5">{t('Rows')}</th>
-                  <th className="px-4 py-3.5">{t('Updated')}</th>
-                  <th className="px-5 py-3.5 text-right" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle">
-                {datasets.map((d) => (
-                  <tr key={d.id} className="transition-colors hover:bg-surface-soft">
-                    <td className="px-5 py-3.5 font-semibold text-ink">
-                      <Link href={`${base}/explore?slug=${d.slug}`} className="hover:text-teal-ink">
-                        {d.name}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span title={t(STATUS_HINT[d.status] || '')}>
-                        <Badge tone={STATUS_TONE[d.status] || 'neutral'} dot>
-                          {t(STATUS_LABEL[d.status] || d.status)}
-                        </Badge>
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5 text-ink-secondary">{t(TYPE_LABEL[d.dataType] || d.dataType)}</td>
-                    <td className="px-4 py-3.5 text-xs text-ink-secondary">
-                      {d.splits.length ? (
-                        <span className="font-mono">{d.splits.map((s) => s.name).join(', ')}</span>
-                      ) : (
-                        <span className="text-ink-subtle">{t('No data yet')}</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-ink">
-                      {d.rows.toLocaleString(locale)}
-                    </td>
-                    <td className="px-4 py-3.5 text-xs text-ink-muted">{formatDate(d.updatedAt)}</td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          href={`${base}/explore?slug=${d.slug}`}
-                          leftIcon={<Table2 className="h-3.5 w-3.5" strokeWidth={1.6} />}
-                        >
-                          {t('View data')}
-                        </Button>
-                        {d.canEdit && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            href={`${base}/edit?slug=${d.slug}`}
-                            leftIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={1.6} />}
-                          >
-                            {t('Edit')}
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* Mobile card list (< md) */}
+          <div className="divide-y divide-line-subtle overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white md:hidden">
+            {datasets.map((d) => (
+              <div key={d.id} className="flex flex-col gap-3 p-4">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="min-w-0">
+                    <Link
+                      href={`${base}/explore?slug=${d.slug}`}
+                      className="block truncate text-sm font-semibold text-ink hover:text-teal-ink"
+                    >
+                      {d.name}
+                    </Link>
+                    <span className="text-xs text-ink-muted">{t(TYPE_LABEL[d.dataType] || d.dataType)}</span>
+                  </div>
+                  <span title={t(STATUS_HINT[d.status] || '')} className="shrink-0">
+                    <Badge tone={STATUS_TONE[d.status] || 'neutral'} dot>
+                      {t(STATUS_LABEL[d.status] || d.status)}
+                    </Badge>
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-secondary">
+                  <span className="truncate">
+                    {d.splits.length ? (
+                      <span className="font-mono">{d.splits.map((s) => s.name).join(', ')}</span>
+                    ) : (
+                      <span className="text-ink-subtle">{t('No data yet')}</span>
+                    )}
+                  </span>
+                  <span className="font-mono font-semibold tabular-nums text-ink">
+                    {d.rows.toLocaleString(locale)} {t('Rows')}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-ink-muted">{formatDate(d.updatedAt)}</span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      href={`${base}/explore?slug=${d.slug}`}
+                      leftIcon={<Table2 className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                    >
+                      {t('View data')}
+                    </Button>
+                    {d.canEdit && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        href={`${base}/edit?slug=${d.slug}`}
+                        leftIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                      >
+                        {t('Edit')}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop table (>= md) */}
+          <div className="hidden overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white md:block">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[780px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">
+                    <th className="px-5 py-3.5">{t('Dataset')}</th>
+                    <th className="px-4 py-3.5">{t('Status')}</th>
+                    <th className="px-4 py-3.5">{t('Type')}</th>
+                    <th className="px-4 py-3.5" title={t('Parts of the dataset, such as train and test')}>
+                      {t('Splits')}
+                    </th>
+                    <th className="px-4 py-3.5">{t('Rows')}</th>
+                    <th className="px-4 py-3.5">{t('Updated')}</th>
+                    <th className="px-5 py-3.5 text-right" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line-subtle">
+                  {datasets.map((d) => (
+                    <tr key={d.id} className="transition-colors hover:bg-surface-soft">
+                      <td className="px-5 py-3.5 font-semibold text-ink">
+                        <Link href={`${base}/explore?slug=${d.slug}`} className="hover:text-teal-ink">
+                          {d.name}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span title={t(STATUS_HINT[d.status] || '')}>
+                          <Badge tone={STATUS_TONE[d.status] || 'neutral'} dot>
+                            {t(STATUS_LABEL[d.status] || d.status)}
+                          </Badge>
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 text-ink-secondary">{t(TYPE_LABEL[d.dataType] || d.dataType)}</td>
+                      <td className="px-4 py-3.5 text-xs text-ink-secondary">
+                        {d.splits.length ? (
+                          <span className="font-mono">{d.splits.map((s) => s.name).join(', ')}</span>
+                        ) : (
+                          <span className="text-ink-subtle">{t('No data yet')}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3.5 font-mono text-xs font-semibold tabular-nums text-ink">
+                        {d.rows.toLocaleString(locale)}
+                      </td>
+                      <td className="px-4 py-3.5 text-xs text-ink-muted">{formatDate(d.updatedAt)}</td>
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            href={`${base}/explore?slug=${d.slug}`}
+                            leftIcon={<Table2 className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                          >
+                            {t('View data')}
+                          </Button>
+                          {d.canEdit && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              href={`${base}/edit?slug=${d.slug}`}
+                              leftIcon={<Pencil className="h-3.5 w-3.5" strokeWidth={1.6} />}
+                            >
+                              {t('Edit')}
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

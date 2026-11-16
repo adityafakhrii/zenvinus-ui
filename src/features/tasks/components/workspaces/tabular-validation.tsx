@@ -15,7 +15,65 @@ const TabularValidation = ({ item, answer, onChange }: WorkspaceProps<'tabular_v
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-white">
-      <div className="overflow-x-auto">
+      {/* Mobile field validation cards (< md) */}
+      <div className="divide-y divide-line-subtle md:hidden">
+        {(item.fields || []).map((f) => {
+          const row: TabularRowAnswer = answer.rows?.[f.key] || {};
+          const valid = row.verdict === 'valid';
+          const invalid = row.verdict === 'invalid';
+          return (
+            <div key={f.key} className="flex flex-col gap-3 p-4">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="text-sm font-semibold text-ink">{t(f.label)}</span>
+                <span className="rounded bg-canvas px-2 py-0.5 font-mono text-xs text-ink break-all">
+                  {f.value}
+                </span>
+              </div>
+
+              <p className="m-0 text-xs text-ink-muted">{t(f.rule)}</p>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  aria-pressed={valid}
+                  className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                    valid
+                      ? 'border-[#10B981] bg-[#10B981] text-white'
+                      : 'border-line bg-canvas text-ink-secondary hover:border-[#10B981]/50 hover:bg-white'
+                  }`}
+                  onClick={() => setRow(f.key, { verdict: 'valid' })}
+                >
+                  <Check className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {t('Valid')}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={invalid}
+                  className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                    invalid
+                      ? 'border-[#FF5A5F] bg-[#FF5A5F] text-white'
+                      : 'border-line bg-canvas text-ink-secondary hover:border-[#FF5A5F]/50 hover:bg-white'
+                  }`}
+                  onClick={() => setRow(f.key, { verdict: 'invalid' })}
+                >
+                  <AlertTriangle className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  {t('Flag')}
+                </button>
+              </div>
+
+              <TextInput
+                size="sm"
+                placeholder={t('Note (optional)')}
+                value={row.note || ''}
+                onChange={(e) => setRow(f.key, { note: e.target.value })}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop table (>= md) */}
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[680px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-[rgba(8,13,53,0.08)] bg-canvas text-xs font-semibold text-ink-muted">

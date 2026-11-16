@@ -82,7 +82,7 @@ const StudioBottombar = (props: StudioBottombarProps) => {
   const { t } = useT();
 
   return (
-    <footer className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-3 border-t border-[rgba(8,13,53,0.08)] bg-white px-4 py-2.5 sm:px-5">
+    <footer className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-2.5 border-t border-[rgba(8,13,53,0.08)] bg-white px-3 py-2.5 sm:gap-3 sm:px-5">
       <div className="flex items-center">
         <Button
           variant="ghost"
@@ -95,31 +95,37 @@ const StudioBottombar = (props: StudioBottombarProps) => {
         </Button>
       </div>
 
-      <div className="flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+      <div className="order-first flex w-full items-center gap-1.5 text-xs font-medium text-ink-muted sm:order-none sm:w-auto">
         {props.reviewMode ? (
           <>
-            <ShieldCheck className="h-4 w-4 text-navy" strokeWidth={1.6} />
+            <ShieldCheck className="h-4 w-4 shrink-0 text-navy" strokeWidth={1.6} />
             <span>{t('Inspect any item, then decide — the decision applies to the whole submission')}</span>
           </>
         ) : draftSavedAt ? (
           <>
-            <CloudUpload className="h-4 w-4 text-teal-ink" strokeWidth={1.6} />
+            <CloudUpload className="h-4 w-4 shrink-0 text-teal-ink" strokeWidth={1.6} />
             <span className="text-teal-ink">{t('Draft saved automatically')}</span>
           </>
         ) : props.hasAnswer ? (
           <>
-            <CheckCircle2 className="h-4 w-4 text-[#10B981]" strokeWidth={1.6} />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#10B981]" strokeWidth={1.6} />
             <span className="text-[#059669]">{t('Answer ready to submit')}</span>
           </>
         ) : (
           <>
-            <PenSquare className="h-4 w-4 text-ink-subtle" strokeWidth={1.6} />
+            <PenSquare className="h-4 w-4 shrink-0 text-ink-subtle" strokeWidth={1.6} />
             <span>{t('No answer yet')}</span>
           </>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div
+        className={
+          props.reviewMode
+            ? 'grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center'
+            : 'flex flex-wrap items-center gap-2'
+        }
+      >
         {props.reviewMode ? (
           props.actions.map((a) => {
             const meta = DECISION_META[a.key] || DECISION_META.escalate;
@@ -128,7 +134,7 @@ const StudioBottombar = (props: StudioBottombarProps) => {
               <button
                 key={a.key}
                 type="button"
-                className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${meta.className}`}
+                className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${meta.className}`}
                 disabled={submitting}
                 title={t('Mark this submission as {status}', { status: t(a.to) })}
                 onClick={() => props.onDecision(a.key)}
