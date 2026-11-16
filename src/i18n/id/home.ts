@@ -291,6 +291,7 @@ const id: Dictionary = {
   'Calling answered within {br} 15 seconds.': 'Panggilan dijawab dalam {br} 15 detik.',
   Backup: 'Pencadangan',
   Services: 'Layanan',
+  Experts: 'Pakar',
   Machine: 'Machine',
   Learning: 'Learning',
   Programming: 'Pemrograman',

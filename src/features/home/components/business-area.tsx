@@ -1,7 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
 import { Code2, Cpu } from 'lucide-react';
-import data_engine_community from '@assets/img/business/data-engine-community.png';
+import { LifecycleHubScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 
 /**
@@ -15,17 +14,11 @@ const BusinessArea = () => {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-6">
-            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
-              <Image
-                src={data_engine_community}
-                alt={t('Zenvinus — Data Engine & AI Community Hub')}
-                className="h-auto w-full object-contain"
-              />
-            </div>
+            <LifecycleHubScene />
           </div>
 
           <div className="lg:col-span-6">
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-ink">
+            <span className="text-xs font-semibold text-teal-ink">
               {t('why {highlight}', { highlight: 'Zenvinus' })}
             </span>
             <h2 className="mt-2 mb-0 text-[28px] font-semibold leading-tight tracking-[-0.025em] text-ink sm:text-[34px]">

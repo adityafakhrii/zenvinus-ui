@@ -1,64 +1,63 @@
 import React from 'react';
-import Image from 'next/image';
-import about_img from '@assets/img/about/about-1.png';
 import {
-  AnnotationIcon,
-  CurationIcon,
-  DatasetIcon,
-  DiscoveryIcon,
-  ProductionIcon,
-  QualityControlIcon,
-  RawDataIcon,
-  TrainingIcon,
-} from '@/components/icons/pipeline-icons';
+  Cpu,
+  Database,
+  Filter,
+  Layers,
+  Rocket,
+  Search,
+  ShieldCheck,
+  Tag,
+} from 'lucide-react';
+import { PipelineScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 import type { PipelineStep } from '../types/home';
 
 const PIPELINE_STEPS: ReadonlyArray<PipelineStep> = [
   {
-    icon: RawDataIcon,
+    icon: Database,
     title: 'Raw Data',
     description: 'Start from any source — your own data or public datasets, structured or unstructured.',
   },
   {
-    icon: DiscoveryIcon,
+    icon: Search,
     title: 'Discovery',
     description: 'Find and connect the right data from your own sources and available public datasets.',
   },
   {
-    icon: CurationIcon,
+    icon: Filter,
     title: 'Curation',
     description: 'Clean, prepare, and organize raw data until it is AI-ready.',
   },
   {
-    icon: AnnotationIcon,
+    icon: Tag,
     title: 'Annotation',
     description: 'Label your data with precision, powered by experts and AI assistance.',
   },
   {
-    icon: QualityControlIcon,
+    icon: ShieldCheck,
     title: 'Quality Control',
     description: 'Validate every output with multi-layer quality checks.',
   },
   {
-    icon: DatasetIcon,
+    icon: Layers,
     title: 'Dataset',
     description: 'Build, version, and manage datasets that are ready for training.',
   },
   {
-    icon: TrainingIcon,
+    icon: Cpu,
     title: 'Training',
     description: 'Train and fine-tune models with fully tracked experiments.',
   },
   {
-    icon: ProductionIcon,
+    icon: Rocket,
     title: 'Production',
     description: 'Evaluate, register, and ship models to production with confidence.',
   },
 ];
 
 /**
- * 8-Stage End-to-End AI Pipeline section showing every lifecycle step transparently in a clean Bento grid.
+ * 8-Stage End-to-End AI Pipeline section pairing structured visual telemetry with uniform Lucide pipeline cards.
  */
 const AboutArea = () => {
   const { t } = useT();
@@ -68,17 +67,11 @@ const AboutArea = () => {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-6 text-center">
-              <Image
-                src={about_img}
-                alt={t('It Industries We’re Offering')}
-                className="mx-auto h-auto max-w-[300px] w-full object-contain"
-              />
-            </div>
+            <PipelineScene />
           </div>
 
           <div className="lg:col-span-8">
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-ink">
+            <span className="text-xs font-semibold text-teal-ink">
               {t('best {highlight}', { highlight: t('it service') })}
             </span>
             <h2 className="mt-2 mb-6 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
@@ -94,8 +87,8 @@ const AboutArea = () => {
                     className="flex flex-col rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-4 transition-colors hover:border-teal-ink/30"
                   >
                     <div className="mb-3 flex items-center justify-between gap-2">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
-                        <Icon />
+                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-teal-ink shadow-[0_1px_2px_rgba(2,6,38,0.04)]">
+                        <Icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
                       </span>
                       <span className="font-mono text-xs font-medium text-ink-muted tabular-nums">
                         {String(idx + 1).padStart(2, '0')}

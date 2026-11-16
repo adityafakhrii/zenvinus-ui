@@ -1,12 +1,7 @@
 import React from 'react';
-import Image from 'next/image';
 import { ArrowRight, CircleDollarSign, Eye, Lock, Share2, Tag } from 'lucide-react';
-import img_hero from '@assets/img/community/01-general-ai-hero.png';
-import img_share from '@assets/img/community/02-share-datasets-models.png';
-import img_annotation from '@assets/img/community/03-annotation-data-collection.png';
-import img_monitoring from '@assets/img/community/04-expert-monitoring.png';
-import img_enterprise from '@assets/img/community/05-enterprise-projects.png';
 import { Badge, Button, cn } from '@/components/ui';
+import { WorkforceScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 import type { CommunityFeature } from '../types/home';
 
@@ -20,7 +15,7 @@ const ICONS = {
 const ICON_TONE = {
   blue: 'bg-tone-blue-bg text-tone-blue-fg',
   mint: 'bg-tone-mint-bg text-tone-mint-fg',
-  purple: 'bg-tone-purple-bg text-tone-purple-fg',
+  navy: 'bg-navy text-teal',
   orange: 'bg-tone-orange-bg text-tone-orange-fg',
 } as const;
 
@@ -28,35 +23,35 @@ const FEATURES: ReadonlyArray<CommunityFeature<keyof typeof ICONS>> = [
   {
     tone: 'blue',
     icon: 'share',
-    img: img_share,
+    meta: 'datasets · models',
     title: 'Share Datasets & Models',
     text: 'Publish your datasets and models to the community, or build on what others have shared.',
   },
   {
     tone: 'mint',
     icon: 'tag',
-    img: img_annotation,
+    meta: 'image · text · audio',
     title: 'Annotation & Collection',
     text: 'Take on annotation and data collection tasks from real enterprise AI projects.',
   },
   {
-    tone: 'purple',
+    tone: 'navy',
     icon: 'eye',
-    img: img_monitoring,
+    meta: '94% QC pass',
     title: 'Expert Monitoring',
     text: 'Every submission is monitored and reviewed by specialists and experts for quality.',
   },
   {
     tone: 'orange',
     icon: 'lock',
-    img: img_enterprise,
+    meta: 'private tier',
     title: 'Enterprise-Exclusive Projects',
     text: 'Level up to unlock private, enterprise-only projects with dedicated workforces.',
   },
 ];
 
 /**
- * Zenvinus Community ecosystem section with Bento feature cards and dual reward CTAs.
+ * Zenvinus Community ecosystem section with live queue preview and clean Bento feature cards.
  */
 const CommunityArea = () => {
   const { t } = useT();
@@ -98,42 +93,36 @@ const CommunityArea = () => {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-5">
-              <Image
-                src={img_hero}
-                alt={t('Zenvinus AI workforce')}
-                className="h-auto w-full object-contain"
-              />
-            </div>
+            <WorkforceScene variant="light" />
           </div>
         </div>
 
         {/* 4 Community Pillars Grid */}
-        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((item) => {
             const Icon = ICONS[item.icon];
             const toneKey = item.tone as keyof typeof ICON_TONE;
             return (
               <article
                 key={item.title}
-                className="grid grid-cols-1 items-center gap-5 rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-5 sm:grid-cols-[minmax(0,1fr)_160px] sm:p-6"
+                className="flex flex-col justify-between rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-5 transition-colors hover:border-teal-ink/30"
               >
                 <div>
-                  <span
-                    className={cn(
-                      'mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl',
-                      ICON_TONE[toneKey] ?? 'bg-canvas text-ink',
-                    )}
-                  >
-                    <Icon className="h-5 w-5" strokeWidth={1.6} />
-                  </span>
+                  <div className="mb-4 flex items-center justify-between gap-2">
+                    <span
+                      className={cn(
+                        'inline-flex h-10 w-10 items-center justify-center rounded-xl',
+                        ICON_TONE[toneKey] ?? 'bg-canvas text-ink',
+                      )}
+                    >
+                      <Icon className="h-5 w-5" strokeWidth={1.5} />
+                    </span>
+                    <span className="font-mono text-[11px] text-ink-muted">{item.meta}</span>
+                  </div>
                   <h3 className="m-0 text-base font-semibold text-ink">{t(item.title)}</h3>
-                  <p className="mt-1.5 mb-0 text-[13px] leading-relaxed text-ink-secondary">
+                  <p className="mt-2 mb-0 text-[13px] leading-relaxed text-ink-secondary">
                     {t(item.text)}
                   </p>
-                </div>
-                <div className="overflow-hidden rounded-xl border border-line-subtle bg-canvas p-2">
-                  <Image src={item.img} alt={t(item.title)} className="h-auto w-full object-contain" />
                 </div>
               </article>
             );
@@ -148,8 +137,8 @@ const CommunityArea = () => {
                 <CircleDollarSign className="h-5 w-5" strokeWidth={1.6} />
               </span>
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-ink">
-                  {t('FOR CONTRIBUTORS')}
+                <span className="text-[11px] font-semibold text-teal-ink">
+                  {t('Contributors')}
                 </span>
                 <h3 className="mt-1 mb-0 text-xl font-semibold text-ink">{t('Contributors Get Paid')}</h3>
                 <p className="mt-1.5 mb-0 text-[13px] leading-relaxed text-ink-secondary">
@@ -170,8 +159,8 @@ const CommunityArea = () => {
                 <Eye className="h-5 w-5" strokeWidth={1.6} />
               </span>
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-teal">
-                  {t('FOR EXPERTS')}
+                <span className="text-[11px] font-semibold text-teal">
+                  {t('Experts')}
                 </span>
                 <h3 className="mt-1 mb-0 text-xl font-semibold text-white">{t('Experts Get Paid')}</h3>
                 <p className="mt-1.5 mb-0 text-[13px] leading-relaxed text-white/75">

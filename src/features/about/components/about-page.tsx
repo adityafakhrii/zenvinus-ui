@@ -1,10 +1,7 @@
 import React from 'react';
-import Image from 'next/image';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import pipeline_img from '@assets/img/about/about-1.png';
-import community_img from '@assets/img/business/data-engine-community.png';
-import platform_img from '@assets/img/community/01-general-ai-hero.png';
 import { Badge, Button } from '@/components/ui';
+import { LifecycleHubScene, PipelineScene, WorkforceScene } from '@/components/visuals/zenvinus-scenes';
 import { useT } from '@/i18n';
 import type { AboutLayer, AboutNumber, AboutPillar, TimelineYear } from '../types/about';
 
@@ -94,14 +91,7 @@ const AboutPage = () => {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-surface p-6 text-center shadow-[0_1px_2px_rgba(2,6,38,0.03)]">
-                <Image
-                  src={pipeline_img}
-                  alt={t('The Zenvinus data pipeline, from raw data to production')}
-                  priority
-                  className="mx-auto h-auto max-w-[320px] w-full object-contain"
-                />
-              </div>
+              <PipelineScene />
             </div>
           </div>
 
@@ -150,13 +140,7 @@ const AboutPage = () => {
             </div>
 
             <div className="lg:col-span-6">
-              <div className="overflow-hidden rounded-2xl border border-[rgba(8,13,53,0.08)] bg-canvas p-5">
-                <Image
-                  src={community_img}
-                  alt={t('Data flowing from sources through the Zenvinus platform to contributors')}
-                  className="h-auto w-full object-contain"
-                />
-              </div>
+              <LifecycleHubScene />
             </div>
           </div>
 
@@ -183,13 +167,7 @@ const AboutPage = () => {
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-8 rounded-2xl bg-navy p-6 text-white lg:grid-cols-12 lg:p-10">
             <div className="lg:col-span-5">
-              <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4">
-                <Image
-                  src={platform_img}
-                  alt={t('The Zenvinus platform for datasets, models and contributors')}
-                  className="h-auto w-full object-contain"
-                />
-              </div>
+              <WorkforceScene variant="dark" />
             </div>
 
             <div className="lg:col-span-7">
