@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Badge, EmptyState, SearchInput, cn } from '@/components/ui';
+import { EmptyState, SearchInput, cn } from '@/components/ui';
 import { SkeletonFilterBar, SkeletonPostGrid } from '@/components/ui/skeleton';
 import { useT } from '@/i18n';
 import { getPageItems, pageQuery, totalPages } from '@/utils/pagination';
@@ -93,10 +93,7 @@ const PostboxArea = ({ base = '/blog', kind = 'blog', initialData }: PostboxArea
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         {/* Editorial Heading */}
         <header className="max-w-2xl">
-          <Badge tone="mint" dot>
-            {isNews ? t('News') : t('Blog')}
-          </Badge>
-          <h1 className="mt-3 mb-0 text-[30px] font-semibold tracking-[-0.025em] text-ink sm:text-[38px]">
+          <h1 className="m-0 text-[30px] font-semibold tracking-[-0.025em] text-ink sm:text-[38px]">
             {isNews ? t('News') : t('Blog')}
           </h1>
           <p className="mt-2 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">

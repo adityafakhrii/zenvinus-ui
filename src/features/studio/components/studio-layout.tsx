@@ -9,7 +9,7 @@ import FooterThree from '@/components/layout/footer/footer';
 import { useAuth } from '@/features/auth';
 import { STUDIO_PERMS } from '../constants';
 import { useT } from '@/i18n';
-import { Badge, BentoSkeleton, Button } from '@/components/ui';
+import { BentoSkeleton, Button } from '@/components/ui';
 
 /**
  * Layout for the dataset studio. Under /studio it uses the public site header and footer; under /dashboard/studio
@@ -77,14 +77,10 @@ const StudioLayout = ({ title, children }: StudioLayoutProps) => {
   const content = (
     <section className={`min-h-[calc(100vh-220px)] bg-canvas ${isPublic ? 'pb-20 pt-28 sm:pt-32' : 'py-8 sm:py-10'}`}>
       <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6">
-        {isPublic && (
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <Badge tone="mint">{t('Dataset Studio')}</Badge>
-            <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{t(title || 'Dataset Studio')}</h1>
-          </div>
-        )}
-        {title && !isPublic && (
-          <h1 className="mb-6 text-2xl font-semibold tracking-tight text-ink">{t(title)}</h1>
+        {(isPublic || title) && (
+          <h1 className="mb-6 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            {t(title || 'Dataset Studio')}
+          </h1>
         )}
         {body}
       </div>

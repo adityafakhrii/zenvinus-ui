@@ -34,10 +34,7 @@ const NewsGrid = ({ initialData }: NewsGridProps) => {
     <section className="min-h-screen bg-canvas py-12 sm:py-16">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <header className="mb-8 max-w-2xl">
-          <Badge tone="mint" dot>
-            {t('News')}
-          </Badge>
-          <h1 className="mt-3 mb-0 text-[30px] font-semibold tracking-[-0.025em] text-ink sm:text-[38px]">
+          <h1 className="m-0 text-[30px] font-semibold tracking-[-0.025em] text-ink sm:text-[38px]">
             {t('News')}
           </h1>
           <p className="mt-2 mb-0 text-sm leading-relaxed text-ink-secondary sm:text-base">

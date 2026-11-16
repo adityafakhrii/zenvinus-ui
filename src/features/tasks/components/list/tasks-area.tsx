@@ -218,10 +218,7 @@ const TasksArea = () => {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <Badge tone="mint" dot>
-              {t('Tasks')}
-            </Badge>
-            <h1 className="mt-3 mb-0 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
+            <h1 className="m-0 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
               {t('Task List')}
             </h1>
             <p className="mt-1.5 mb-0 text-sm text-ink-secondary">

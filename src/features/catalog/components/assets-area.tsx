@@ -24,7 +24,7 @@ import {
 } from '@/components/ui';
 import type { BadgeTone, SelectOption } from '@/components/ui';
 import { SkeletonRows } from '@/components/ui/skeleton';
-import { DATA_TYPES, type DataType } from '@/config/data-types';
+import { DATA_TYPES, isDataType, type DataType } from '@/config/data-types';
 import { useT } from '@/i18n';
 import { fetchAssets } from '../services/catalog-api';
 import type { AssetKind, AssetListParams } from '../types/asset';
@@ -183,10 +183,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
         {/* Header & Search/Sort Toolbar */}
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <Badge tone="mint" dot>
-              {isDataset ? t('Datasets') : t('Models')}
-            </Badge>
-            <h1 className="mt-3 mb-0 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
+            <h1 className="m-0 text-[28px] font-semibold tracking-[-0.025em] text-ink sm:text-[34px]">
               {t(pageTitle)}
             </h1>
             <p className="mt-1.5 mb-0 text-sm text-ink-secondary">{t(pageSub)}</p>
@@ -253,6 +250,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
               assets.map((asset) => {
                 const badgeTone = TONE_MAP[asset.tone] ?? 'neutral';
                 const iconClass = ICON_SURFACE[asset.tone] ?? 'bg-canvas text-ink-secondary';
+                const dtypeLabel = isDataType(asset.dtype) ? DTYPE_LABELS[asset.dtype] : asset.dtype;
                 const Icon = isDataset ? Database : Cpu;
                 return (
                   <article
@@ -279,7 +277,7 @@ const DatasetsArea = ({ res = 'Dataset' }: AssetsAreaProps) => {
                               {asset.title}
                             </Link>
                           </h2>
-                          <Badge tone={badgeTone}>{res === 'Model' ? t('Models') : t('Datasets')}</Badge>
+                          {dtypeLabel && <Badge tone={badgeTone}>{t(dtypeLabel)}</Badge>}
                         </div>
 
                         {asset.tags.length > 0 && (
