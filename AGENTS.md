@@ -51,6 +51,11 @@ no API key, $0).
 - State: API data in TanStack Query, shared app state in Redux Toolkit slices (`src/features/<feature>/store`, combined in `src/store/store.ts`), UI state in `useState`. See docs/frontend.md section 9.
 - Before finishing: `bun run typecheck` and `bun run lint` with no errors.
 
+## UI/UX revamp guidelines
+
+- Before designing or modifying any UI, components, or styles, read `ai-guidelines/color-system.md`, `ai-guidelines/design-revamp-guide.md`, and `.agents/unslop/skills/unslop/SKILL.md`.
+- Keep changes 100% on local dummy data (`src/services/api.ts`, `src/features/*/data/`), prioritize Tailwind CSS, use `lucide-react` icons, use custom React SVG charts, and replace all browser-native controls with custom components.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

@@ -20,20 +20,30 @@ Sebelum menyentuh kode komponen atau stylesheet apa pun, AI agent **wajib** memb
 
 Saat melakukan revamp, **utamakan menggunakan Tailwind CSS** sebagai sistem styling utama untuk seluruh komponen, layout, custom controls, dan halaman baru — menggantikan pendekatan lama berbasis Bootstrap 5 + SCSS template (`public/assets/scss` dan class legacy `.edash-*` / `.tflow-*` / `.zv-*`).
 
-### Aturan Implementasi Tailwind CSS
-1. **Setup Awal (Belum Terpasang Saat Ini):** Saat memulai Fase 1, pasang Tailwind CSS (`tailwindcss`, `@tailwindcss/postcss`, `postcss` — disarankan Tailwind v4) menggunakan `bun add -d` dan muat dari entry CSS global (`src/styles/globals.css` / `index.scss`).
+### Aturan Implementasi Tailwind CSS & Dependency Baru
+1. **Setup Awal (Belum Terpasang Saat Ini):** Saat memulai Fase 1, pasang Tailwind CSS dan `lucide-react` menggunakan `bun`:
+   - `bun add -d tailwindcss @tailwindcss/postcss postcss`
+   - `bun add lucide-react`
+   - Muat Tailwind dari entry CSS global (`src/styles/globals.css` / `src/styles/index.scss`).
 2. **Design Tokens di `@theme` / CSS Variables:** Petakan seluruh palet dari [ai-guidelines/color-system.md](color-system.md) dan skala `4px` dari `unslop` ke dalam token Tailwind (`@theme`), seperti:
    - Brand & Surfaces: `--color-navy: #020626`, `--color-teal: #05DAC3`, `--color-teal-ink: #0D9488`, `--color-canvas: #F5F6F8`, `--color-surface: #FFFFFF`, `--color-tint-cyan: #F3FBFE`, `--color-tint-mint: #F1FBFA`
    - Semantic 6-Tone: `blue`, `mint`, `purple`, `orange`, `amber`, `red` (pair `bg` + `text`)
-   - Motion & Radius: `--ease-out-smooth: cubic-bezier(0.22, 1, 0.36, 1)`
+   - Typography & Motion: `--font-sans` (`Inter`), `--font-mono` (`JetBrains Mono`), `--ease-out-smooth: cubic-bezier(0.22, 1, 0.36, 1)`
 3. **Utility-First, Hindari SCSS Baru:** Semua halaman dan komponen hasil revamp **wajib** ditulis dengan utility classes Tailwind (`flex`, `grid`, `gap-4`, `rounded-xl`, `tabular-nums`, responsif `sm:`, `md:`, `lg:`, `xl:`). **Jangan** membuat file `.scss` baru atau menambah class CSS custom manual kecuali untuk token `@theme`, `@keyframes`, atau reset tipis yang tidak bisa diekspresikan di utility class.
 4. **Aturan Tailwind dari `unslop`:**
    - Gunakan skala spacing kelipatan `4px` (`p-4`, `p-6`, `gap-3`, `gap-6`, dll.) — hindari arbitrary value aneh seperti `mt-[13px]` atau `py-[11px]`.
    - Untuk transisi, **dilarang** `transition-all`. Selalu sebutkan properti eksplisit seperti `transition-colors`, `transition-opacity`, atau `transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]`.
    - **Dilarang** `animate-pulse`, `animate-bounce`, atau `hover:scale-*` dekoratif.
-5. **Migrasi Aman dari Bootstrap/SCSS Legacy:**
+5. **Migrasi Aman & Pembersihan Legacy Package:**
    - Selama proses revamp berjalan bertahap per grup halaman, jaga agar style Bootstrap legacy tidak menimpa komponen Tailwind (hindari konflik class Bootstrap seperti `.btn`, `.card`, `.row`, `.badge`, `.modal` pada komponen baru).
-   - Setelah seluruh Grup A–E selesai dirombak ke Tailwind, hapus dependency `bootstrap`, `@types/bootstrap`, `bootstrap/dist/js/bootstrap` di `_app.tsx`, `wowjs`, serta import `public/assets/scss/main` agar bundle bersih dan ringan.
+   - Setelah seluruh Grup A–E selesai dirombak ke Tailwind, hapus seluruh paket legacy yang sudah digantikan komponen custom agar bundle bersih, `npm install` bebas peer-conflict, dan Turbopack (`bun run dev`) berjalan mulus di Windows:
+     - `bootstrap` & `@types/bootstrap` (plus `bootstrap/dist/js/bootstrap` di `_app.tsx`)
+     - `wowjs` (`src/lib/wow.ts` & `Wrapper`)
+     - `react-18-image-lightbox` (diganti `Modal` custom)
+     - `react-modal-video` & `@types/react-modal-video` (diganti `Modal` custom)
+     - `swiper` (diganti layout grid / carousel ringan Tailwind)
+     - `react-circular-progressbar` (diganti custom SVG gauge)
+     - Import `public/assets/scss/main` serta `sass` bila tidak ada file `.scss` tersisa.
 
 ---
 
@@ -63,21 +73,26 @@ Mengacu pada layout dashboard referensi yang dilampirkan, terapkan bahasa visual
   - **Baris Bawah (3 kolom):** Kartu komposisi biaya/data (1 horizontal segmented block bar + legenda 2 kolom), Kartu Health/Quality Score (semi-circular segmented gauge + 1 kalimat ringkas), dan Kartu Tracker + Daftar Aktivitas/Riwayat terbaru berikon bulat `36px`.
 - **Nested Radius Math:** Selalu patuhi rumus `innerRadius = outerRadius - padding` (minimal `4px`). Panel/window `16px–20px`, kartu `12px–16px`, input/tombol/row aktif `8px–10px`, tag/keycap `4px–6px`.
 
-### B. Tipografi, Angka & Copywriting (Aturan Unslop)
-- **Font:** Pertahankan font brand yang jelas dan terbaca (sans-serif bersih untuk UI seperti `Plus Jakarta Sans` / `Inter` / `DM Sans` + monospace `JetBrains Mono` / `ui-monospace` untuk ID proyek, token, keycap shortcut, dan angka tabular).
-- **Bobot Teks (Weight):** Gunakan `400` (body), `500` (label/angka KPI/nav), dan `600` (judul kartu & penekanan). **Hindari** heading super tebal `800–900` dan **dilarang** `gradient text` atau `italic` untuk penekanan.
+### B. Tipografi, Angka, Copywriting & Sinkronisasi i18n (Aturan Unslop)
+- **Font (Rombak Sesuai Referensi):** Ganti pasangan font lama (`DM Sans` + `Raleway` 400–900 di [src/pages/_document.tsx](../src/pages/_document.tsx)) dengan pasangan neo-grotesque yang tajam dan bersih sesuai gaya referensi `ACRU`:
+  - **Primary UI & Heading Font:** `Inter` (`weights: 400, 500, 600` — dimuat via `next/font/google` di `_app.tsx` atau Google Fonts di `_document.tsx`).
+  - **Monospace Font:** `JetBrains Mono` (`weights: 400, 500`) untuk ID proyek (`REQ-xxxx`), potongan kode/citation, keycap shortcut (`Ctrl K`), dan counter mono.
+- **Bobot Teks (Weight):** Gunakan `400` (body & metadata), `500` (label, nav item, angka KPI/tabel), dan `600` (judul kartu, section heading, tombol utama). **Dilarang** memakai weight `800–900`, **dilarang** `gradient text`, dan **dilarang** `italic` untuk penekanan.
 - **Sentence Case:** Semua label navigasi, header tabel, subjudul, dan badge ditulis dalam *Sentence case* (`Workspace`, `Paid this month`, `Review queue`), **bukan** `UPPERCASE` dengan *wide letter-spacing*.
-- **Tabular Numbers:** Seluruh angka uang, persentase, durasi, jumlah baris, dan tanggal di tabel/KPI wajib memakai `font-variant-numeric: tabular-nums` dan format seragam.
-- **Copywriting Bersih:**
+- **Tabular Numbers:** Seluruh angka uang, persentase, durasi, jumlah baris, dan tanggal di tabel/KPI wajib memakai `tabular-nums` dan format seragam.
+- **Copywriting Bersih & Sinkronisasi i18n (`useT()`):**
   - Tidak ada sapaan emosional/emoji (`Welcome back! 👋` → gunakan judul konteks seperti `Enterprise Workspace` atau `Project Overview`).
   - Tidak ada tanda seru (`!`), kata hype (*supercharge, seamless, unlock, magic, AI-powered*), atau badge gimmick (`PRO ✨`, `New 🚀`, `Beta`).
   - Setiap delta persentase wajib menyebut pembandingnya (`+12.4% vs last month`, bukan `+12.4%` saja).
   - Placeholder singkat (`Search`, bukan `Search anything...`).
+  - **Wajib Sinkron i18n:** Karena seluruh aplikasi memakai `t('English Key')` dengan kamus di `src/i18n/id/*.ts`, setiap penambahan atau perubahan teks UI hasil pass Copy **harus ikut ditambahkan/diperbarui di `src/i18n/id/*.ts`** agar switcher bahasa `ID / EN` tetap lengkap dan konsisten.
 
-### C. Ikonografi
-- Gunakan **satu set ikon garis (line icons)** secara konsisten di seluruh aplikasi (misalnya `lucide-react` berukuran `16px` atau `18px` dengan ketebalan `strokeWidth={1.5}` — atau ikon garis seragam jika tetap memakai subset Font Awesome).
+### C. Ikonografi & Aset Logo
+- **Migrasi Penuh ke `lucide-react`:** Seluruh ikon aplikasi (menggantikan `<i className="fa-...">` yang saat ini tersebar di ~62 file) wajib menggunakan **`lucide-react`** dengan ukuran seragam `16px` (`w-4 h-4`) untuk kontrol/nav atau `18px` (`w-[18px] h-[18px]`) untuk kartu aksi, ketebalan konsisten `strokeWidth={1.5}`.
+- **Pengecualian Social Brand:** Ikon brand sosial (Google, GitHub pada halaman `/login`) boleh memakai inline SVG flat monokrom/resmi yang sederhana.
 - **Dilarang keras** menggunakan emoji sebagai ikon menu, badge, atau dekorasi teks di UI.
 - Ikon mengambil warna peran teks (`#5A627D` / `#6B7280`, atau `#020626` saat aktif). Untuk indikator kategori berwarna, gunakan status dot kecil (`6px–8px`), bukan mewarnai seluruh ikon.
+- **Logo Brand Eksisting:** Tetap gunakan aset logo resmi yang sudah ada di repo — [public/assets/img/logo/logo.png](../public/assets/img/logo/logo.png) untuk header/sidebar terang dan [public/assets/img/logo/footer-logo.png](../public/assets/img/logo/footer-logo.png) untuk footer gelap, dengan tinggi proporsional (`28px–34px` di header/sidebar, `40px` di footer). Jangan menggantinya dengan logo AI generik.
 
 ---
 
@@ -128,6 +143,30 @@ Berikut daftar komponen custom wajib dan penggantian yang harus dilakukan:
 | **`Popover` & `Tooltip`** | Native `title` attributes pada kontrol penting & tooltip chart | Floating card tipis (`#020626` teks `#FFFFFF` untuk tooltip ringkas; `#FFFFFF` border hairline + shadow untuk popover interaktif dan hover chart). |
 | **`TextInput`, `Textarea`, `SearchInput`, `FileDropzone`** | Input HTML mentah & `<input type="file">` standar di `studio-editor.tsx` & `company-settings.tsx` | Tinggi seragam (`42px` default, `36px` compact), border `1px solid #D5DBE2`, hover `#9CA3AF`, focus border `#0D9488` + ring `rgba(13, 148, 136, 0.15)`. `FileDropzone` menyembunyikan `<input type="file">` native dan menampilkan zona drag-and-drop rapi dengan preview nama/ukuran file. |
 | **`Tabs` / `SegmentedControl` & `Toast`** | Tab campuran & inline state alerts | `SegmentedControl` ala referensi (`7d`, `30d`, view switcher `Rows / Stats`, tab `Card / Viewer / Files`) dengan pill aktif `#FFFFFF` ber-shadow lembut di atas track `#F1F1F1` / `#F5F6F8`. `Toast` melayang di pojok kanan bawah tanpa menggeser layout. |
+
+### B. Custom SVG Charts & Data Visualization (`src/components/ui/charts/`)
+Untuk menghindari bloat dan konflik React 19 serta menjaga akurasi visual sesuai referensi desain, seluruh visualisasi data **wajib dibangun menggunakan custom SVG React components** (bukan `react-circular-progressbar` atau library chart berat):
+
+1. **`CustomBarChart` (Grafik Utama Dashboard):**
+   - Mendukung stacked/grouped series atau bar tunggal dengan background column netral (`#EEF1F4` / `#F1F1F1`) dan **hanya bar aktif/terpilih/terfokus** yang disorot dengan **Zenvinus Teal (`#05DAC3` + `#0D9488`)** serta warna semantic pendukung bila multi-seri.
+   - Grid horizontal tipis putus-putus (`stroke-dasharray`), label sumbu X/Y netral `12px` Sentence case (`Sun`, `Mon`, `Tue`, ...).
+   - Hover/focus pada bar menampilkan **Custom Floating Popover Tooltip** (`#FFFFFF`, hairline border, shadow lembut, dot warna + label + nilai `tabular-nums` rata kanan).
+   - Dilengkapi slot kanan atas untuk `CustomSelect` timeframe (`7d`, `30d`) & toggle mode tampilan bila diperlukan.
+2. **`CustomSemiCircleGauge` (Health / Quality / Agreement Score):**
+   - Menggantikan `react-circular-progressbar`. Dibangun dengan **SVG semi-circular segmented arc** (menyerupai gauge `75%` pada referensi desain): segmen terisi menggunakan Zenvinus Teal (`#05DAC3` → `#09AD86`), segmen sisa menggunakan netral `#E6E9EE`, dan di tengahnya angka utama besar (`28px–32px`, `tabular-nums`, `font-semibold`, `#020626`) + sublabel `12px` `#5A627D`.
+3. **`SegmentedBreakdownBar`:**
+   - Satu bar horizontal terbagi beberapa blok ber-radius kecil (`4px`) untuk komposisi spend/status/dataset, dipasangkan dengan legenda 2 kolom rapi (color dot `8px` + label + persentase `tabular-nums` rata kanan).
+4. **`CustomProgressBar`:**
+   - Track `#F1F1F1` tinggi `8px–10px` radius penuh atau `6px`, fill `#05DAC3` / `#0D9488`, dengan angka `tabular-nums` kiri-kanan di bawahnya.
+
+### C. Standar Loading, Empty, Error & Workspace States
+Setiap halaman dan tabel wajib mendesain 4 state berikut secara eksplisit dengan Tailwind CSS:
+- **Loading State (Skeleton):** Bangun komponen skeleton yang bentuk dan rasio tingginya meniru kartu Bento / baris tabel aslinya, menggunakan shimmer netral dari `color-system.md` (`#EDF1F5 → #F6F8FA → #EDF1F5`), dengan hormat pada `prefers-reduced-motion`.
+- **Empty State:** Panel tenang berborder hairline dengan ikon garis `24px` (`#6B7280`) di dalam badge lingkaran `#F5F6F8`, 1 kalimat penjelasan ringkas, dan maksimal 1 tombol aksi primer/sekunder.
+- **Error State:** Kartu/alert tenang dengan border halus `#FECACA` / background `#FEF2F2` dan teks `#B42318`, lengkap dengan 1 tombol retry — tanpa dump error mentah atau banner merah mencolok full-width.
+- **Interactive Table & Studio States:**
+  - Tabel (`Projects`, `Review Queue`, `Studio Explorer`, `Billing`) wajib membedakan jelas: header (`bg-[#F5F6F8]`, `text-xs font-medium text-[#5A627D]`), baris hover (`hover:bg-[#F8FAFC]`), baris terpilih (`bg-[#F1FBFA]`), serta **sticky header** pada tabel data panjang (`/studio/explore`) dengan wrapper `overflow-x-auto` berindikator scroll di mobile.
+  - Pada **Task Studio (`/task-studio`)**, tampilkan keyboard shortcut (`1–9`, `Ctrl+Enter`, `←/→`) sebagai `<kbd>` keycap monospace kecil yang rapi.
 
 ---
 
@@ -235,20 +274,22 @@ Saat merombak setiap halaman/komponen, terapkan 9 pass `unslop` secara berurutan
 
 Saat mulai mengeksekusi revamp di kode nanti, jalankan dalam fase berikut agar aplikasi tetap jalan dan terverifikasi (`bun run typecheck` + `bun run lint` + `bun run next build --webpack`) di setiap fase:
 
-1. **Fase 1 — Tailwind Setup, Design Foundation & Custom UI Kit (`src/styles/` & `src/components/ui/`):**
-   - Pasang **Tailwind CSS** (`bun add -d tailwindcss @tailwindcss/postcss postcss`) dan definisikan seluruh `@theme` tokens (warna dari `color-system.md`, spacing 4px scale, radius, motion curve, font scale).
-   - Bangun seluruh custom primitives berbasis Tailwind CSS (`CustomSelect`, `CustomDatePicker`, `CustomRadioGroup`/`Card`, `CustomCheckbox`/`Switch`, `Modal`/`ConfirmDialog`, `Drawer`, `Popover`/`Tooltip`, `SegmentedControl`, `FileDropzone`, `Toast`).
+1. **Fase 1 — Tailwind Setup, Font, Icons & Custom UI Kit (`src/styles/`, `src/pages/_document.tsx`, `src/components/ui/`):**
+   - Pasang **Tailwind CSS** dan **`lucide-react`**: `bun add -d tailwindcss @tailwindcss/postcss postcss && bun add lucide-react`.
+   - Rombak font di [src/pages/_document.tsx](../src/pages/_document.tsx) (atau `next/font/google`) dari `DM Sans` + `Raleway` ke **`Inter` (`400, 500, 600`) + `JetBrains Mono` (`400, 500`)** dan definisikan seluruh `@theme` tokens (warna dari `color-system.md`, spacing `4px` scale, radius, motion curve).
+   - Bangun seluruh custom primitives berbasis Tailwind CSS (`CustomSelect`, `CustomDatePicker`, `CustomDateTimePicker`, `CustomRadioGroup`/`Card`, `CustomCheckbox`/`Switch`, `Modal`/`ConfirmDialog`, `Drawer`, `Popover`/`Tooltip`, `SegmentedControl`, `FileDropzone`, `Toast`) serta custom SVG charts (`CustomBarChart`, `CustomSemiCircleGauge`, `SegmentedBreakdownBar`, `CustomProgressBar`).
    - Pastikan class komponen baru bebas dari tabrakan selector Bootstrap legacy.
 2. **Fase 2 — Dual-Mode App Shell (`Top Navbar` Default + `Sidebar` Switchable):**
    - Tambah Redux slice preferensi layout navigasi (`navMode: 'topbar' | 'sidebar'`, default `'topbar'`, persisted di `localStorage`).
    - Bangun `DashboardShell` dengan Tailwind CSS yang mendukung kedua mode + Mobile Drawer responsif + Global Quick Search.
    - Integrasikan pemilih mode navigasi di `/dashboard/settings`.
 3. **Fase 3 — Revamp 4 Role Dashboards (`/dashboard`):**
-   - Terapkan Bento Grid asimetris (`grid-cols-12`) ala referensi untuk Enterprise, Community, Internal, dan Expert.
+   - Terapkan Bento Grid asimetris (`grid-cols-12`) ala referensi untuk Enterprise, Community, Internal, dan Expert dengan custom SVG charts & gauge.
 4. **Fase 4 — Revamp Public Site, Catalog, Blog/News & Login:**
-   - Rombak `/`, `/about`, `/contact`, `/service*`, `/blog*`, `/news*`, `/datasets*`, `/models*`, `/login`, `/404` ke Tailwind CSS.
+   - Rombak `/`, `/about`, `/contact`, `/service*`, `/blog*`, `/news*`, `/datasets*`, `/models*`, `/login`, `/404` ke Tailwind CSS (gunakan `lucide-react` dan pastikan setiap copy baru sinkron ke `src/i18n/id/*.ts`).
 5. **Fase 5 — Revamp Task Flow, Annotation Studio, Dataset Studio, Projects, Lab & Support:**
-   - Pastikan seluruh `<select>`, `<input type="date">`, checkbox, radio, dan dialog di semua wizard & workspace telah diganti 100% ke komponen custom berbasis Tailwind.
-6. **Fase 6 — Cleanup Legacy Bootstrap/SCSS & Audit Akhir `unslop`:**
-   - Cabut `bootstrap`, `wowjs`, dan stylesheet template Technix yang tidak lagi terpakai.
+   - Pastikan seluruh `<select>`, `<input type="date">`, checkbox, radio, dan dialog di semua wizard & workspace telah diganti 100% ke komponen custom berbasis Tailwind, serta seluruh `fa-*` icon bermigrasi ke `lucide-react`.
+6. **Fase 6 — Cleanup Legacy Packages & Audit Akhir `unslop`:**
+   - Cabut seluruh package dan asset legacy (`bootstrap`, `@types/bootstrap`, `wowjs`, `react-18-image-lightbox`, `react-modal-video`, `@types/react-modal-video`, `swiper`, `react-circular-progressbar`, serta import `public/assets/scss/main`).
+   - Verifikasi `bun run typecheck`, `bun run lint`, `bun run build`, dan pastikan `bun run dev` (Turbopack) kembali berjalan lancar di Windows.
    - Periksa seluruh checklist 20 poin di `SKILL.md` pada viewport `375px`, `768px`, `1280px`, dan `1440px`.
