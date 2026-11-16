@@ -418,12 +418,15 @@ const DashboardHeader = () => {
     <>
       <header className="sticky top-0 z-40 border-b border-[rgba(8,13,53,0.08)] bg-surface/95 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-6">
+          <div className="flex min-w-0 flex-1 items-center gap-4 2xl:gap-6">
             <Link href="/" className="inline-flex shrink-0 items-center no-underline">
               <Image src={Logo} alt="Zenvinus" className="h-7 w-auto" priority />
             </Link>
 
-            <nav className="hidden xl:flex items-center gap-1" aria-label={t('Main menu')}>
+            <nav
+              className="hidden min-w-0 xl:flex items-center gap-0.5 2xl:gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              aria-label={t('Main menu')}
+            >
               {navItems.map((item) => {
                 const active = item === activeMatch;
                 return (
@@ -432,7 +435,7 @@ const DashboardHeader = () => {
                     href={item.href}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
-                      'relative inline-flex h-9 items-center gap-1.5 rounded-[8px] px-3 text-[13px] font-medium no-underline whitespace-nowrap',
+                      'relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[8px] px-2.5 2xl:px-3 text-[13px] font-medium no-underline whitespace-nowrap',
                       'transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-ink/40',
                       active
                         ? 'bg-canvas text-ink font-semibold'
@@ -447,7 +450,7 @@ const DashboardHeader = () => {
                     )}
                     {active && (
                       <span
-                        className="absolute inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-teal"
+                        className="absolute inset-x-2.5 2xl:inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-teal"
                         aria-hidden="true"
                       />
                     )}
@@ -462,7 +465,7 @@ const DashboardHeader = () => {
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label={t('Quick search')}
-              className="hidden md:inline-flex h-9 items-center gap-2 rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-canvas/70 px-3 text-[13px] text-ink-muted hover:border-ink/25 hover:bg-surface transition-colors cursor-pointer"
+              className="hidden 2xl:inline-flex h-9 items-center gap-2 rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-canvas/70 px-3 text-[13px] text-ink-muted hover:border-ink/25 hover:bg-surface transition-colors cursor-pointer"
             >
               <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
               <span>{t('Search')}</span>
@@ -474,21 +477,14 @@ const DashboardHeader = () => {
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label={t('Quick search')}
-              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:text-ink md:hidden cursor-pointer"
+              title={`${t('Quick search')} (Ctrl+K)`}
+              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:border-ink/25 hover:text-ink transition-colors 2xl:hidden cursor-pointer"
             >
               <Search className="h-4 w-4" strokeWidth={1.5} />
             </button>
 
             <LanguageSwitch className="hidden sm:inline-flex" />
             <NotificationsPopover />
-
-            <Link
-              href="/dashboard/settings"
-              aria-label={t('Account Settings')}
-              className="hidden lg:flex h-9 w-9 items-center justify-center rounded-[9px] border border-[rgba(8,13,53,0.10)] bg-surface text-ink-secondary hover:border-ink/25 hover:text-ink transition-colors no-underline"
-            >
-              <Settings className="h-4 w-4" strokeWidth={1.5} />
-            </Link>
 
             {renderCtaButton('hidden lg:inline-flex')}
 
